@@ -14,4 +14,5 @@ repositories {
 
 dependencies {
   implementation(kotlin("stdlib"))
+  implementation(group = "org.snakeyaml", name = "snakeyaml-engine", version = "1.+")
 }

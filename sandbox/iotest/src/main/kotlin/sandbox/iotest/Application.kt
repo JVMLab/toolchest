@@ -4,6 +4,7 @@ package com.jvmlab.sandbox.iotest
 import java.io.File
 
 import com.jvmlab.commons.io.*
+import commons.io.Yaml
 
 
 fun main(args: Array<String>) {
@@ -37,4 +38,8 @@ fun main(args: Array<String>) {
      FileMatcher(MatchingPattern(excl), MatcherType.EXCLUDE),
      FileMatcher(MatchingPattern(".*(lookups|kotlin).*", PatternSyntax.REGEX), MatcherType.EXCLUDE)
   )).forEach{ f: File -> println(f) }
+
+  val yaml = Yaml()
+  val map = yaml.loadMap(File("src/test/map.yaml"))
+  map.forEach { k, v -> println("$k : $v") }
 }
