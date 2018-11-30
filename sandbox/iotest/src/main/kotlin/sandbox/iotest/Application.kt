@@ -42,4 +42,6 @@ fun main(args: Array<String>) {
   val yaml = Yaml()
   val map = yaml.loadMap(File("src/test/map.yaml"))
   map.forEach { k, v -> println("$k : $v") }
+  println((map["name"] as Map<String, Any>).get("last"))
+  println((map["languages"] as List<String>).get(2))
 }
