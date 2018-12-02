@@ -4,7 +4,6 @@ package com.jvmlab.sandbox.iotest
 import java.io.File
 
 import com.jvmlab.commons.io.*
-import commons.io.Yaml
 
 
 fun main(args: Array<String>) {

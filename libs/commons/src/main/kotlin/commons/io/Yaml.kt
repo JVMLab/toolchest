@@ -1,4 +1,4 @@
-package commons.io
+package com.jvmlab.commons.io
 
 import java.io.File
 import java.io.FileReader
