@@ -8,9 +8,15 @@ import com.jvmlab.commons.io.Yaml
 
 
 /**
- * Parses [File] path and returns [Parsed<File>]
+ * Parses [File] path and returns a new [Parsed<File>]
  */
 fun File.parsePath (): Parsed<File> = Parsed<File>(this, ::fileParsePath)
+
+
+/**
+ * Parses source of [Parsed<File>] path and returns a new [Parsed<File>]
+ */
+fun Parsed<File>.parsePath (): Parsed<File> = this.mergeResult(::fileParsePath)
 
 
 /**

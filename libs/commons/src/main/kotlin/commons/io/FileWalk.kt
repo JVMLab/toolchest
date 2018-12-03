@@ -77,11 +77,3 @@ fun File.applyFileMatcherArray (
 
   return returnSeq
 }
-
-
-/**
- * Creates a new [File] with the extension to changed to [newExt]
- * 
- * @return newly created [File] instance
- */
-fun File.changeExt (newExt: String): File = File(this.nameWithoutExtension + ".$newExt")
