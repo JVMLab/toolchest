@@ -22,4 +22,4 @@ val File.extensionSeparator: String
  * 
  * @return newly created [File] instance
  */
-fun File.changeExt (newExt: String): File = File(this.nameWithoutExtension + ".$newExt")
+fun File.changeExt (newExt: String): File = File(nameWithoutExtension + extensionSeparator + newExt)

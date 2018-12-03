@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
   println("source: ${parsedFile.source}")
   println("result: ${parsedFile.result}")
 
-  val parsedPath = file.parsePath()
+  val parsedPath = file.parseYaml(yaml).parsePath()
 
   println("source: ${parsedPath.source}")
   println("result: ${parsedPath.result}")

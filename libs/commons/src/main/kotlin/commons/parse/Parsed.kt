@@ -1,5 +1,8 @@
 package com.jvmlab.commons.parse
 
+import java.io.File
+import kotlin.reflect.KFunction2
+
 
 /**
  * Represents a parsed [source] value along with the results of the parsing, which is [Map<String, Any>] value
@@ -26,7 +29,8 @@ class Parsed<T> (val source: T, parser: (T) -> Map<String, Any>) {
   fun mergeResult(parser: (T) -> Map<String, Any>): Parsed<T> = Parsed<T>(this.source) { source: T ->
     val mergedResult = HashMap<String, Any> (this.result)
 
-    mergedResult.putAll(parser(source))
-    mergedResult
+    mergedResult.apply {
+      this.putAll(parser(source))
+    }
   }
 }

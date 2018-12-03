@@ -7,7 +7,7 @@ import com.jvmlab.commons.io.*
 
 
 fun main(args: Array<String>) {
-  val file = File("tmp.txt")
+  val file = File("src/test/map.yaml")
 
   println("Original name: ${file.name}")
   println("With new extn: ${file.changeExt("md").name}")
