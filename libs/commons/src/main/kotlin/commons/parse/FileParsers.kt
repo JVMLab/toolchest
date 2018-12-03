@@ -21,7 +21,7 @@ fun File.parsePath (key: String = filePath): Parsed<File> = Parsed<File>(this) {
  *
  * @param key an optional key to store the parsing result
  */
-fun Parsed<File>.parsePath (key: String = filePath): Parsed<File> = this.mergeResult{ f: File ->
+fun Parsed<File>.parsePath (key: String = filePath): Parsed<File> = this.mergeResult { f: File ->
   fileParsePath(f, key)
 }
 
@@ -35,6 +35,15 @@ fun File.parseYaml (yaml: Yaml, key: String = fileContent): Parsed<File> = Parse
   mapOf (key to yaml.loadMap(f))
 }
 
+
+/**
+ * Parses source of [Parsed<File>] content as YAML
+ *
+ * @param key an optional key to store the parsing result
+ */
+fun Parsed<File>.parseYaml (yaml: Yaml, key: String = fileContent): Parsed<File> = this.mergeResult { f: File ->
+  mapOf (key to yaml.loadMap(f))
+}
 
 
 private const val filePath = "filePath"
