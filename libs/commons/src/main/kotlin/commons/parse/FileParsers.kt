@@ -8,6 +8,8 @@ import com.jvmlab.commons.io.*
 
 /**
  * Parses [File] path and returns a new [Parsed<File>]
+ *
+ * @param key an optional key to store the parsing result
  */
 fun File.parsePath (key: String = filePath): Parsed<File> = Parsed<File>(this) { f: File ->
   fileParsePath(f, key)
@@ -16,6 +18,8 @@ fun File.parsePath (key: String = filePath): Parsed<File> = Parsed<File>(this) {
 
 /**
  * Parses source of [Parsed<File>] path and returns a new [Parsed<File>]
+ *
+ * @param key an optional key to store the parsing result
  */
 fun Parsed<File>.parsePath (key: String = filePath): Parsed<File> = this.mergeResult{ f: File ->
   fileParsePath(f, key)
@@ -24,6 +28,8 @@ fun Parsed<File>.parsePath (key: String = filePath): Parsed<File> = this.mergeRe
 
 /**
  * Parses [File] content as YAML
+ *
+ * @param key an optional key to store the parsing result
  */
 fun File.parseYaml (yaml: Yaml, key: String = fileContent): Parsed<File> = Parsed<File>(this) { f: File ->
   mapOf (key to yaml.loadMap(f))
