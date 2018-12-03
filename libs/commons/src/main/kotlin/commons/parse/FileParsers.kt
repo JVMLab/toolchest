@@ -55,10 +55,11 @@ private fun fileParsePath(file: File, key: String): Map<String, Any> = mapOf (
       "separator"            to File.separator,
       "pathSeparator"        to File.pathSeparator,
       "extensionSeparator"   to file.extensionSeparator,
+      "parent"               to (file.parent ?: ""),
+      "pathList"             to file.toPath().iterator().asList(),
       "name"                 to file.name,
       "extension"            to file.extension,
       "nameWithoutExtension" to file.nameWithoutExtension,
-      "parent"               to (file.parent ?: ""),
-      "pathList"             to file.toPath().iterator().asList()
+      "nameList"             to file.name.split(file.extensionSeparator)
     )
   )
