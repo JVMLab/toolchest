@@ -14,4 +14,9 @@ fun main(args: Array<String>) {
 
   println("source: ${parsedFile.source}")
   println("result: ${parsedFile.result}")
+
+  val parsedPath = file.parsePath()
+
+  println("source: ${parsedPath.source}")
+  println("result: ${parsedPath.result}")
 }
