@@ -20,14 +20,14 @@ class Parsed<T> (val source: T, parser: (T) -> Map<String, Any>) {
    * Returns a new [Parsed<V>] instance with the original parsing result and the source transformed
    * by the [transform] function
    */
-  fun <V> transformSource(transform: (T) -> V): Parsed<V> = Parsed<V>(transform(this.source)) {this.result}
+  fun <V> transformSource(transform: (T) -> V): Parsed<V> = Parsed<V>(transform(source)) {result}
 
   /**
    * Returns a new [Parsed<T>] instance with the original source and the original parsing result merged with the new
    * one produced by the [parser] function
    */
-  fun mergeResult(parser: (T) -> Map<String, Any>): Parsed<T> = Parsed<T>(this.source) { source: T ->
-    val mergedResult = HashMap<String, Any> (this.result)
+  fun mergeResult(parser: (T) -> Map<String, Any>): Parsed<T> = Parsed<T>(source) { source: T ->
+    val mergedResult = HashMap<String, Any> (result)
 
     mergedResult.apply {
       this.putAll(parser(source))
