@@ -3,7 +3,6 @@ package com.jvmlab.commons.parse.file
 import java.io.File
 
 import com.jvmlab.commons.collections.asList
-import com.jvmlab.commons.io.Yaml
 import com.jvmlab.commons.io.extensionSeparator
 import com.jvmlab.commons.parse.Parsed
 
