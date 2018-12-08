@@ -5,8 +5,8 @@ import java.nio.file.*
 
 
 /**
- * The same as [File.walk()] but is tuned to be used for directories. [this] file is excluded and all others
- * are relativilized against [this]
+ * The same as [File.walk()] but is tuned to be used for directories. [this] file is excluded
+ * and all others are relativilized against [this]
  *
  * @return filtered Sequence<File>
  */
@@ -45,8 +45,8 @@ fun Sequence<File>.applyFileMatcher (fm: FileMatcher = FileMatcher()): Sequence<
 
 
 /**
- * Applies a [Array<FileMatcher>] [fma] to a sequence of files obtained by walking starting from [this] file
- * (assumed to be a directory)
+ * Applies a [Array<FileMatcher>] [fma] to a sequence of files obtained by walking starting from
+ * [this] file (assumed to be a directory)
  * 
  * @param [fma] Array of file matchers
  * @param [direction] a file walking direction

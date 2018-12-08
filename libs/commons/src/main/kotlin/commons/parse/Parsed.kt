@@ -5,7 +5,8 @@ import kotlin.reflect.KFunction2
 
 
 /**
- * Represents a parsed [source] value along with the results of the parsing, which is [Map<String, Any>] value
+ * Represents a parsed [source] value along with the results of the parsing, which is
+ * a [Map<String, Any>] value
  *
  * @property source a value to be parsed
  * @property result a result of the parsing
@@ -23,8 +24,8 @@ class Parsed<T> (val source: T, parser: (T) -> Map<String, Any>) {
   fun <V> transformSource(transform: (T) -> V): Parsed<V> = Parsed<V>(transform(source)) {result}
 
   /**
-   * Returns a new [Parsed<T>] instance with the original source and the original parsing result merged with the new
-   * one produced by the [parser] function
+   * Returns a new [Parsed<T>] instance with the original source and the original parsing result
+   * merged with the new one produced by the [parser] function
    */
   fun mergeResult(parser: (T) -> Map<String, Any>): Parsed<T> = Parsed<T>(source) { source: T ->
     val mergedResult = HashMap<String, Any> (result)
