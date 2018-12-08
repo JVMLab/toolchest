@@ -1,9 +1,11 @@
-package com.jvmlab.commons.parse
+package com.jvmlab.commons.parse.file
 
 import java.io.File
 
 import com.jvmlab.commons.collections.asList
-import com.jvmlab.commons.io.*
+import com.jvmlab.commons.io.Yaml
+import com.jvmlab.commons.io.extensionSeparator
+import com.jvmlab.commons.parse.Parsed
 
 
 /**
@@ -32,7 +34,7 @@ fun Parsed<File>.parsePath (key: String = filePath): Parsed<File> = this.mergeRe
  * @param key an optional key to store the parsing result
  */
 fun File.parseYaml (yaml: Yaml, key: String = fileContent): Parsed<File> = Parsed<File>(this) { f: File ->
-  mapOf (key to yaml.loadMap(f))
+  mapOf(key to yaml.loadMap(f))
 }
 
 
