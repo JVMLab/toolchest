@@ -37,11 +37,8 @@ abstract class AbstractTokenizer<E: Enum<E>> {
    * A function to be used in [nextChar] to validate [tokenStatus] and throw an exception
    * in case of an illegal status
    */
-  protected fun validateTokenStatus(tokenStatus: TokenStatus) {
-    when (tokenStatus) {
-      TokenStatus.BUILDING -> return
-      TokenStatus.FINISHED, TokenStatus.FAILED ->
-        throw IllegalArgumentException("An illegal attempt to parse $tokenStatus token")
-    }
-  }
+  protected fun validateTokenStatus(tokenStatus: TokenStatus) =
+      require(TokenStatus.BUILDING == tokenStatus) {
+        "An illegal attempt to parse $tokenStatus token"
+      }
 }
