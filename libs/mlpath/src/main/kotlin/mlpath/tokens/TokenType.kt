@@ -2,7 +2,7 @@ package com.jvmlab.mlpath.tokens
 
 
 
-enum class Types {
+enum class TokenType {
   MLPATH,
   MAP_ACCESS,
   LIST_ACCESS
