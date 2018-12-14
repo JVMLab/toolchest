@@ -12,4 +12,4 @@ class MLToken(
     start: Int,
     finish: Int,
     subTokens: List<Token<TokenType>>
-): Token<TokenType>(type, start, finish, subTokens)
+) : Token<TokenType>(type, start, finish, subTokens)

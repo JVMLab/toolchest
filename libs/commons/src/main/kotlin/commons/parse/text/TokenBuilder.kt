@@ -12,24 +12,23 @@ enum class TokenStatus {
 
 
 /**
- * Used in [Tokenizer] as a return mutable value which represents an intermediate result of
- * a [Tokenizer] while constructing a [Token]. The interface is parametrized with [Enum]
- * type parameter which defines a possible type of a token produced by the [TokenBuilder]
+ * Used in [Tokenizer] as a mutable returned value which represents an intermediate result of
+ * a [Tokenizer] while constructing a [Token]. The class extends [AbstractToken] and is
+ * parametrized with [Enum] type parameter which defines a possible type of a token produced
+ * by the [TokenBuilder]
  *
  * @property type is a type of a token to be built
- * @property start is a starting point in a [CharSequence] (inclusive)
- * @property finish is an ending point in a [CharSequence] (inclusive)
  * @property status is the status of the token to be built
  * @property subTokens is a [MutableList] of [TokenBuilder] containing intermediate results of
  * sub-tokens of the [TokenBuilder]
  */
 open class TokenBuilder<E: Enum<E>> (
     val type: E,
-    val start: Int,
-    var finish: Int,
+    start: Int,
+    finish: Int,
     var status: TokenStatus,
-    val subTokens: MutableList<TokenBuilder<E>>
-) {
+    override val subTokens: MutableList<TokenBuilder<E>>) : AbstractToken(start, finish, subTokens)
+{
 
   /**
    * Builds a [TokenStatus.FINISHED] token with sub-tokens
