@@ -12,8 +12,8 @@ enum class TokenStatus {
 
 
 /**
- * Used in [Tokenizer] as a mutable returned value which represents an intermediate result of
- * a [Tokenizer] while constructing a [Token]. The class extends [AbstractToken] and is
+ * Used in [AbstractTokenizer] as a mutable returned value which represents an intermediate result
+ * of a [AbstractTokenizer] while constructing a [Token]. The class extends [AbstractToken] and is
  * parametrized with [Enum] type parameter which defines a possible type of a token produced
  * by the [TokenBuilder]
  *
