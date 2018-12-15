@@ -4,7 +4,7 @@ package com.jvmlab.commons.parse.text
 /**
  * Represents a current status of a token to be built by a [TokenBuilder]
  */
-enum class TokenStatus {
+enum class BuildingStatus {
   BUILDING,
   FINISHED,
   FAILED
@@ -13,35 +13,34 @@ enum class TokenStatus {
 
 /**
  * Used in [AbstractTokenizer] as a mutable returned value which represents an intermediate result
- * of a [AbstractTokenizer] while constructing a [Token]. The class extends [AbstractToken] and is
- * parametrized with [Enum] type parameter which defines a possible type of a token produced
- * by the [TokenBuilder]
+ * of a [AbstractTokenizer] while constructing a [Token]. The class extends [Token] and adds
+ * [status] property to represent the current status or the result of a [Token] creation
  *
- * @property type is a type of a token to be built
  * @property status is the status of the token to be built
- * @property subTokens is a [MutableList] of [TokenBuilder] containing intermediate results of
- * sub-tokens of the [TokenBuilder]
  */
 open class TokenBuilder<E: Enum<E>> (
-    val type: E,
+    type: E,
     start: Int,
     finish: Int,
-    var status: TokenStatus,
-    override val subTokens: MutableList<TokenBuilder<E>>) : AbstractToken(start, finish, subTokens)
-{
+    var status: BuildingStatus) : Token<E>(type, start, finish) {
+
+  override var finish: Int = finish
+  set(value) {
+    require(value >= start) {
+      "Illegal attempt to set finish value ($value) less than start ($start)"
+    }
+    field = value
+  }
+
 
   /**
-   * Builds a [TokenStatus.FINISHED] token with sub-tokens
-   * This [TokenBuilder] and all sub-tokens *MUST* have [TokenStatus.FINISHED] status
-   * before colling this function
+   * Builds a [Token]
+   * This [TokenBuilder] *MUST* have [BuildingStatus.FINISHED] status before colling this function
    */
-  fun build(): Token<E> {
-    if (TokenStatus.FINISHED != status) {
-      throw IllegalStateException("Attempt to build incomplete $type token")
+  open fun build(): Token<E> {
+    check(BuildingStatus.FINISHED == status) {
+      "Illegal attempt to build $type token with incorrect status: $status"
     }
-
-    return Token(type, start, finish, subTokens.map { tb ->
-      tb.build()
-    })
+    return Token<E>(type, start, finish)
   }
 }

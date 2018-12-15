@@ -1,37 +1,44 @@
 package com.jvmlab.commons.parse.text
 
-import java.lang.IllegalArgumentException
-
 
 
 /**
- * Describes a text token taken from a [CharSequence]. The class extends [AbstractToken] and
- * is parametrized with [Enum] type parameter which defines possible type of the token.
+ * Describes an text token taken from a [CharSequence].
  *
- * @property type is a type of this token
- * @property subTokens overrides parent's property to make it a [List] of [Token] entities
+ * @property type is a type of this token, to be defined in sub-classes
+ * @property start is a starting point in a [CharSequence] (inclusive)
+ * @property finish is an ending point in a [CharSequence] (inclusive)
  */
-open class Token<E: Enum<E>> (
+open class Token<E: Enum<E>>(
     val type: E,
-    start: Int,
-    finish: Int,
-    override val subTokens: List<Token<E>>) : AbstractToken(start, finish, subTokens) {
-
+    val start: Int,
+    open val finish: Int) {
 
   /**
-   * Gives [CharSequence] representation of this token based on a [source] [CharSequence]
+   * Checks consistency of the token bounds
    */
-  open fun subSequence(source: CharSequence): CharSequence = source.subSequence(start, finish)
+  init {
+    require(start <= finish) { "Start ($start) is greater than finish ($finish)" }
+  }
+
+    /**
+     * Gives [CharSequence] representation of this token based on a [source] [CharSequence]
+     */
+    open fun subSequence(source: CharSequence): CharSequence = source.subSequence(start, finish)
 
 
-  /**
-   * Gives [String] representation of this token based on a [source] [CharSequence]
-   */
-  open fun asString(source: CharSequence): String = subSequence(source).toString()
+    /**
+     * Gives [String] representation of this token based on a [source] [CharSequence]
+     *
+     * @param source is a source [CharSequence] for this token
+     * @param indent is an optional prefix for a proper indent while printing a [ComplexToken]
+     */
+    open fun asString(source: CharSequence, indent: String = ""): String =
+        indent + subSequence(source).toString()
 
 
-  /**
-   * Gives length of the token in characters
-   */
-  open fun length(): Int = finish - start + 1
+    /**
+     * Gives length of the token in characters
+     */
+    open fun length(): Int = finish - start + 1
 }

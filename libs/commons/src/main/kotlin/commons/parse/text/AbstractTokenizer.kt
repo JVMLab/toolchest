@@ -1,11 +1,9 @@
 package com.jvmlab.commons.parse.text
 
-import java.lang.IllegalArgumentException
-
 
 /**
  * Contains functions to parse [Char]s from a [CharSequence] using mutable [TokenBuilder] to hold
- * an intermediate state of a [Token] to be parsed
+ * an intermediate state of a [ComplexToken] to be parsed
  */
 abstract class AbstractTokenizer<E: Enum<E>> {
 
@@ -34,11 +32,11 @@ abstract class AbstractTokenizer<E: Enum<E>> {
 
 
   /**
-   * A function to be used in [nextChar] to validate [tokenStatus] and throw an exception
+   * A function to be used in [nextChar] to validate [status] and throw an exception
    * in case of an illegal status
    */
-  protected fun validateTokenStatus(tokenStatus: TokenStatus) =
-      require(TokenStatus.BUILDING == tokenStatus) {
-        "An illegal attempt to parse $tokenStatus token"
+  protected fun validateTokenStatus(status: BuildingStatus) =
+      require(BuildingStatus.BUILDING == status) {
+        "Illegal attempt to parse $status token"
       }
 }
