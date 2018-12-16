@@ -5,9 +5,11 @@ package com.jvmlab.commons.parse.text
  * Represents a current status of a token to be built by a [TokenBuilder]
  */
 enum class BuildingStatus {
-  BUILDING,
-  FINISHED,
-  FAILED
+  BUILDING,   // a normal status of a token in progress
+  FINISHED,   // a successful completion status, the token can be built by build() call
+  CANCELLED,  // a normal status when a current Char indicates that doesn't match the token,
+              // and the token is not complete yet. Example: keywords
+  FAILED      // an exceptional status in case of an unexpected current Char
 }
 
 

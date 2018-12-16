@@ -12,7 +12,8 @@ import com.jvmlab.commons.parse.Parsed
  *
  * @param key an optional key to store the parsing result
  */
-fun File.parseYaml (yaml: Yaml, key: String = FILE_CONTENT): Parsed<File> = Parsed<File>(this) { f: File ->
+fun File.parseYaml (yaml: Yaml, key: String = FILE_CONTENT): Parsed<File> = Parsed<File>(this) {
+  f: File ->
   mapOf(key to yaml.loadMap(f))
 }
 
@@ -22,9 +23,8 @@ fun File.parseYaml (yaml: Yaml, key: String = FILE_CONTENT): Parsed<File> = Pars
  *
  * @param key an optional key to store the parsing result
  */
-fun Parsed<File>.parseYaml (yaml: Yaml, key: String = FILE_CONTENT): Parsed<File> = this.mergeResult { f: File ->
-  mapOf (key to yaml.loadMap(f))
-}
+fun Parsed<File>.parseYaml (yaml: Yaml, key: String = FILE_CONTENT): Parsed<File> =
+    this.mergeResult { f: File -> mapOf (key to yaml.loadMap(f)) }
 
 
 
