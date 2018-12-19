@@ -5,42 +5,31 @@ import java.io.File
 import com.jvmlab.commons.collections.asList
 import com.jvmlab.commons.io.extensionSeparator
 import com.jvmlab.commons.parse.Parsed
+import com.jvmlab.commons.parse.ParsedKey
 
 
 /**
- * Parses [File] path and returns a new [Parsed<File>]
- *
- * @param key an optional key to store the parsing result
+ * Parses [File] path and returns a new [Parsed]
  */
-fun File.parsePath (key: String = FILE_PATH): Parsed<File> = Parsed<File>(this) { f: File ->
-  fileParsePath(f, key)
-}
+fun File.parsePath(): Parsed<File> = Parsed<File>(this, ParsedKey.FILE_PATH, ::fileParsePath)
 
 
 /**
- * Parses source of [Parsed<File>] path and returns a new [Parsed<File>]
- *
- * @param key an optional key to store the parsing result
+ * Parses path of [File] source of [Parsed] and returns a new [Parsed] with new result merged with
+ * previous
  */
-fun Parsed<File>.parsePath (key: String = FILE_PATH): Parsed<File> = this.mergeResult { f: File ->
-  fileParsePath(f, key)
-}
+fun Parsed<File>.parsePath(): Parsed<File> = this.mergeResult(ParsedKey.FILE_PATH, ::fileParsePath)
 
 
 
-private const val FILE_PATH = "filePath"
-
-
-private fun fileParsePath(file: File, key: String): Map<String, Any> = mapOf (
-  key to mapOf (
-      "separator"            to File.separator,
-      "pathSeparator"        to File.pathSeparator,
-      "extensionSeparator"   to file.extensionSeparator,
-      "parent"               to (file.parent ?: ""),
-      "pathList"             to file.toPath().iterator().asList(),
-      "name"                 to file.name,
-      "extension"            to file.extension,
-      "nameWithoutExtension" to file.nameWithoutExtension,
-      "nameList"             to file.name.split(file.extensionSeparator)
-    )
+private fun fileParsePath(file: File): Map<String, Any> = mapOf (
+    "separator"            to File.separator,
+    "pathSeparator"        to File.pathSeparator,
+    "extensionSeparator"   to file.extensionSeparator,
+    "parent"               to (file.parent ?: ""),
+    "pathList"             to file.toPath().iterator().asList(),
+    "name"                 to file.name,
+    "extension"            to file.extension,
+    "nameWithoutExtension" to file.nameWithoutExtension,
+    "nameList"             to file.name.split(file.extensionSeparator)
   )
