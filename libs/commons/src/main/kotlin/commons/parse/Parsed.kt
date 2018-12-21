@@ -20,7 +20,7 @@ class Parsed<T> (val source: T, key: ParsedKey? = null, parser: (T) -> Map<Strin
 
 
   private fun extraMap (key: ParsedKey? = null, parser: (T) -> Map<String, Any>, source: T) =
-      key?.let { mapOf(it.key to parser(source))} ?: parser(source)
+      key?.let { mapOf(it.key to parser(source)) } ?: parser(source)
 
 
   /**

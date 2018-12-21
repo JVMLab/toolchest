@@ -28,7 +28,7 @@ abstract class AbstractTokenizer<E: Enum<E>> {
    *
    * @return a modified [tokenBuilder]
    */
-  abstract fun nextChar(char: Char, tokenBuilder: TokenBuilder<E>): TokenBuilder<E>
+  abstract fun nextChar(char: Char, tokenBuilder: TokenBuilder<E>)
 
 
   /**

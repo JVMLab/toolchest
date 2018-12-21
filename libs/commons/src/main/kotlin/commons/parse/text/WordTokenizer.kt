@@ -13,7 +13,7 @@ class WordTokenizer<E: Enum<E>>(type: E) : SingleTokenizer<E>(type) {
     else null
 
 
-  override fun nextChar(char: Char, tokenBuilder: TokenBuilder<E>): TokenBuilder<E> {
+  override fun nextChar(char: Char, tokenBuilder: TokenBuilder<E>) {
     validateTokenStatus(tokenBuilder.status)
 
     if (char.isLetterOrDigit()) {
@@ -21,7 +21,5 @@ class WordTokenizer<E: Enum<E>>(type: E) : SingleTokenizer<E>(type) {
     } else {
       tokenBuilder.status = BuildingStatus.FINISHED
     }
-
-    return tokenBuilder
   }
 }
