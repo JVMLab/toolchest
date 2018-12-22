@@ -22,4 +22,13 @@ class WordTokenizer<E: Enum<E>>(type: E) : SingleTokenizer<E>(type) {
       tokenBuilder.status = BuildingStatus.FINISHED
     }
   }
+
+
+  override fun lastChar(char: Char, tokenBuilder: TokenBuilder<E>) {
+    validateTokenStatus(tokenBuilder.status)
+    check(char.isLetterOrDigit()) {
+      "Unexpected state: the last char should always match a $type token"
+    }
+    tokenBuilder.status = BuildingStatus.FINISHED
+  }
 }

@@ -54,11 +54,7 @@ private fun <E: Enum<E>> parse(
         BuildingStatus.FINISHED -> {
           token = this.build()
           currentBuilder = null
-          defaultTokenType?.let { defaultTokenType ->
-            if (defaultStart < token.start) {
-              tokenList.add(Token(defaultTokenType, defaultStart, token.start - 1))
-            }
-          }
+          tokenList.addDefaultToken(defaultTokenType, defaultStart, token.start)
           tokenList.add(token)
           idx = token.finish + 1
           defaultStart = idx
@@ -79,5 +75,51 @@ private fun <E: Enum<E>> parse(
     }
   }
 
+  /*
+  Process a last char of the charSequence if we have the currentBuilder in
+  the BuildingStatus.BUILDING status, and generate default token if required
+  */
+  currentBuilder?.apply {
+    if (this.status == BuildingStatus.BUILDING) {
+      idx-- //sets idx to the last char in charSequence
+      char = charSequence[idx]
+      tokenizer.lastChar(char, this)
+      when (this.status) {
+        BuildingStatus.FINISHED -> {
+          token = this.build()
+          tokenList.addDefaultToken(defaultTokenType, defaultStart, token.start)
+          tokenList.add(token)
+        }
+
+        BuildingStatus.CANCELLED -> {
+          tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
+        }
+
+        BuildingStatus.BUILDING -> {
+          throw IllegalStateException("Unexpected state: ${BuildingStatus.BUILDING} " +
+                  "of ${this.type} at position ${this.finish}")
+        }
+
+        BuildingStatus.FAILED -> {
+          throw IllegalStateException("Parsing error of ${this.type} at position ${this.finish}")
+        }
+      }
+    }
+  }
+
   return mapOf(ParsedKey.PARSED_STRING.key to tokenList)
+}
+
+
+
+private fun <E: Enum<E>> MutableList<Token<E>>.addDefaultToken(
+    defaultTokenType: E?,
+    defaultStart: Int,
+    nextTokenStart: Int
+) {
+  defaultTokenType?.let { defaultTokenType ->
+    if (defaultStart < nextTokenStart) {
+      this.add(Token<E>(defaultTokenType, defaultStart, nextTokenStart - 1))
+    }
+  }
 }
