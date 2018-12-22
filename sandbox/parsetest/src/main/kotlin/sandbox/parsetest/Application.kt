@@ -29,7 +29,7 @@ fun main(args: Array<String>) {
   val str = "  ttt  kkk 123  x"
   val parsedString = str.parse(WordTokenizer<TokenType>(TokenType.WORD), TokenType.WHITESPACE)
   println("source: '${parsedString.source}'")
-  (parsedString.result[ParsedKey.PARSED_STRING.key] as List<Token<TokenType>>).forEach {
+  parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
     token ->
     println("${token.type} = '${token.asString(parsedString.source)}'")
   }

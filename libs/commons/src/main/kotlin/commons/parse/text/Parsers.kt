@@ -9,11 +9,16 @@ import com.jvmlab.commons.parse.ParsedKey
  */
 
 
+/**
+ * An extension function to parse [CharSequence] into [Parsed] using [tokenizer]
+ *
+ * @param tokenizer is an [AbstractTokenizer] used to split [this] [CharSequence] into tokens
+ * @param defaultTokenType is a type of a default token, which is created whenever the [tokenizer]
+ */
 fun <E: Enum<E>> CharSequence.parse(
     tokenizer: AbstractTokenizer<E>,
-    defaultTokenType: E? = null): Parsed<CharSequence> = Parsed(this) { charSequence ->
-      parse(charSequence, tokenizer, defaultTokenType)
-    }
+    defaultTokenType: E? = null): Parsed<CharSequence, List<Token<E>>> =
+    Parsed(this) { charSequence -> parse(charSequence, tokenizer, defaultTokenType) }
 
 
 /**

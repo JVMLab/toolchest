@@ -11,18 +11,20 @@ import com.jvmlab.commons.parse.ParsedKey
 /**
  * Parses [File] path and returns a new [Parsed]
  */
-fun File.parsePath(): Parsed<File> = Parsed<File>(this, ParsedKey.FILE_PATH, ::fileParsePath)
+fun File.parsePath(): Parsed<File, Any> =
+    Parsed<File, Any>(this, ParsedKey.FILE_PATH, ::fileParsePath)
 
 
 /**
  * Parses path of [File] source of [Parsed] and returns a new [Parsed] with new result merged with
  * previous
  */
-fun Parsed<File>.parsePath(): Parsed<File> = this.mergeResult(ParsedKey.FILE_PATH, ::fileParsePath)
+fun Parsed<File, Any>.parsePath(): Parsed<File, Any> =
+    this.mergeResult(ParsedKey.FILE_PATH, ::fileParsePath)
 
 
 
-private fun fileParsePath(file: File): Map<String, Any> = mapOf (
+private fun fileParsePath(file: File): Map<String, Any> = mapOf<String, Any> (
     "separator"            to File.separator,
     "pathSeparator"        to File.pathSeparator,
     "extensionSeparator"   to file.extensionSeparator,
