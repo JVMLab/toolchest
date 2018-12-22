@@ -8,7 +8,10 @@ package com.jvmlab.commons.parse.text
 abstract class AbstractTokenizer<E: Enum<E>> {
 
   /**
-   * Parses first [char] of a token
+   * Parses first [char] of a token.
+   *
+   * An implementation *SHOULD* always set [TokenBuilder.start] and [TokenBuilder.finish]
+   * equal to [start]
    *
    * @param char is a [Char] to be parsed
    * @param start is a position of the [char] in a parsed [CharSequence] to be stored in
@@ -20,8 +23,10 @@ abstract class AbstractTokenizer<E: Enum<E>> {
 
 
   /**
-   * Parses a next [char] of a token. An implementation *MUST* call [validateTokenStatus]
-   * to prevent parsing of a token with incorrect initial status
+   * Parses a next [char] of a token.
+   *
+   * An implementation *MUST* call [validateTokenStatus] to prevent parsing of a token
+   * with incorrect initial status
    *
    * @param char is a [Char] to be parsed
    * @param tokenBuilder is a value returned by a previous call to [firstChar] or [nextChar]

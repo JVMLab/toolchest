@@ -9,22 +9,24 @@ package com.jvmlab.commons.parse.text
  * @property start is a starting point in a [CharSequence] (inclusive)
  * @property finish is an ending point in a [CharSequence] (inclusive)
  */
-open class Token<E: Enum<E>>(
-    val type: E,
-    val start: Int,
-    open val finish: Int) {
+open class Token<E: Enum<E>>(val type: E, startParam: Int, finishParam: Int) {
 
-  /**
-   * Checks consistency of the token bounds
-   */
+  // Checks consistency of the token bounds startParam and finishParam
   init {
-    require(start <= finish) { "Start ($start) is greater than finish ($finish)" }
+    require(startParam >= 0) { "Start ($startParam) cannot be negative" }
+    require(startParam <= finishParam) {
+      "Start ($startParam) is greater than finish ($finishParam)"
+    }
   }
+
+  val start: Int = startParam
+  open val finish: Int = finishParam
+
 
     /**
      * Gives [CharSequence] representation of this token based on a [source] [CharSequence]
      */
-    open fun subSequence(source: CharSequence): CharSequence = source.subSequence(start, finish)
+    open fun subSequence(source: CharSequence): CharSequence = source.subSequence(start, finish + 1)
 
 
     /**

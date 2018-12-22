@@ -50,5 +50,5 @@ class Parsed<T> (val source: T, key: ParsedKey? = null, parser: (T) -> Map<Strin
 enum class ParsedKey(val key: String) {
   FILE_CONTENT("fileContent"),
   FILE_PATH("filePath"),
-  TOKENIZED_STRING("tokenizedString")
+  PARSED_STRING("parsedString")
 }
