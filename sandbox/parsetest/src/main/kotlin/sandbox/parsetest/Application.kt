@@ -2,11 +2,10 @@ package com.jvmlab.sandbox.parsetest
 
 import java.io.File
 
-import com.jvmlab.commons.io.*
+import com.jvmlab.commons.io.Yaml
 import com.jvmlab.commons.parse.ParsedKey
 import com.jvmlab.commons.parse.file.parsePath
 import com.jvmlab.commons.parse.file.parseYaml
-import com.jvmlab.commons.parse.text.Token
 import com.jvmlab.commons.parse.text.WordTokenizer
 import com.jvmlab.commons.parse.text.parse
 
@@ -30,8 +29,7 @@ fun main(args: Array<String>) {
   val parsedString = str.parse(WordTokenizer<TokenType>(TokenType.WORD), TokenType.WHITESPACE)
   println("source: '${parsedString.source}'")
   parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
-    token ->
-    println("${token.type} = '${token.asString(parsedString.source)}'")
+    token -> println("${token.type} = '${token.asString(parsedString.source)}'")
   }
 
 }
