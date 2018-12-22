@@ -8,9 +8,6 @@ package com.jvmlab.commons.parse
  *
  * @property source a value to be parsed
  * @property result a result of the parsing
- * @param key an optional [ParsedKey], if not null then an extra [Map] is created for the [result]
- * with [ParsedKey.key] as a key and parser([source]) as a value
- * @param parser a function to perform the actual parsing
  */
 class Parsed<S, R> {
 
