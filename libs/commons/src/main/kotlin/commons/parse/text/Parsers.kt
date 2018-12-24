@@ -62,7 +62,8 @@ private fun <E: Enum<E>> parse(
               throw IllegalStateException("Unexpected state: ${BuildingStatus.BUILDING} " +
                   "of ${this.type} at position $idx")
           } else {
-            // increments idx if still in building or keeps it
+            // increments idx if still in building or
+            // keeps it when this.finish was not incremented in tokenizer.nextChar()
             idx = this.finish + 1
           }
         }
@@ -72,12 +73,12 @@ private fun <E: Enum<E>> parse(
           currentBuilder = null
           tokenList.addDefaultToken(defaultTokenType, defaultStart, token.start)
           tokenList.add(token)
-          idx = token.finish + 1
+          idx = token.finish + 1 // sets idx to a next char after the current token
           defaultStart = idx
         }
 
         BuildingStatus.CANCELLED -> {
-          if (isLast) // Add a default token in case of the last char
+          if (isLast) // Add a default token till the end of charSequence in case of the last char
             tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
           idx = this.finish + 1
           currentBuilder = null
@@ -94,6 +95,7 @@ private fun <E: Enum<E>> parse(
           idx++ // to exit the loop
           tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
         }
+        // don't increment idx here to process a new currentBuilder.status in the next iteration
       } else {
         idx++
       }

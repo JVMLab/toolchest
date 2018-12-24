@@ -38,13 +38,13 @@ abstract class AbstractTokenizer<E: Enum<E>> {
    * An implementation *MUST* call [validateTokenStatus] to prevent parsing of a token
    * with incorrect initial status.
    *
-   * An implementation *SHALL* expect that [char] is a next [Char] from a source [CharSequence]
-   * after [TokenBuilder.finish] of the [tokenBuilder], so if this [char] matches the token
-   * the implementation *MUST* increment [TokenBuilder.finish] in the [tokenBuilder]
-   *
    * Possible [TokenBuilder.status] values to be set by an implementation:
    *  - [isLast] == false : any value
    *  - [isLast] == true  : any value except [BuildingStatus.BUILDING]
+   *
+   * An implementation *SHALL* expect that [char] is a next [Char] from a source [CharSequence]
+   * after [TokenBuilder.finish] of the [tokenBuilder], so if this [char] matches the token
+   * the implementation *MUST* increment [TokenBuilder.finish] in the [tokenBuilder]
    *
    *
    * @param char is a [Char] to be parsed
