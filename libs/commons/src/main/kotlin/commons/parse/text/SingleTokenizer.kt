@@ -3,7 +3,7 @@ package com.jvmlab.commons.parse.text
 
 
 /**
- * Represents a [AbstractTokenizer] which produces only a single type of tokens
+ * Represents an [AbstractTokenizer] which produces only a single type of tokens
  *
  * @property type is a type of token to be produced
  */
