@@ -6,6 +6,7 @@ import com.jvmlab.commons.io.Yaml
 import com.jvmlab.commons.parse.ParsedKey
 import com.jvmlab.commons.parse.file.parsePath
 import com.jvmlab.commons.parse.file.parseYaml
+import com.jvmlab.commons.parse.text.SingleCharTokenizer
 import com.jvmlab.commons.parse.text.WordTokenizer
 import com.jvmlab.commons.parse.text.parse
 
@@ -25,7 +26,8 @@ fun main(args: Array<String>) {
   println("result: ${parsedPath.result}\n")
 
 
-  val strList = listOf<String>(
+  val wordStrList = listOf<String>(
+      "   ",
       "xxx",
       " ttt",
       "xxx ",
@@ -33,7 +35,7 @@ fun main(args: Array<String>) {
       "xxx  x   "
   )
 
-  strList.forEach { str: String ->
+  wordStrList.forEach { str: String ->
     val parsedString = str.parse(WordTokenizer<TokenType>(TokenType.WORD), TokenType.WSPC)
     println("\nsrc  : '${parsedString.source}'")
     parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
@@ -43,9 +45,25 @@ fun main(args: Array<String>) {
     }
   }
 
+  val separatorStrList = listOf<String>(
+      "xxx,ttt",
+      "xxx, ttt,x",
+      ",xxx,",
+      ",,xxx,,tt,,"
+  )
+
+  separatorStrList.forEach { str: String ->
+    val parsedString = str.parse(SingleCharTokenizer(TokenType.SPRT, ','), TokenType.WORD)
+    println("\nsrc  : '${parsedString.source}'")
+    parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
+      token ->
+      val indent = " ".repeat(token.start)
+      println("${token.type} : $indent'${token.asString(parsedString.source)}'")
+    }
+  }
 }
 
 
 enum class TokenType {
-  WORD, WSPC
+  WORD, WSPC, SPRT
 }
