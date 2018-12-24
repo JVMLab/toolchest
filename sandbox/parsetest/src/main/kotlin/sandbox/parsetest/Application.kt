@@ -28,7 +28,8 @@ fun main(args: Array<String>) {
   val strList = listOf<String>(
       "xxx",
       " ttt",
-      "  ttt  kkk 123  x",
+      "xxx ",
+      "  ttt  kkk 123  x ",
       "xxx  x   "
   )
 

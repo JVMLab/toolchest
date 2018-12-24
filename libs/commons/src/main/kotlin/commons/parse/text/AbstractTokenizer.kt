@@ -11,11 +11,18 @@ abstract class AbstractTokenizer<E: Enum<E>> {
    * Parses first [char] of a token.
    *
    * An implementation *SHOULD* always set [TokenBuilder.start] and [TokenBuilder.finish]
-   * equal to [start]
+   * equal to [start] if a new [TokenBuilder] is created
+   *
+   * Possible [TokenBuilder.status] values to be set by an implementation:
+   *  - [isLast] == false : any value
+   *  - [isLast] == true  : any value except [BuildingStatus.BUILDING]
+   *
    *
    * @param char is a [Char] to be parsed
+   *
    * @param start is a position of the [char] in a parsed [CharSequence] to be stored in
    * a returned [TokenBuilder]
+   *
    * @param isLast indicates if [char] is the last [Char] in a parsed [CharSequence]. It is expected
    * to be used in an implementation to set either [BuildingStatus.BUILDING] or
    * another completed [BuildingStatus] in a returned [TokenBuilder]
@@ -35,8 +42,15 @@ abstract class AbstractTokenizer<E: Enum<E>> {
    * after [TokenBuilder.finish] of the [tokenBuilder], so if this [char] matches the token
    * the implementation *MUST* increment [TokenBuilder.finish] in the [tokenBuilder]
    *
+   * Possible [TokenBuilder.status] values to be set by an implementation:
+   *  - [isLast] == false : any value
+   *  - [isLast] == true  : any value except [BuildingStatus.BUILDING]
+   *
+   *
    * @param char is a [Char] to be parsed
+   *
    * @param tokenBuilder is a value returned by a previous call to [firstChar] or [nextChar]
+   *
    * @param isLast indicates if [char] is the last [Char] in a parsed [CharSequence]. It is expected
    * to be used in an implementation to set either [BuildingStatus.BUILDING] or
    * another completed [BuildingStatus] in the [tokenBuilder]

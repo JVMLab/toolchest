@@ -54,12 +54,15 @@ private fun <E: Enum<E>> parse(
       when (this.status) {
 
         BuildingStatus.BUILDING -> {
+          // changes this.status and may increment this.finish if still in building
           tokenizer.nextChar(char, this, isLast)
           if (isLast) {
+            // don't increment idx here to process a new this.status in the next iteration
             if (this.status == BuildingStatus.BUILDING)
               throw IllegalStateException("Unexpected state: ${BuildingStatus.BUILDING} " +
                   "of ${this.type} at position $idx")
           } else {
+            // increments idx if still in building or keeps it
             idx = this.finish + 1
           }
         }
