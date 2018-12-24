@@ -25,16 +25,26 @@ fun main(args: Array<String>) {
   println("result: ${parsedPath.result}\n")
 
 
-  val str = "  ttt  kkk 123  x"
-  val parsedString = str.parse(WordTokenizer<TokenType>(TokenType.WORD), TokenType.WHITESPACE)
-  println("source: '${parsedString.source}'")
-  parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
-    token -> println("${token.type} = '${token.asString(parsedString.source)}'")
+  val strList = listOf<String>(
+      "xxx",
+      " ttt",
+      "  ttt  kkk 123  x",
+      "xxx  x   "
+  )
+
+  strList.forEach { str: String ->
+    val parsedString = str.parse(WordTokenizer<TokenType>(TokenType.WORD), TokenType.WSPC)
+    println("\nsrc  : '${parsedString.source}'")
+    parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
+      token ->
+      val indent = " ".repeat(token.start)
+      println("${token.type} : $indent'${token.asString(parsedString.source)}'")
+    }
   }
 
 }
 
 
 enum class TokenType {
-  WORD, WHITESPACE
+  WORD, WSPC
 }

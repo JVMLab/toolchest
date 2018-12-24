@@ -16,14 +16,17 @@ abstract class AbstractTokenizer<E: Enum<E>> {
    * @param char is a [Char] to be parsed
    * @param start is a position of the [char] in a parsed [CharSequence] to be stored in
    * a returned [TokenBuilder]
+   * @param isLast indicates if [char] is the last [Char] in a parsed [CharSequence]. It is expected
+   * to be used in an implementation to set either [BuildingStatus.BUILDING] or
+   * another completed [BuildingStatus] in a returned [TokenBuilder]
    *
    * @return a [TokenBuilder] or null if the [char] is not a [Char] which can start a token
    */
-  abstract fun firstChar(char: Char, start: Int): TokenBuilder<E>?
+  abstract fun firstChar(char: Char, start: Int, isLast: Boolean): TokenBuilder<E>?
 
 
   /**
-   * Parses a next [char] of a token.
+   * Parses a next [char] of a token and modifies the state of the [tokenBuilder]
    *
    * An implementation *MUST* call [validateTokenStatus] to prevent parsing of a token
    * with incorrect initial status.
@@ -34,36 +37,15 @@ abstract class AbstractTokenizer<E: Enum<E>> {
    *
    * @param char is a [Char] to be parsed
    * @param tokenBuilder is a value returned by a previous call to [firstChar] or [nextChar]
-   *
-   * @return a modified [tokenBuilder]
+   * @param isLast indicates if [char] is the last [Char] in a parsed [CharSequence]. It is expected
+   * to be used in an implementation to set either [BuildingStatus.BUILDING] or
+   * another completed [BuildingStatus] in the [tokenBuilder]
    */
-  abstract fun nextChar(char: Char, tokenBuilder: TokenBuilder<E>)
+  abstract fun nextChar(char: Char, tokenBuilder: TokenBuilder<E>, isLast: Boolean)
 
 
   /**
-   * Parses the last [char] of a token in a [CharSequence]. To be called to finalize
-   * the [tokenBuilder] status when the [char] is the very last [Char] in a [CharSequence]
-   *
-   * An implementation *MUST* call [validateTokenStatus] to prevent parsing of a token
-   * with incorrect initial status
-   *
-   * An implementation *SHALL* expect that [char] is a [Char] from a source [CharSequence]
-   * at the [TokenBuilder.finish] of the [tokenBuilder] position, so if this [char] matches
-   * the token the implementation *MUST NOT* increment [TokenBuilder.finish] in the [tokenBuilder]
-   *
-   * An implementation *MUST NOT* set the resulting [TokenBuilder.status]
-   * to [BuildingStatus.BUILDING] as this is the last [char] in a [CharSequence]
-   *
-   * @param char is a [Char] to be parsed
-   * @param tokenBuilder is a value returned by a previous call to [firstChar] or [nextChar]
-   *
-   * @return a modified [tokenBuilder]
-   */
-  abstract fun lastChar(char: Char, tokenBuilder: TokenBuilder<E>)
-
-
-  /**
-   * A function to be used in [nextChar] and [lastChar] to validate [status] and throw an exception
+   * A function to be used in [nextChar] to validate [status] and throw an exception
    * in case of an illegal status
    */
   protected fun validateTokenStatus(status: BuildingStatus) =

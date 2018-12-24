@@ -43,17 +43,25 @@ private fun <E: Enum<E>> parse(
   var currentBuilder: TokenBuilder<E>? = null // a current token builder provided be tokenizer
   var token: Token<E> // a token built by the currentBuilder
   var defaultStart: Int = 0 // a start of a default token, used when defaultTokenType is not null
-  var idx: Int = 0 // current index in the CharSequence
-  var char: Char // current char in the CharSequence
+  var idx: Int = 0 // current index in the charSequence
+  var char: Char // current char in the charSequence
+  var isLast: Boolean // true if char is the last Char in the charSequence
 
   while (idx < charSequence.length) {
     char = charSequence[idx]
+    isLast = (idx == charSequence.length - 1)
     currentBuilder?.apply {
       when (this.status) {
 
         BuildingStatus.BUILDING -> {
-          tokenizer.nextChar(char, this)
-          idx = this.finish + 1
+          tokenizer.nextChar(char, this, isLast)
+          if (isLast) {
+            if (this.status == BuildingStatus.BUILDING)
+              throw IllegalStateException("Unexpected state: ${BuildingStatus.BUILDING} " +
+                  "of ${this.type} at position $idx")
+          } else {
+            idx = this.finish + 1
+          }
         }
 
         BuildingStatus.FINISHED -> {
@@ -66,6 +74,8 @@ private fun <E: Enum<E>> parse(
         }
 
         BuildingStatus.CANCELLED -> {
+          if (isLast) // Add a default token in case of the last char
+            tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
           idx = this.finish + 1
           currentBuilder = null
         }
@@ -75,39 +85,14 @@ private fun <E: Enum<E>> parse(
         }
       }
     } ?: run {
-      currentBuilder = tokenizer.firstChar(char, idx)
-      idx++
-    }
-  }
-
-  /*
-  Process a last char of the charSequence if we have the currentBuilder in
-  the BuildingStatus.BUILDING status, and generate default token if required
-  */
-  currentBuilder?.apply {
-    if (this.status == BuildingStatus.BUILDING) {
-      idx-- //sets idx to the last char in charSequence
-      char = charSequence[idx]
-      tokenizer.lastChar(char, this)
-      when (this.status) {
-        BuildingStatus.FINISHED -> {
-          token = this.build()
-          tokenList.addDefaultToken(defaultTokenType, defaultStart, token.start)
-          tokenList.add(token)
-        }
-
-        BuildingStatus.CANCELLED -> {
+      currentBuilder = tokenizer.firstChar(char, idx, isLast)
+      if (isLast) {
+        currentBuilder ?: run { // Add a default token if the last char doesn't start a token
           tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
+          idx++ // to exit the loop
         }
-
-        BuildingStatus.BUILDING -> {
-          throw IllegalStateException("Unexpected state: ${BuildingStatus.BUILDING} " +
-                  "of ${this.type} at position ${this.finish}")
-        }
-
-        BuildingStatus.FAILED -> {
-          throw IllegalStateException("Parsing error of ${this.type} at position ${this.finish}")
-        }
+      } else {
+        idx++
       }
     }
   }
@@ -116,12 +101,13 @@ private fun <E: Enum<E>> parse(
 }
 
 
-
+/**
+ * Adds a default token if required
+ */
 private fun <E: Enum<E>> MutableList<Token<E>>.addDefaultToken(
     defaultTokenType: E?,
     defaultStart: Int,
-    nextTokenStart: Int
-) {
+    nextTokenStart: Int) {
   defaultTokenType?.let { defaultTokenType ->
     if (defaultStart < nextTokenStart) {
       this.add(Token<E>(defaultTokenType, defaultStart, nextTokenStart - 1))
