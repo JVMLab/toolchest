@@ -88,8 +88,8 @@ private fun <E: Enum<E>> parse(
       currentBuilder = tokenizer.firstChar(char, idx, isLast)
       if (isLast) {
         currentBuilder ?: run { // Add a default token if the last char doesn't start a token
-          tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
           idx++ // to exit the loop
+          tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
         }
       } else {
         idx++
