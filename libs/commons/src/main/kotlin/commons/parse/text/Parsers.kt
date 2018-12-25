@@ -113,9 +113,8 @@ private fun <E: Enum<E>> MutableList<Token<E>>.addDefaultToken(
     defaultTokenType: E?,
     defaultStart: Int,
     nextTokenStart: Int) {
-  defaultTokenType?.let { defaultTokenType ->
-    if (defaultStart < nextTokenStart) {
-      this.add(Token<E>(defaultTokenType, defaultStart, nextTokenStart - 1))
-    }
+  defaultTokenType?.let {
+    if (defaultStart < nextTokenStart)
+      this.add(Token<E>(it, defaultStart, nextTokenStart - 1))
   }
 }
