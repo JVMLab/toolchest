@@ -26,7 +26,7 @@ enum class BuildingStatus {
 open class TokenBuilder<E: Enum<E>> (
     type: E,
     start: Int,
-    finish: Int,
+    finish: Int = start,
     status: BuildingStatus) : Token<E>(type, start, finish) {
 
   override var finish: Int = finish
@@ -40,7 +40,7 @@ open class TokenBuilder<E: Enum<E>> (
   var status: BuildingStatus = status
     set(value) {
       require(value != BuildingStatus.NONE) {
-        "Illegal attempt to set BuildingStatus.NONE of a $type TokenBuilder"
+        "Illegal attempt to set BuildingStatus ${BuildingStatus.NONE} of a $type TokenBuilder"
       }
       field = value
     }

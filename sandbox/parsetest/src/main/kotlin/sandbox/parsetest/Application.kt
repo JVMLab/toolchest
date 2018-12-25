@@ -29,8 +29,8 @@ fun main(args: Array<String>) {
   val wordStrList = listOf<String>(
       "   ",
       "xxx",
+      "aaa ",
       " ttt",
-      "xxx ",
       "  ttt  kkk 123  x ",
       "xxx  x   "
   )

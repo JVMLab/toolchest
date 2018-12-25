@@ -39,8 +39,7 @@ private fun <E: Enum<E>> parse(
     tokenizer: AbstractTokenizer<E>,
     defaultTokenType: E?
 ): Map<String, List<Token<E>>> {
-  val tokenList = ArrayList<Token<E>>() // a list of tokens to be returned
-  var currentBuilder: TokenBuilder<E>? = null // a current token builder provided be tokenizer
+  val tokenList = ArrayList<Token<E>>() // a list of tokens to be returned as a value in the Map
   var token: Token<E> // a token built by the currentBuilder
   var defaultStart: Int = 0 // a start of a default token, used when defaultTokenType is not null
   var idx: Int = 0 // current index in the charSequence
@@ -50,54 +49,53 @@ private fun <E: Enum<E>> parse(
   while (idx < charSequence.length) {
     char = charSequence[idx]
     isLast = (idx == charSequence.length - 1)
-    currentBuilder?.apply {
-      when (this.status) {
+    when (tokenizer.getBuildingStatus()) {
 
-        BuildingStatus.BUILDING -> {
-          // changes this.status and may increment this.finish if still in building
-          tokenizer.nextChar(char, this, isLast)
-          if (isLast) {
-            // don't increment idx here to process a new this.status in the next iteration
-            if (this.status == BuildingStatus.BUILDING)
-              throw IllegalStateException("Unexpected state: ${BuildingStatus.BUILDING} " +
-                  "of ${this.type} at position $idx")
-          } else {
-            // increments idx if still in building or
-            // keeps it when this.finish was not incremented in tokenizer.nextChar()
-            idx = this.finish + 1
-          }
-        }
-
-        BuildingStatus.FINISHED -> {
-          token = this.build()
-          currentBuilder = null
-          tokenList.addDefaultToken(defaultTokenType, defaultStart, token.start)
-          tokenList.add(token)
-          idx = token.finish + 1 // sets idx to a next char after the current token
-          defaultStart = idx
-        }
-
-        BuildingStatus.CANCELLED -> {
-          if (isLast) // Add a default token till the end of charSequence in case of the last char
+      BuildingStatus.NONE -> {
+        tokenizer.processChar(char, idx, isLast)
+        if (isLast) {
+          if (BuildingStatus.NONE == tokenizer.getBuildingStatus()) {
+            idx++ // to exit the loop
+            // Add a default token if the last char doesn't start a token
             tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
-          idx = this.finish + 1
-          currentBuilder = null
-        }
-
-        BuildingStatus.FAILED -> {
-          throw IllegalStateException("Parsing error of ${this.type} at position ${this.finish}")
+          }
+          // don't increment idx here to process a new BuildingStatus in the next iteration
+        } else {
+          idx++
         }
       }
-    } ?: run {
-      currentBuilder = tokenizer.firstChar(char, idx, isLast)
-      if (isLast) {
-        currentBuilder ?: run { // Add a default token if the last char doesn't start a token
-          idx++ // to exit the loop
-          tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
+
+      BuildingStatus.BUILDING -> {
+        // changes this.status and may increment this.finish if still in building
+        tokenizer.processChar(char, idx, isLast)
+        if (isLast) {
+          // don't increment idx here to process a new this.status in the next iteration
+          if (BuildingStatus.BUILDING == tokenizer.getBuildingStatus())
+            throw IllegalStateException(
+                "Unexpected state: ${BuildingStatus.BUILDING} at the last position $idx")
+        } else {
+          // increments idx if still in building or
+          // keeps it when this.finish was not incremented in tokenizer.processChar()
+          idx = tokenizer.getCurrentFinish() + 1
         }
-        // don't increment idx here to process a new currentBuilder.status in the next iteration
-      } else {
-        idx++
+      }
+
+      BuildingStatus.FINISHED -> {
+        token = tokenizer.buildToken()
+        tokenList.addDefaultToken(defaultTokenType, defaultStart, token.start)
+        tokenList.add(token)
+        idx = token.finish + 1 // sets idx to a next char after the current token
+        defaultStart = idx
+      }
+
+      BuildingStatus.CANCELLED -> {
+        if (isLast) // Add a default token till the end of charSequence in case of the last char
+          tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
+        idx = tokenizer.getCurrentFinish() + 1
+      }
+
+      BuildingStatus.FAILED -> {
+        throw IllegalStateException("Parsing error at position $idx")
       }
     }
   }

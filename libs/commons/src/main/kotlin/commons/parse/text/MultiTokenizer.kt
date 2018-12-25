@@ -11,16 +11,15 @@ open class MultiTokenizer<E: Enum<E>>(
     private val subTokenizers: Map<E, AbstractTokenizer<E>>
 ) : AbstractTokenizer<E>() {
 
-  override fun firstChar(char: Char, start: Int, isLast: Boolean): TokenBuilder<E>? {
+  override fun firstChar(char: Char, idx: Int, isLast: Boolean) {
     subTokenizers.forEach { type: E, tokenizer: AbstractTokenizer<E> ->
 
     }
     TODO()
-    return null
   }
 
 
-  override fun nextChar(char: Char, tokenBuilder: TokenBuilder<E>, isLast: Boolean) {
+  override fun nextChar(char: Char, idx: Int, isLast: Boolean) {
     TODO()
   }
 }
