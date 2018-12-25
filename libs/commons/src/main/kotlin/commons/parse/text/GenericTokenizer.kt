@@ -25,21 +25,20 @@ open class GenericTokenizer<E: Enum<E>>(
     private val checkNextChar: (Char) -> Boolean = checkFirstChar
 ) : SingleTokenizer<E>(type) {
 
-  override fun firstChar(char: Char, start: Int, isLast: Boolean): TokenBuilder<E>? =
+  override fun firstChar(char: Char, idx: Int, isLast: Boolean) {
     if (checkFirstChar(char))
-      if (isLast)
-        TokenBuilder<E>(type, start, start, BuildingStatus.FINISHED)
-      else
-        TokenBuilder<E>(type, start, start, firstCharStatus)
-    else null
+      tokenBuilder =
+          if (isLast)
+            TokenBuilder<E>(type, idx, status = BuildingStatus.FINISHED)
+          else
+            TokenBuilder<E>(type, idx, status = firstCharStatus)
+  }
 
-
-  override fun nextChar(char: Char, tokenBuilder: TokenBuilder<E>, isLast: Boolean) {
-    validateTokenStatus(tokenBuilder.status)
+  override fun nextChar(char: Char, idx: Int, isLast: Boolean) {
     if (checkNextChar(char)) {
-      if (isLast) tokenBuilder.status = BuildingStatus.FINISHED
-      tokenBuilder.finish++
+      if (isLast) tokenBuilder?.status = BuildingStatus.FINISHED
+      tokenBuilder?.apply { this.finish++ }
     }
-    else tokenBuilder.status = BuildingStatus.FINISHED
+    else tokenBuilder?.status = BuildingStatus.FINISHED
   }
 }
