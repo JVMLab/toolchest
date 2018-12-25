@@ -2,10 +2,23 @@ package com.jvmlab.commons.parse.text
 
 
 /**
- * Contains functions to parse [Char]s from a [CharSequence] using mutable [TokenBuilder] to hold
+ * Contains functions to parse [Char]s from a [CharSequence] using mutable [tokenBuilder] to hold
  * an intermediate state of a [ComplexToken] to be parsed
+ *
+ * @property tokenBuilder holds a state of the current token in progress. Used by the public
+ * [getBuildingStatus] method and to be used in protected [firstChar] and [nextChar] implementations
+ * of the [AbstractTokenizer]
  */
 abstract class AbstractTokenizer<E: Enum<E>> {
+
+  protected var tokenBuilder: TokenBuilder<E>? = null
+
+
+  /**
+   * Gives the current [BuildingStatus] of the [AbstractTokenizer]
+   */
+  open fun getBuildingStatus(): BuildingStatus = tokenBuilder?.status ?: BuildingStatus.NONE
+
 
   /**
    * Parses first [char] of a token.
