@@ -48,9 +48,7 @@ class Parsed<S, R> {
    */
   fun mergeResult(parser: (S) -> Map<String, R>): Parsed<S, R> =
       Parsed<S, R>(source) { src: S ->
-        HashMap<String, R>(result).apply {
-          this.putAll(parser(src))
-        }
+        HashMap<String, R>(result).apply { putAll(parser(src)) }
       }
 
 
@@ -63,9 +61,7 @@ class Parsed<S, R> {
    */
   fun mergeResult(parsedKey: ParsedKey, parser: (S) -> R): Parsed<S, R> =
       Parsed<S, R>(source) { src: S ->
-        HashMap<String, R>(result).apply {
-          this.putAll(mapOf(parsedKey.key to parser(src)))
-        }
+        HashMap<String, R>(result).apply { putAll(mapOf(parsedKey.key to parser(src))) }
       }
 }
 

@@ -37,7 +37,7 @@ open class GenericTokenizer<E: Enum<E>>(
   override fun nextChar(char: Char, idx: Int, isLast: Boolean) {
     if (checkNextChar(char)) {
       if (isLast) tokenBuilder?.status = BuildingStatus.FINISHED
-      tokenBuilder?.apply { this.finish++ }
+      tokenBuilder?.apply { finish++ }
     }
     else tokenBuilder?.status = BuildingStatus.FINISHED
   }
