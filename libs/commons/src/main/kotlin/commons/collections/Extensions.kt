@@ -6,6 +6,6 @@ package com.jvmlab.commons.collections
  */
 fun <T> Iterator<T>.asList(): List<T> = ArrayList<T>().apply {
   while (hasNext()) {
-    this += next()
+    this.add(next())
   }
 }
