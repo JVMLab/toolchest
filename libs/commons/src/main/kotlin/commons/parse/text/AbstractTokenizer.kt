@@ -91,7 +91,7 @@ abstract class AbstractTokenizer<E: Enum<E>> {
    * equal to [idx] in a new [tokenBuilder]
    *
    * An implementation *SHALL* expect that it's called with an initial state of [AbstractTokenizer]
-   * after a call to [reset]
+   * after a call to [reset] and *MUST* set [tokenBuilder] to some non-null [TokenBuilder] value
    *
    * Possible [TokenBuilder.status] values to be set in [tokenBuilder] by an implementation
    * (among values of [BuildingStatus] applicable for a [TokenBuilder]):

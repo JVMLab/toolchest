@@ -23,8 +23,9 @@ enum class BuildingStatus {
  * @property finish is overridden to become variable
  * @property status is the status of the token to be built
  * @property reason keeps a text message describing a reason of a FAILED state, if any
+ * @property current keeps a read-only wrapper around this [TokenBuilder]
  */
-open class TokenBuilder<E: Enum<E>> (
+class TokenBuilder<E: Enum<E>> (
     type: E,
     start: Int,
     finish: Int = start,
@@ -47,11 +48,14 @@ open class TokenBuilder<E: Enum<E>> (
       field = value
     }
 
+  val current = RTokenBuilder<E>(this)
+
+
   /**
    * Builds a [Token]
    * This [TokenBuilder] *MUST* have [BuildingStatus.FINISHED] status before colling this function
    */
-  open fun build(): Token<E> {
+  fun build(): Token<E> {
     check(BuildingStatus.FINISHED == status) {
       "Illegal attempt to build $type token with incorrect status: $status"
     }

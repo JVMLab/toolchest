@@ -7,8 +7,11 @@ import com.jvmlab.commons.parse.ParsedKey
 import com.jvmlab.commons.parse.file.parsePath
 import com.jvmlab.commons.parse.file.parseYaml
 import com.jvmlab.commons.parse.text.AbstractTokenizer
+import com.jvmlab.commons.parse.text.BuildingStatus
 import com.jvmlab.commons.parse.text.MultiTokenizer
+import com.jvmlab.commons.parse.text.RTokenBuilder
 import com.jvmlab.commons.parse.text.SingleCharTokenizer
+import com.jvmlab.commons.parse.text.TokenBuilder
 import com.jvmlab.commons.parse.text.WordTokenizer
 import com.jvmlab.commons.parse.text.parse
 
@@ -105,6 +108,13 @@ fun main(args: Array<String>) {
       println("${token.type} : $indent'${token.asString(parsedString.source)}'")
     }
   }
+
+
+  val tokenBuilder = TokenBuilder<TokenType>(TokenType.DFLT, 0, status = BuildingStatus.BUILDING)
+  val currentToken: RTokenBuilder<TokenType> = tokenBuilder.current
+  tokenBuilder.finish++
+  println("\ncurrentFinish == ${currentToken.finish()}")
+
 
 }
 
