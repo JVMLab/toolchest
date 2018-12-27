@@ -95,7 +95,8 @@ private fun <E: Enum<E>> parse(
       }
 
       BuildingStatus.FAILED -> {
-        throw IllegalStateException("Parsing error at position $idx")
+        throw IllegalStateException(
+            "Parsing error at position $idx with reason: ${tokenizer.tokenBuilder?.reason}")
       }
     }
   }

@@ -69,13 +69,18 @@ open class MultiTokenizer<E: Enum<E>>(
     // error because it contains more than one element and other elements could have only
     // BUILDING or FINISHED statuses
     (activeTokenizers.find { it.getBuildingStatus() == BuildingStatus.FINISHED })?.let {
-      reset()
-      tokenBuilder = it.tokenBuilder?.transformType(defaultTokenType)
+      finishedTokenizer ->
+      tokenBuilder = finishedTokenizer.tokenBuilder?.transformType(defaultTokenType)
       tokenBuilder?.status = BuildingStatus.FAILED
+      tokenBuilder?.reason = "more than 1 sub-tokenizer " +
+          "has ${BuildingStatus.FINISHED} or ${BuildingStatus.BUILDING} status"
+      activeTokenizers.clear()
+      subTokenizers.forEach { it.reset() }
       return
     }
 
-    // At this stage activeTokenizers contains the only BUILDING statuses
+    // At this stage activeTokenizers contains more than one element,
+    // and they have the only BUILDING statuses
     // Set defaultTokenType of the tokenBuilder because we have more then one active tokenizer
     tokenBuilder = activeTokenizers.first.tokenBuilder?.transformType(defaultTokenType)
   }

@@ -22,12 +22,14 @@ enum class BuildingStatus {
  *
  * @property finish is overridden to become variable
  * @property status is the status of the token to be built
+ * @property reason keeps a text message describing a reason of a FAILED state, if any
  */
 open class TokenBuilder<E: Enum<E>> (
     type: E,
     start: Int,
     finish: Int = start,
-    status: BuildingStatus) : Token<E>(type, start, finish) {
+    status: BuildingStatus,
+    var reason: String = "") : Token<E>(type, start, finish) {
 
   override var finish: Int = finish
   set(value) {
