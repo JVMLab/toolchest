@@ -66,6 +66,29 @@ fun main(args: Array<String>) {
   }
 
 
+  wordStrList.forEach { str: String ->
+    try {
+      val parsedString = str.parse(
+          MultiTokenizer(
+              TokenType.DFLT,
+              listOf<AbstractTokenizer<TokenType>>(
+                  WordTokenizer<TokenType>(TokenType.WORD),
+                  WordTokenizer<TokenType>(TokenType.WORD)
+              )),
+          TokenType.WSPC)
+
+
+      println("\nsrc  : '${parsedString.source}'")
+      parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach { token ->
+        val indent = " ".repeat(token.start)
+        println("${token.type} : $indent'${token.asString(parsedString.source)}'")
+      }
+    } catch (e: Exception) {
+      println(e.message)
+    }
+  }
+
+
   separatorStrList.forEach { str: String ->
     val parsedString = str.parse(
         MultiTokenizer(
@@ -82,6 +105,7 @@ fun main(args: Array<String>) {
       println("${token.type} : $indent'${token.asString(parsedString.source)}'")
     }
   }
+
 }
 
 
