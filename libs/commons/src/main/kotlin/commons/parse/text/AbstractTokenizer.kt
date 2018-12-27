@@ -11,21 +11,31 @@ package com.jvmlab.commons.parse.text
  */
 abstract class AbstractTokenizer<E: Enum<E>> {
 
-  protected var tokenBuilder: TokenBuilder<E>? = null
+  var tokenBuilder: TokenBuilder<E>? = null
+    protected set
 
 
   /**
    * Gives the current [BuildingStatus] of a token in progress or [BuildingStatus.NONE]
    * if there is no current token
    */
-  open fun getBuildingStatus(): BuildingStatus = tokenBuilder?.status ?: BuildingStatus.NONE
+  fun getBuildingStatus(): BuildingStatus = tokenBuilder?.status ?: BuildingStatus.NONE
 
 
   /**
    * Gives the current [TokenBuilder.finish] value of a token in progress or -1
    * if there is no current token
    */
-  open fun getCurrentFinish(): Int = tokenBuilder?.finish ?: -1
+  fun getCurrentFinish(): Int = tokenBuilder?.finish ?: -1
+
+
+  /**
+   * Resets an [AbstractTokenizer] to an initial state.
+   *
+   * The standard implementation just sets [tokenBuilder] to null. An implementation in a sub-class
+   * may use more complex logic, which is why [reset] is used in [buildToken] and in [processChar]
+   */
+  open fun reset() { tokenBuilder = null }
 
 
   /**
@@ -42,7 +52,7 @@ abstract class AbstractTokenizer<E: Enum<E>> {
       throw IllegalStateException(
         "Illegal attempt to build a token with incorrect status: ${getBuildingStatus()}")
     }
-    tokenBuilder = null
+    reset()
     return token
   }
 
@@ -56,6 +66,10 @@ abstract class AbstractTokenizer<E: Enum<E>> {
    * a protected [tokenBuilder] value will be overridden before the [firstChar] call
    * from [processChar]
    *
+   * A possible implementation in a sub-class *MUST* always call [reset] prior to the [firstChar]
+   * call to ensure that the [AbstractTokenizer] or its sub-class has an initial state
+   *
+   *
    * @param char is a [Char] to be parsed
    * @param idx is a position of the [char] in a parsed [CharSequence]
    * @param isLast indicates if [idx] is the last index of a parsed [CharSequence]
@@ -64,7 +78,7 @@ abstract class AbstractTokenizer<E: Enum<E>> {
     if (BuildingStatus.BUILDING == getBuildingStatus()) {
       nextChar(char, idx, isLast)
     } else {
-      tokenBuilder = null
+      reset()
       firstChar(char, idx, isLast)
     }
   }
@@ -73,8 +87,11 @@ abstract class AbstractTokenizer<E: Enum<E>> {
   /**
    * Parses the first [char] of a token and creates a new [tokenBuilder]
    *
-   * An implementation *SHOULD* always set [TokenBuilder.start] and [TokenBuilder.finish]
+   * An implementation *MUST* always set [TokenBuilder.start] and [TokenBuilder.finish]
    * equal to [idx] in a new [tokenBuilder]
+   *
+   * An implementation *SHALL* expect that it's called with an initial state of [AbstractTokenizer]
+   * after a call to [reset]
    *
    * Possible [TokenBuilder.status] values to be set in [tokenBuilder] by an implementation
    * (among values of [BuildingStatus] applicable for a [TokenBuilder]):

@@ -55,4 +55,13 @@ open class TokenBuilder<E: Enum<E>> (
     }
     return Token<E>(type, start, finish)
   }
+
+
+  /**
+   * Creates a new [TokenBuilder] with a new type
+   *
+   * @param newType a type of a new [TokenBuilder]
+   * @return a newly created [TokenBuilder]
+   */
+  fun transformType(newType: E) = TokenBuilder(newType, start, finish, status)
 }
