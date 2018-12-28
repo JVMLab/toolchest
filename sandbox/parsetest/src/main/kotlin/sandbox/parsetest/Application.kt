@@ -18,7 +18,7 @@ import com.jvmlab.commons.parse.text.parse
 
 fun main(args: Array<String>) {
 
-  val file = File("src/test/map.yaml")
+/*  val file = File("src/test/map.yaml")
   val yaml = Yaml()
   val parsedFile = file.parseYaml(yaml)
 
@@ -107,13 +107,13 @@ fun main(args: Array<String>) {
       val indent = " ".repeat(token.start)
       println("${token.type} : $indent'${token.asString(parsedString.source)}'")
     }
-  }
+  }*/
 
 
   val tokenBuilder = TokenBuilder<TokenType>(TokenType.DFLT, 0, status = BuildingStatus.BUILDING)
   val currentToken: RTokenBuilder<TokenType> = tokenBuilder.current
   tokenBuilder.finish++
-  println("\ncurrentFinish == ${currentToken.finish()}")
+  println("\ncurrentFinish == ${currentToken.finish}")
 
 
 }

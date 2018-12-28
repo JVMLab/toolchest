@@ -16,6 +16,12 @@ abstract class AbstractTokenizer<E: Enum<E>> {
 
 
   /**
+   * Gives the current read-only version of [tokenBuilder]
+   */
+  fun getRTokenBuilder(): RTokenBuilder<E>? = tokenBuilder?.current
+
+
+  /**
    * Gives the current [BuildingStatus] of a token in progress or [BuildingStatus.NONE]
    * if there is no current token
    */
