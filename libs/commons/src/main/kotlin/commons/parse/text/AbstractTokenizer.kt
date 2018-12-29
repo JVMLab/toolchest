@@ -6,7 +6,7 @@ package com.jvmlab.commons.parse.text
  * an intermediate state of a token in progress
  *
  * @property tokenBuilder holds a state of the current token in progress.
- * @property nextCharIncluded is updated by [nextChar], see method description
+ * @property nextCharIncluded is updated by [nextChar], see the method description
  */
 abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E) {
 
@@ -39,7 +39,10 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    * The standard implementation just resets [tokenBuilder]. An implementation in a sub-class
    * may use more complex logic, which is why [reset] is used in [buildToken] and in [processChar]
    */
-  open fun reset() { tokenBuilder.reset() }
+  open fun reset() {
+    setTokenType(defaultTokenType)
+    tokenBuilder.reset()
+  }
 
 
   /**
@@ -83,53 +86,55 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
       if (details.status != BuildingStatus.NONE)
         tokenBuilder.startToken(idx, details)
     }
+
+    if (isLast) require(tokenBuilder.details.status != BuildingStatus.BUILDING) {
+      "Unexpected ${BuildingStatus.BUILDING} for the last char at position $idx"
+    }
   }
 
 
   /**
-   * Parses the first [char] of a token and creates a new [tokenBuilder]
-   *
-   * An implementation *MUST* always set [TokenBuilder.start] and [TokenBuilder.finish]
-   * equal to [idx] in a new [tokenBuilder]
+   * Parses the first [char] of a token
    *
    * An implementation *SHALL* expect that it's called with an initial state of [AbstractTokenizer]
-   * after a call to [reset] and *MUST* set [tokenBuilder] to some non-null [TokenBuilder] value
+   * after a call to [reset]
    *
-   * Possible [TokenBuilder.status] values to be set in [tokenBuilder] by an implementation
-   * (among values of [BuildingStatus] applicable for a [TokenBuilder]):
+   * Possible [BuildingDetails.status] values to be set in the returned value:
    *  - [isLast] == false : any value
    *  - [isLast] == true  : any value except [BuildingStatus.BUILDING]
    *
    *
    * @param char is a [Char] to be parsed
-   * @param idx is a position of the [char] in a parsed [CharSequence] to be stored in
-   * [tokenBuilder]
-   * @param isLast indicates if [idx] is the last index of a parsed [CharSequence]. It is expected
-   * to be used by an implementation to set a proper [BuildingStatus] of the [tokenBuilder]
+   * @param idx is a position of the [char] in a parsed [CharSequence]
+   * @param isLast indicates if [idx] is the last index of a parsed [CharSequence]. It is intended
+   * to be used by an implementation to set a proper [BuildingStatus] in case of the last char
+   *
+   * @return [BuildingStatus] with the building status and reason
    */
   protected abstract fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails
 
 
   /**
-   * Parses a next [char] of a token and modifies the state of the [tokenBuilder]
+   * Parses a next [char] of a token
    *
-   * The method can be called only when [getBuildingStatus] returns [BuildingStatus.BUILDING]
+   * The method is called when [getBuildingStatus] returns [BuildingStatus.BUILDING]
    * to prevent parsing of a token with incorrect initial status.
    *
-   * Possible [TokenBuilder.status] values to be set in [tokenBuilder] by an implementation
-   * (among values of [BuildingStatus] applicable for a [TokenBuilder]):
+   * Possible [BuildingDetails.status] values to be set in the returned value::
    *  - [isLast] == false : any value
    *  - [isLast] == true  : any value except [BuildingStatus.BUILDING]
    *
    * An implementation *SHALL* expect that [char] is a next [Char] from a source [CharSequence]
    * after [TokenBuilder.finish] of the [tokenBuilder], so if this [char] matches the token
-   * the implementation *MUST* increment [TokenBuilder.finish] in the [tokenBuilder]
+   * the implementation *MUST* set [nextCharIncluded] to true
    *
    *
    * @param char is a [Char] to be parsed
    * @param idx is a position of the [char] in a parsed [CharSequence]
    * @param isLast indicates if [idx] is the last index of a parsed [CharSequence]. It is expected
    * to be used by an implementation to set a proper [BuildingStatus] of the [tokenBuilder]
+   *
+   * @return [BuildingStatus] with the building status and reason
    */
   protected abstract fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails
 

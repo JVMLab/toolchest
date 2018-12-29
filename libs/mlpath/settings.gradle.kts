@@ -6,4 +6,5 @@ pluginManagement {
   }
 }
 
+rootProject.name = "jvmlab-mlpath"
 includeBuild("../../libs/commons")

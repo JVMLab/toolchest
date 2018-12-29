@@ -6,4 +6,4 @@ pluginManagement {
   }
 }
 
-includeBuild("../../libs/commons")
+rootProject.name = "jvmlab-commons"
