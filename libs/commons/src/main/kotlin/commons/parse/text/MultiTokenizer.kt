@@ -15,9 +15,9 @@ import java.util.*
  * different from [BuildingStatus.NONE] or [BuildingStatus.CANCELLED]
  */
 open class MultiTokenizer<E: Enum<E>>(
-    private val defaultTokenType: E,
+    defaultTokenType: E,
     private val subTokenizers: List<AbstractTokenizer<E>>
-) : AbstractTokenizer<E>() {
+) : AbstractTokenizer<E>(defaultTokenType) {
 
   private val activeTokenizers: LinkedList<AbstractTokenizer<E>> = LinkedList()
 
@@ -42,94 +42,86 @@ open class MultiTokenizer<E: Enum<E>>(
    *
    * Used in [firstChar] and [nextChar] methods after a change in [activeTokenizers]
    */
-  private fun updateTokenizer() {
-    if (processEmptyOrSingleActiveTokenizer()) return
+  private fun updateTokenizer(): BuildingDetails {
+    processEmptyOrSingleActiveTokenizer()?.let { return it}
 
     // Iterate over activeTokenizers and keep the only BUILDING and FINISHED statuses
     val iterator = activeTokenizers.iterator()
     while (iterator.hasNext()) {
-      val tokenizer = iterator.next()
-      when (tokenizer.getBuildingStatus()) {
+      val details = iterator.next().getRTokenBuilder().details
+      when (details.status) {
         BuildingStatus.NONE ->throw IllegalStateException(
             "Unexpected ${BuildingStatus.NONE} of an active sub-tokenizer")
-        BuildingStatus.FAILED -> {
-          tokenBuilder = tokenizer.tokenBuilder
-          activeTokenizers.clear()
-          return
-        }
+        BuildingStatus.FAILED -> return details
         BuildingStatus.CANCELLED -> iterator.remove()
         BuildingStatus.BUILDING, BuildingStatus.FINISHED -> {}
       }
     }
 
     // At this stage activeTokenizers contains the only BUILDING and FINISHED statuses
-    if (processEmptyOrSingleActiveTokenizer()) return
+    processEmptyOrSingleActiveTokenizer()?.let { return it}
 
     // If at this stage activeTokenizers contains a FINISHED status then it's an ambiguous parsing
     // error because it contains more than one element and other elements could have only
     // BUILDING or FINISHED statuses
     (activeTokenizers.find { it.getBuildingStatus() == BuildingStatus.FINISHED })?.let {
-      finishedTokenizer ->
-      tokenBuilder = finishedTokenizer.tokenBuilder?.transformType(defaultTokenType)
-      tokenBuilder?.status = BuildingStatus.FAILED
-      tokenBuilder?.reason = "more than 1 sub-tokenizer " +
-          "has ${BuildingStatus.FINISHED} or ${BuildingStatus.BUILDING} status"
-      activeTokenizers.clear()
-      subTokenizers.forEach { it.reset() }
-      return
+      setTokenType(defaultTokenType)
+      nextCharIncluded = (it.getRTokenBuilder().finish > getRTokenBuilder().finish)
+      return BuildingDetails(BuildingStatus.FAILED,
+          "${it.getRTokenBuilder().type} sub-tokenizer is ${BuildingStatus.FINISHED} but another " +
+              "has either ${BuildingStatus.BUILDING} or ${BuildingStatus.FINISHED} status")
     }
 
     // At this stage activeTokenizers contains more than one element,
     // and they have the only BUILDING statuses
     // Set defaultTokenType of the tokenBuilder because we have more then one active tokenizer
-    tokenBuilder = activeTokenizers.first.tokenBuilder?.transformType(defaultTokenType)
+    setTokenType(defaultTokenType)
+    nextCharIncluded = true // BuildingStatus.BUILDING always includes a next char
+    return BuildingDetails(BuildingStatus.BUILDING)
   }
 
 
   /**
    * Used in [updateTokenizer] to process [activeTokenizers] with 0 or 1 element
    */
-  private fun processEmptyOrSingleActiveTokenizer(): Boolean {
-    if (activeTokenizers.isEmpty()) {
-      super.reset()
-      return true
-    }
+  private fun processEmptyOrSingleActiveTokenizer(): BuildingDetails? {
+    if (activeTokenizers.isEmpty()) return BuildingDetails()
 
     if (activeTokenizers.size == 1) {
-      tokenBuilder = activeTokenizers.first.tokenBuilder
-      check(getBuildingStatus() != BuildingStatus.NONE) {
+      val activeTokenizer = activeTokenizers.first
+      check(activeTokenizer.getBuildingStatus() != BuildingStatus.NONE) {
         "Unexpected ${BuildingStatus.NONE} of an active sub-tokenizer"
       }
-      if (getBuildingStatus() != BuildingStatus.BUILDING)
-        activeTokenizers.clear()
-      return true
+      // Successful BuildingStatus.FINISHED is returned from here
+      setTokenType(activeTokenizer.getRTokenBuilder().type)
+      nextCharIncluded = (activeTokenizer.getRTokenBuilder().finish > getRTokenBuilder().finish)
+      return activeTokenizer.getRTokenBuilder().details
     }
-
-    return false
+    return null
   }
 
 
-  override fun firstChar(char: Char, idx: Int, isLast: Boolean) {
+  override fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails {
     // populate activeTokenizers
-    subTokenizers.forEach { tokenizer: AbstractTokenizer<E> ->
-      tokenizer.processChar(char, idx, isLast)
-      when (tokenizer.getBuildingStatus()) {
+    subTokenizers.forEach { subTokenizer: AbstractTokenizer<E> ->
+      subTokenizer.processChar(char, idx, isLast)
+      when (subTokenizer.getBuildingStatus()) {
         BuildingStatus.FAILED -> {
-          tokenBuilder = tokenizer.tokenBuilder
-          return
+          setTokenType(subTokenizer.getRTokenBuilder().type)
+          return subTokenizer.getRTokenBuilder().details
         }
         BuildingStatus.BUILDING, BuildingStatus.FINISHED, BuildingStatus.CANCELLED ->
-          activeTokenizers.add(tokenizer)
+          activeTokenizers.add(subTokenizer)
         BuildingStatus.NONE -> {}
       }
     }
 
-    // process activeTokenizers and set tokenBuilder accordingly
-    updateTokenizer()
+    // process activeTokenizers and return result
+    return updateTokenizer()
   }
 
 
-  override fun nextChar(char: Char, idx: Int, isLast: Boolean) {
+  override fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails {
     // we should have some active tokenizers if this method is called
     check(activeTokenizers.isNotEmpty()) { "Unexpected empty list of active sub-tokenizers" }
 
@@ -137,12 +129,13 @@ open class MultiTokenizer<E: Enum<E>>(
     activeTokenizers.forEach {
       // we should have the only BUILDING statuses in activeTokenizers
       check(it.getBuildingStatus() == BuildingStatus.BUILDING) {
-        "Unexpected ${it.getBuildingStatus()} of an active sub-tokenizer"
+        "Unexpected ${it.getBuildingStatus()} of an active ${it.getRTokenBuilder().type} " +
+            "sub-tokenizer"
       }
       it.processChar(char, idx, isLast)
     }
 
-    // process activeTokenizers and set tokenBuilder accordingly
-    updateTokenizer()
+    // process activeTokenizers and return result
+    return updateTokenizer()
   }
 }

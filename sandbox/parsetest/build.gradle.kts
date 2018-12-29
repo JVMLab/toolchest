@@ -1,17 +1,32 @@
+buildscript {
+
+  repositories {
+    maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.20-eap-52")
+  }
+}
+
+apply(plugin = "kotlin")
+
 plugins {
-  kotlin("jvm") version "1.3.10" 
   application
 }
+
 
 application {
   mainClassName = "com.jvmlab.sandbox.parsetest.ApplicationKt"
 }
 
 repositories {
-  jcenter() 
+  maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
+  mavenCentral()
 }
 
 dependencies {
-  implementation(kotlin("stdlib"))
-  compile("com.jvmlab.libs:jvmlab-commons")
+  "compile"("org.jetbrains.kotlin:kotlin-stdlib")
+  "compile"("com.jvmlab.libs:jvmlab-commons")
 }

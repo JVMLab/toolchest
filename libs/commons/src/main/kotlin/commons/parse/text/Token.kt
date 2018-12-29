@@ -9,7 +9,7 @@ package com.jvmlab.commons.parse.text
  * @property start is a starting point in a [CharSequence] (inclusive)
  * @property finish is an ending point in a [CharSequence] (inclusive)
  */
-open class Token<E: Enum<E>>(val type: E, startParam: Int, finishParam: Int) {
+open class Token<E: Enum<E>>(open val type: E, startParam: Int, finishParam: Int) {
 
   // Checks consistency of the token bounds startParam and finishParam
   init {
@@ -19,7 +19,7 @@ open class Token<E: Enum<E>>(val type: E, startParam: Int, finishParam: Int) {
     }
   }
 
-  val start: Int = startParam
+  open val start: Int = startParam
   open val finish: Int = finishParam
 
 

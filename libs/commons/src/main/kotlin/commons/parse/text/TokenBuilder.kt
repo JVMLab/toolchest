@@ -2,11 +2,10 @@ package com.jvmlab.commons.parse.text
 
 
 /**
- * Represents a current status of a token to be built by a [TokenBuilder]. Used in [TokenBuilder]
- * and in [AbstractTokenizer]
+ * Represents a current status of a token to be built by a [TokenBuilder]. Used in [BuildingDetails]
  */
 enum class BuildingStatus {
-  NONE,       // to be used in an AbstractTokenizer only when no TokenBuilder is created yet
+  NONE,       // a token is not yet started
   BUILDING,   // a normal status of a token in progress
   FINISHED,   // a successful completion status, the token can be built by build() call
   CANCELLED,  // a normal status when a current Char indicates that doesn't match the token,
@@ -16,54 +15,109 @@ enum class BuildingStatus {
 
 
 /**
- * Used in [AbstractTokenizer] as a mutable returned value which represents an intermediate result
- * of a [AbstractTokenizer] while constructing a [Token]. The class extends [Token] and adds
- * [status] property to represent the current status or the result of a [Token] creation
+ * Holds a [Token] building details in a [TokenBuilder] or [AbstractTokenizer]
  *
- * @property finish is overridden to become variable
  * @property status is the status of the token to be built
- * @property reason keeps a text message describing a reason of a FAILED state, if any
+ * @property reason keeps a text message describing a reason of the [status] value, if any
  */
-open class TokenBuilder<E: Enum<E>> (
-    type: E,
-    start: Int,
+data class BuildingDetails (
+    val status: BuildingStatus = BuildingStatus.NONE,
+    val reason: String = "")
+
+
+/**
+ * Used in [AbstractTokenizer] to keep an intermediate result of the [AbstractTokenizer]
+ * while constructing a [Token]. The class extends [Token] and adds some variable
+ * properties to monitor the current status or the result of a [Token] creation
+ *
+ * @property start is overridden to variable, should be 0 for [BuildingStatus.NONE] of [details]
+ * @property finish is overridden to variable, should be 0 for [BuildingStatus.NONE] of [details]
+ * @property details represents the current status or the result of a [Token] creation
+ * @property current keeps a read-only wrapper [RTokenBuilder] around this [TokenBuilder]
+ */
+class TokenBuilder<E: Enum<E>> (
+    override var type: E,
+    start: Int = 0,
     finish: Int = start,
-    status: BuildingStatus,
-    var reason: String = "") : Token<E>(type, start, finish) {
+    details: BuildingDetails = BuildingDetails()) : Token<E>(type, start, finish) {
 
-  override var finish: Int = finish
-  set(value) {
-    require(value >= start) {
-      "Illegal attempt to set finish value ($value) less than start ($start)"
-    }
-    field = value
-  }
-
-  var status: BuildingStatus = status
+  override var start: Int = start
     set(value) {
-      require(value != BuildingStatus.NONE) {
-        "Illegal attempt to set BuildingStatus ${BuildingStatus.NONE} of a $type TokenBuilder"
+      if (BuildingStatus.NONE == details.status) {
+        require(value == 0) {
+          "Incorrect start value ($value) for the BuildingStatus ${BuildingStatus.NONE}"
+        }
+      }
+      require(value <= finish) {
+        "Illegal attempt to set start value ($value) greater than finish ($finish)"
       }
       field = value
     }
 
-  /**
-   * Builds a [Token]
-   * This [TokenBuilder] *MUST* have [BuildingStatus.FINISHED] status before colling this function
-   */
-  open fun build(): Token<E> {
-    check(BuildingStatus.FINISHED == status) {
-      "Illegal attempt to build $type token with incorrect status: $status"
+  override var finish: Int = finish
+    set(value) {
+      if (BuildingStatus.NONE == details.status) {
+        require(value == 0) {
+          "Incorrect finish value ($value) for the BuildingStatus ${BuildingStatus.NONE}"
+        }
+      }
+      require(value >= start) {
+        "Illegal attempt to set finish value ($value) less than start ($start)"
+      }
+      field = value
     }
-    return Token<E>(type, start, finish)
+
+  var details: BuildingDetails = details
+    set(value) {
+      if (BuildingStatus.NONE == details.status) {
+        require(start == 0) {
+          "Incorrect start value ($start) for the BuildingStatus ${BuildingStatus.NONE}"
+        }
+        require(finish == 0) {
+          "Incorrect finish value ($finish) for the BuildingStatus ${BuildingStatus.NONE}"
+        }
+      }
+      field = value
+    }
+
+  val current = RTokenBuilder<E>(this)
+
+
+  /**
+   * Resets this [TokenBuilder] to the default values and the initial [type]
+   */
+  fun reset() {
+    type = super.type
+    start = 0
+    finish = 0
+    details = BuildingDetails()
   }
 
 
   /**
-   * Creates a new [TokenBuilder] with a new type
-   *
-   * @param newType a type of a new [TokenBuilder]
-   * @return a newly created [TokenBuilder]
+   * Sets [TokenBuilder] properties to start a new token
    */
-  fun transformType(newType: E) = TokenBuilder(newType, start, finish, status)
+  fun startToken(start: Int, details: BuildingDetails) {
+    require(details.status != BuildingStatus.NONE) {
+      "Incorrect status (${details.status}) to start a token"
+    }
+    this.details = details
+    this.finish = start
+    this.start = start
+  }
+
+  /**
+   * Builds a [Token]
+   * A [TokenBuilder] *MUST* have [BuildingStatus.FINISHED] of [details]
+   * before colling this function
+   *
+   * @throws IllegalStateException when [TokenBuilder] has an improper [BuildingStatus]
+   */
+  fun build(): Token<E> {
+    check(BuildingStatus.FINISHED == details.status) {
+      "Illegal attempt to build $type token with incorrect status: ${details.status}"
+    }
+    return Token<E>(type, start, finish)
+  }
+
 }

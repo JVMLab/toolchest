@@ -3,7 +3,7 @@ package com.jvmlab.commons.parse.text
 
 
 /**
- * A [SingleTokenizer] to create tokens based on conditions for chars given by external functions
+ * An [AbstractTokenizer] to create tokens based on conditions for chars given by external functions
  *
  *
  * @property checkFirstChar a function to check the first char of a token, to be used in
@@ -23,22 +23,21 @@ open class GenericTokenizer<E: Enum<E>>(
     private val checkFirstChar: (Char) -> Boolean,
     private val firstCharStatus: BuildingStatus = BuildingStatus.BUILDING,
     private val checkNextChar: (Char) -> Boolean = checkFirstChar
-) : SingleTokenizer<E>(type) {
+) : AbstractTokenizer<E>(type) {
 
-  override fun firstChar(char: Char, idx: Int, isLast: Boolean) {
+  override fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails =
     if (checkFirstChar(char))
-      tokenBuilder =
-          if (isLast)
-            TokenBuilder<E>(type, idx, status = BuildingStatus.FINISHED)
-          else
-            TokenBuilder<E>(type, idx, status = firstCharStatus)
-  }
+      if (isLast) BuildingDetails(BuildingStatus.FINISHED)
+      else BuildingDetails(firstCharStatus)
+    else BuildingDetails()
 
-  override fun nextChar(char: Char, idx: Int, isLast: Boolean) {
+
+  override fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails =
     if (checkNextChar(char)) {
-      if (isLast) tokenBuilder?.status = BuildingStatus.FINISHED
-      tokenBuilder?.apply { finish++ }
+      nextCharIncluded = true
+      if (isLast) BuildingDetails(BuildingStatus.FINISHED)
+      else getRTokenBuilder().details // expected to have BuildingStatus.BUILDING
     }
-    else tokenBuilder?.status = BuildingStatus.FINISHED
-  }
+    else BuildingDetails(BuildingStatus.FINISHED)
+
 }
