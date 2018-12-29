@@ -1,14 +1,16 @@
 plugins {
-  kotlin("jvm") version "1.3.10" 
+  kotlin("jvm") version "1.3.20-eap-52"
   application
 }
+
 
 application {
   mainClassName = "com.jvmlab.sandbox.iotest.ApplicationKt"
 }
 
 repositories {
-  jcenter() 
+  maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
+  mavenCentral()
 }
 
 dependencies {
