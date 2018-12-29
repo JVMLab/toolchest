@@ -7,6 +7,7 @@ import com.jvmlab.commons.parse.ParsedKey
 import com.jvmlab.commons.parse.file.parsePath
 import com.jvmlab.commons.parse.file.parseYaml
 import com.jvmlab.commons.parse.text.AbstractTokenizer
+import com.jvmlab.commons.parse.text.BuildingDetails
 import com.jvmlab.commons.parse.text.BuildingStatus
 import com.jvmlab.commons.parse.text.MultiTokenizer
 import com.jvmlab.commons.parse.text.RTokenBuilder
@@ -18,7 +19,7 @@ import com.jvmlab.commons.parse.text.parse
 
 fun main(args: Array<String>) {
 
-/*  val file = File("src/test/map.yaml")
+  val file = File("src/test/map.yaml")
   val yaml = Yaml()
   val parsedFile = file.parseYaml(yaml)
 
@@ -40,6 +41,7 @@ fun main(args: Array<String>) {
       "xxx  x   "
   )
 
+  println("\n*********** WordTokenizer positive")
   wordStrList.forEach { str: String ->
     val parsedString = str.parse(WordTokenizer<TokenType>(TokenType.WORD), TokenType.WSPC)
     println("\nsrc  : '${parsedString.source}'")
@@ -58,6 +60,7 @@ fun main(args: Array<String>) {
       ",,xxx,  , tt ,,"
   )
 
+  println("\n\n*********** SingleCharTokenizer positive")
   separatorStrList.forEach { str: String ->
     val parsedString = str.parse(SingleCharTokenizer(TokenType.SPRT, ','), TokenType.WORD)
     println("\nsrc  : '${parsedString.source}'")
@@ -69,6 +72,7 @@ fun main(args: Array<String>) {
   }
 
 
+  println("\n\n*********** MultiTokenizer negative")
   wordStrList.forEach { str: String ->
     try {
       val parsedString = str.parse(
@@ -87,11 +91,13 @@ fun main(args: Array<String>) {
         println("${token.type} : $indent'${token.asString(parsedString.source)}'")
       }
     } catch (e: Exception) {
+      println("\nsrc  : '$str'")
       println(e.message)
     }
   }
 
 
+  println("\n\n*********** MultiTokenizer positive")
   separatorStrList.forEach { str: String ->
     val parsedString = str.parse(
         MultiTokenizer(
@@ -107,14 +113,7 @@ fun main(args: Array<String>) {
       val indent = " ".repeat(token.start)
       println("${token.type} : $indent'${token.asString(parsedString.source)}'")
     }
-  }*/
-
-
-  val tokenBuilder = TokenBuilder<TokenType>(TokenType.DFLT, 0, status = BuildingStatus.BUILDING)
-  val currentToken: RTokenBuilder<TokenType> = tokenBuilder.current
-  tokenBuilder.finish++
-  println("\ncurrentFinish == ${currentToken.finish}")
-
+  }
 
 }
 

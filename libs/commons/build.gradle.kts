@@ -1,17 +1,29 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-plugins {
-  kotlin("jvm") version "1.3.10"
+
+buildscript {
+
+  repositories {
+    maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.20-eap-52")
+  }
 }
+
+apply(plugin = "kotlin")
 
 group = "com.jvmlab.libs"
 
 
 repositories {
-  jcenter()
+  maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
+  mavenCentral()
 }
 
 dependencies {
-  implementation(kotlin("stdlib"))
-  implementation(group = "org.snakeyaml", name = "snakeyaml-engine", version = "1.+")
+  "implementation"("org.jetbrains.kotlin:kotlin-stdlib")
+  "implementation"("org.snakeyaml:snakeyaml-engine:1.+")
 }

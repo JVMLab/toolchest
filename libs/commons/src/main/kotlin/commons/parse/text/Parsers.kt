@@ -69,14 +69,14 @@ private fun <E: Enum<E>> parse(
         // changes this.status and may increment this.finish if still in building
         tokenizer.processChar(char, idx, isLast)
         if (isLast) {
-          // don't increment idx here to process a new this.status in the next iteration
+          // don't increment idx here to process a new status in the next iteration
           if (BuildingStatus.BUILDING == tokenizer.getBuildingStatus())
             throw IllegalStateException(
                 "Unexpected state: ${BuildingStatus.BUILDING} at the last position $idx")
         } else {
           // increments idx if still in building or
           // keeps it when this.finish was not incremented in tokenizer.processChar()
-          idx = tokenizer.getCurrentFinish() + 1
+          idx = tokenizer.getRTokenBuilder().finish + 1
         }
       }
 
@@ -91,12 +91,13 @@ private fun <E: Enum<E>> parse(
       BuildingStatus.CANCELLED -> {
         if (isLast) // Add a default token till the end of charSequence in case of the last char
           tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
-        idx = tokenizer.getCurrentFinish() + 1
+        idx = tokenizer.getRTokenBuilder().finish + 1
       }
 
       BuildingStatus.FAILED -> {
         throw IllegalStateException(
-            "Parsing error at position $idx with reason: ${tokenizer.tokenBuilder?.reason}")
+            "Parsing error at position $idx with reason: " +
+                tokenizer.getRTokenBuilder().details.reason)
       }
     }
   }
