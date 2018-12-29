@@ -39,7 +39,10 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    * The standard implementation just resets [tokenBuilder]. An implementation in a sub-class
    * may use more complex logic, which is why [reset] is used in [buildToken] and in [processChar]
    */
-  open fun reset() { tokenBuilder.reset() }
+  open fun reset() {
+    setTokenType(defaultTokenType)
+    tokenBuilder.reset()
+  }
 
 
   /**
