@@ -6,12 +6,12 @@ package com.jvmlab.commons.parse.text
  * an intermediate state of a token in progress
  *
  * @property tokenBuilder holds a state of the current token in progress.
- * @property nextCharIncluded is updated by [nextChar], see the method description
+ * @property finalCharIncluded is updated by [nextChar], see the method description
  */
 abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E) {
 
   private val tokenBuilder: TokenBuilder<E> = TokenBuilder(defaultTokenType)
-  protected var nextCharIncluded: Boolean = false
+  protected var finalCharIncluded: Boolean = false
 
 
   /**
@@ -70,6 +70,14 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    * a private [tokenBuilder] value will be overridden before the [firstChar] call
    * from [processChar]
    *
+   * The method expects that [char] is a next [Char] from a source [CharSequence]
+   * after [TokenBuilder.finish] of the [tokenBuilder], so if this [char] matches the token
+   * then [TokenBuilder.finish] of the [tokenBuilder] will be incremented in the following cases:
+   *
+   * - [getBuildingStatus] is [BuildingStatus.BUILDING] before and after call to [processChar]
+   * - [getBuildingStatus] is [BuildingStatus.BUILDING] before call to [processChar] and
+   * [finalCharIncluded] is set to true by [nextChar]
+   *
    *
    * @param char is a [Char] to be parsed
    * @param idx is a position of the [char] in a parsed [CharSequence]
@@ -77,9 +85,9 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    */
   fun processChar(char: Char, idx: Int, isLast: Boolean) {
     if (BuildingStatus.BUILDING == getBuildingStatus()) {
-      nextCharIncluded = false
+      finalCharIncluded = false
       tokenBuilder.details = nextChar(char, idx, isLast)
-      if (nextCharIncluded) tokenBuilder.finish++
+      if (finalCharIncluded || BuildingStatus.BUILDING == getBuildingStatus()) tokenBuilder.finish++
     } else {
       reset()
       val details = firstChar(char, idx, isLast)
@@ -124,9 +132,10 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    *  - [isLast] == false : any value
    *  - [isLast] == true  : any value except [BuildingStatus.BUILDING]
    *
-   * An implementation *SHALL* expect that [char] is a next [Char] from a source [CharSequence]
-   * after [TokenBuilder.finish] of the [tokenBuilder], so if this [char] matches the token
-   * the implementation *MUST* set [nextCharIncluded] to true
+   * The implementation *MUST* set [finalCharIncluded] to true if [TokenBuilder.finish]
+   * of the [tokenBuilder] should be incremented by [processChar] for any of the final statuses
+   * (all statuses except [BuildingStatus.BUILDING]), although there is no harm to set
+   * [finalCharIncluded] to true even for [BuildingStatus.BUILDING]
    *
    *
    * @param char is a [Char] to be parsed

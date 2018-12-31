@@ -34,7 +34,7 @@ open class GenericTokenizer<E: Enum<E>>(
 
   override fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails =
     if (checkNextChar(char)) {
-      nextCharIncluded = true
+      finalCharIncluded = true
       if (isLast) BuildingDetails(BuildingStatus.FINISHED)
       else getRTokenBuilder().details // expected to have BuildingStatus.BUILDING
     }
