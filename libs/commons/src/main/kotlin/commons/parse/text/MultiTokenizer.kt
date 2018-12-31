@@ -66,7 +66,7 @@ open class MultiTokenizer<E: Enum<E>>(
     // BUILDING or FINISHED statuses
     (activeTokenizers.find { it.getBuildingStatus() == BuildingStatus.FINISHED })?.let {
       setTokenType(defaultTokenType)
-      nextCharIncluded = (it.getRTokenBuilder().finish > getRTokenBuilder().finish)
+      finalCharIncluded = (it.getRTokenBuilder().finish > getRTokenBuilder().finish)
       return BuildingDetails(BuildingStatus.FAILED,
           "${it.getRTokenBuilder().type} sub-tokenizer is ${BuildingStatus.FINISHED} but another " +
               "has either ${BuildingStatus.BUILDING} or ${BuildingStatus.FINISHED} status")
@@ -76,7 +76,6 @@ open class MultiTokenizer<E: Enum<E>>(
     // and they have the only BUILDING statuses
     // Set defaultTokenType of the tokenBuilder because we have more then one active tokenizer
     setTokenType(defaultTokenType)
-    nextCharIncluded = true // BuildingStatus.BUILDING always includes a next char
     return BuildingDetails(BuildingStatus.BUILDING)
   }
 
@@ -94,7 +93,7 @@ open class MultiTokenizer<E: Enum<E>>(
       }
       // Successful BuildingStatus.FINISHED is returned from here
       setTokenType(activeTokenizer.getRTokenBuilder().type)
-      nextCharIncluded = (activeTokenizer.getRTokenBuilder().finish > getRTokenBuilder().finish)
+      finalCharIncluded = (activeTokenizer.getRTokenBuilder().finish > getRTokenBuilder().finish)
       return activeTokenizer.getRTokenBuilder().details
     }
     return null
