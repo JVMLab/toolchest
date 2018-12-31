@@ -27,6 +27,21 @@ abstract class AbstractComplexTokenizer<E: Enum<E>>(
     subTokenizer.reset()
   }
 
+  /**
+   * Builds a resulting token and resets [tokenBuilder], so a current token can be built
+   * only once.
+   *
+   * The standard implementation just delegates the building to [tokenBuilder] [TokenBuilder.build]
+   * method, but implementations in sub-classes may use more complex logic.
+   *
+   * @throws IllegalStateException when [tokenBuilder] has an improper [BuildingStatus]
+   */
+  override fun buildToken(): ComplexToken<E> {
+    val token = ComplexToken(getRTokenBuilder().build(), subTokens)
+    reset()
+    return token
+  }
+
 
   override fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails =
       anyChar(char, idx, isLast, ::firstBeforeSubTokenizer, ::firstAfterSubTokenizer)
