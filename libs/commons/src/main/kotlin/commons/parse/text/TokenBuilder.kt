@@ -106,10 +106,10 @@ class TokenBuilder<E: Enum<E>> (
     this.start = start
   }
 
+
   /**
-   * Builds a [Token]
-   * A [TokenBuilder] *MUST* have [BuildingStatus.FINISHED] of [details]
-   * before colling this function
+   * Builds a new [Token]
+   * A [TokenBuilder] *MUST* have [BuildingStatus.FINISHED] of [details] before colling this method
    *
    * @throws IllegalStateException when [TokenBuilder] has an improper [BuildingStatus]
    */

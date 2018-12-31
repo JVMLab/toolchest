@@ -33,4 +33,11 @@ open class ComplexToken<E: Enum<E>> (
     }
   }
 
+
+  /**
+   * Additional constructor to create a [ComplexToken] based on [Token]
+   */
+  constructor(token: Token<E>, subTokens: List<Token<E>>) : this(
+      token.type, token.start, token.finish, subTokens)
+
 }
