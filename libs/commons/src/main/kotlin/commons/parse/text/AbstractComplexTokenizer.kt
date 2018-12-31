@@ -5,9 +5,9 @@ package com.jvmlab.commons.parse.text
  * An [AbstractTokenizer] which creates a ComplexToken. subTokens of the [ComplexToken] are created
  * by an internal [AbstractTokenizer] stored in a private [subTokenizer] property.
  *
- * @property subTokenizer
- * @property subTokens
- * @property processInSubTokenizer
+ * @property subTokenizer contains a class creating sub-tokens
+ * @property subTokens mutable list of tokens to be included in a resulting [ComplexToken]
+ * @property processInSubTokenizer a flag indicating if a char should be processed in [subTokenizer]
  */
 abstract class AbstractComplexTokenizer<E: Enum<E>>(
     type: E,
