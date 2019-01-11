@@ -7,11 +7,13 @@ import com.jvmlab.commons.parse.ParsedKey
 import com.jvmlab.commons.parse.file.parsePath
 import com.jvmlab.commons.parse.file.parseYaml
 import com.jvmlab.commons.parse.text.AbstractTokenizer
+import com.jvmlab.commons.parse.text.BracketsTokenizer
 import com.jvmlab.commons.parse.text.BuildingDetails
 import com.jvmlab.commons.parse.text.BuildingStatus
 import com.jvmlab.commons.parse.text.MultiTokenizer
 import com.jvmlab.commons.parse.text.RTokenBuilder
 import com.jvmlab.commons.parse.text.SingleCharTokenizer
+import com.jvmlab.commons.parse.text.SubTokenizer
 import com.jvmlab.commons.parse.text.TokenBuilder
 import com.jvmlab.commons.parse.text.WordTokenizer
 import com.jvmlab.commons.parse.text.parse
@@ -115,9 +117,35 @@ fun main(args: Array<String>) {
     }
   }
 
+
+  val bracketsStrList = listOf<String>(
+      "[xxx]",
+      "[xxx] [ttt,xx] ",
+      " [tt,xxx,t]"
+  )
+
+  println("\n\n*********** BracketsTokenizer positive")
+  bracketsStrList.forEach { str: String ->
+    println("\nsrc  : '$str'")
+    val parsedString = str.parse(
+        BracketsTokenizer<TokenType>(TokenType.BRCK,
+            SubTokenizer(MultiTokenizer(
+                TokenType.DFLT,
+                listOf<AbstractTokenizer<TokenType>>(
+                    WordTokenizer<TokenType>(TokenType.WORD),
+                    SingleCharTokenizer(TokenType.SPRT, ',')
+                ))),TokenType.L_BR, TokenType.R_BR
+        ),
+        TokenType.WSPC)
+    parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
+      token ->
+      val indent = " ".repeat(token.start)
+      println("${token.type} : $indent'${token.asString(parsedString.source)}'")
+    }
+  }
 }
 
 
 enum class TokenType {
-  DFLT, WORD, WSPC, SPRT
+  DFLT, WORD, WSPC, SPRT, BRCK, L_BR, R_BR
 }

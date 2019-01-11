@@ -8,7 +8,7 @@ package com.jvmlab.commons.parse.text
  * @property tokenBuilder holds a state of the current token in progress.
  * @property finalCharIncluded is updated by [nextChar], see the method description
  */
-abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E) {
+abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E) : ITokenizer<E> {
 
   private val tokenBuilder: TokenBuilder<E> = TokenBuilder(defaultTokenType)
   protected var finalCharIncluded: Boolean = false
@@ -17,13 +17,13 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
   /**
    * Gives the current read-only version of [tokenBuilder]
    */
-  fun getRTokenBuilder(): RTokenBuilder<E> = tokenBuilder.current
+  override fun getRTokenBuilder(): RTokenBuilder<E> = tokenBuilder.current
 
 
   /**
    * A convenience method to get the current building status from the [tokenBuilder]
    */
-  fun getBuildingStatus(): BuildingStatus = tokenBuilder.details.status
+  override fun getBuildingStatus(): BuildingStatus = tokenBuilder.details.status
 
 
   /**
@@ -39,7 +39,7 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    * The standard implementation just resets [tokenBuilder]. An implementation in a sub-class
    * may use more complex logic, which is why [reset] is used in [buildToken] and in [processChar]
    */
-  open fun reset() {
+  override fun reset() {
     setTokenType(defaultTokenType)
     tokenBuilder.reset()
   }
@@ -54,7 +54,7 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    *
    * @throws IllegalStateException when [tokenBuilder] has an improper [BuildingStatus]
    */
-  open fun buildToken(): Token<E> {
+  override fun buildToken(): Token<E> {
     val token = tokenBuilder.build()
     reset()
     return token
@@ -83,7 +83,7 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    * @param idx is a position of the [char] in a parsed [CharSequence]
    * @param isLast indicates if [idx] is the last index of a parsed [CharSequence]
    */
-  fun processChar(char: Char, idx: Int, isLast: Boolean) {
+  override fun processChar(char: Char, idx: Int, isLast: Boolean) {
     if (BuildingStatus.BUILDING == getBuildingStatus()) {
       finalCharIncluded = false
       tokenBuilder.details = nextChar(char, idx, isLast)
