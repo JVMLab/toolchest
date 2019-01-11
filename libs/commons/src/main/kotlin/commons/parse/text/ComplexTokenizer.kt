@@ -34,7 +34,7 @@ open class ComplexTokenizer<E: Enum<E>>(
     type: E,
     private val subTokenizers: List<SubTokenizer<E>>) : AbstractTokenizer<E>(type) {
 
-  private val subTokens: MutableList<Token<E>> = ArrayList()
+  private var subTokens: MutableList<Token<E>> = ArrayList()
   private var subIdx: Int = 0
   private var tokenCount: Int = 0
   private var currentTokenizer: SubTokenizer<E> = subTokenizers.first()
@@ -46,7 +46,7 @@ open class ComplexTokenizer<E: Enum<E>>(
   }
 
   private fun subInit() {
-    subTokens.clear()
+    subTokens = ArrayList()
     subTokenizers.forEach { it.reset() }
     subIdx = 0
     tokenCount = 0

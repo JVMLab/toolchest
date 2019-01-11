@@ -30,13 +30,12 @@ open class Token<E: Enum<E>>(open val type: E, startParam: Int, finishParam: Int
 
 
     /**
-     * Gives [String] representation of this token based on a [source] [CharSequence]
+     * Pretty printing of this token based on a [source] [CharSequence]
      *
      * @param source is a source [CharSequence] for this token
-     * @param indent is an optional prefix for a proper indent while printing a [ComplexToken]
      */
-    open fun asString(source: CharSequence, indent: String = ""): String =
-        indent + subSequence(source).toString()
+    open fun prettyPrint(source: CharSequence) =
+        println("$type : " + " ".repeat(start) + "'${subSequence(source).toString()}'")
 
 
     /**
