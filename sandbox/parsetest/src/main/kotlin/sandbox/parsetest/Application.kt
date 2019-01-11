@@ -8,13 +8,9 @@ import com.jvmlab.commons.parse.file.parsePath
 import com.jvmlab.commons.parse.file.parseYaml
 import com.jvmlab.commons.parse.text.AbstractTokenizer
 import com.jvmlab.commons.parse.text.BracketsTokenizer
-import com.jvmlab.commons.parse.text.BuildingDetails
-import com.jvmlab.commons.parse.text.BuildingStatus
 import com.jvmlab.commons.parse.text.MultiTokenizer
-import com.jvmlab.commons.parse.text.RTokenBuilder
 import com.jvmlab.commons.parse.text.SingleCharTokenizer
 import com.jvmlab.commons.parse.text.SubTokenizer
-import com.jvmlab.commons.parse.text.TokenBuilder
 import com.jvmlab.commons.parse.text.WordTokenizer
 import com.jvmlab.commons.parse.text.parse
 
@@ -48,9 +44,7 @@ fun main(args: Array<String>) {
     val parsedString = str.parse(WordTokenizer<TokenType>(TokenType.WORD), TokenType.WSPC)
     println("\nsrc  : '${parsedString.source}'")
     parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
-      token ->
-      val indent = " ".repeat(token.start)
-      println("${token.type} : $indent'${token.asString(parsedString.source)}'")
+      it.prettyPrint(parsedString.source)
     }
   }
 
@@ -67,9 +61,7 @@ fun main(args: Array<String>) {
     val parsedString = str.parse(SingleCharTokenizer(TokenType.SPRT, ','), TokenType.WORD)
     println("\nsrc  : '${parsedString.source}'")
     parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
-      token ->
-      val indent = " ".repeat(token.start)
-      println("${token.type} : $indent'${token.asString(parsedString.source)}'")
+      it.prettyPrint(parsedString.source)
     }
   }
 
@@ -88,9 +80,8 @@ fun main(args: Array<String>) {
 
 
       println("\nsrc  : '${parsedString.source}'")
-      parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach { token ->
-        val indent = " ".repeat(token.start)
-        println("${token.type} : $indent'${token.asString(parsedString.source)}'")
+      parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
+        it.prettyPrint(parsedString.source)
       }
     } catch (e: Exception) {
       println("\nsrc  : '$str'")
@@ -111,9 +102,7 @@ fun main(args: Array<String>) {
         TokenType.WSPC)
     println("\nsrc  : '${parsedString.source}'")
     parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
-      token ->
-      val indent = " ".repeat(token.start)
-      println("${token.type} : $indent'${token.asString(parsedString.source)}'")
+      it.prettyPrint(parsedString.source)
     }
   }
 
@@ -138,9 +127,7 @@ fun main(args: Array<String>) {
         ),
         TokenType.WSPC)
     parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
-      token ->
-      val indent = " ".repeat(token.start)
-      println("${token.type} : $indent'${token.asString(parsedString.source)}'")
+      it.prettyPrint(parsedString.source)
     }
   }
 }

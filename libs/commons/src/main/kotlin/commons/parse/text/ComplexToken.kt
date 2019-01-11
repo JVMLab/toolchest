@@ -20,7 +20,6 @@ open class ComplexToken<E: Enum<E>> (
     finish: Int,
     val subTokens: List<Token<E>>) : Token<E>(type, start, finish) {
 
-
   /**
    * Checks consistency of sub-token bounds
    */
@@ -33,11 +32,19 @@ open class ComplexToken<E: Enum<E>> (
     }
   }
 
-
   /**
    * Additional constructor to create a [ComplexToken] based on [Token]
    */
   constructor(token: Token<E>, subTokens: List<Token<E>>) : this(
       token.type, token.start, token.finish, subTokens)
+
+
+  /**
+   * Pretty printing with sub-tokens
+   */
+  override fun prettyPrint(source: CharSequence) {
+    super.prettyPrint(source)
+    subTokens.forEach { it.prettyPrint(source) }
+  }
 
 }
