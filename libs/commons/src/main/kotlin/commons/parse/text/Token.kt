@@ -42,4 +42,31 @@ open class Token<E: Enum<E>>(open val type: E, startParam: Int, finishParam: Int
      * Gives length of the token in characters
      */
     open fun length(): Int = finish - start + 1
+
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Token<*>
+
+    if (type != other.type) return false
+    if (start != other.start) return false
+    if (finish != other.finish) return false
+
+    return true
+  }
+
+
+  override fun hashCode(): Int {
+    var result = type.hashCode()
+    result = 31 * result + start
+    result = 31 * result + finish
+    return result
+  }
+
+
+  override fun toString(): String {
+    return "Token(type=$type, start=$start, finish=$finish)"
+  }
 }
