@@ -1,6 +1,6 @@
 package com.jvmlab.commons.parse.text
 
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
@@ -14,31 +14,31 @@ class SingeCharTokenizerTest {
   @Test
   fun `non matching not last`() {
     tokenizer.processChar(' ', 0, false)
-    assertEquals(BuildingStatus.NONE, tokenizer.getBuildingStatus())
+    assertThat(tokenizer.getBuildingStatus()).isEqualTo(BuildingStatus.NONE)
   }
 
   @Test
   fun `non matching last`() {
     tokenizer.processChar(' ', 0, true)
-    assertEquals(BuildingStatus.NONE, tokenizer.getBuildingStatus())
+    assertThat(tokenizer.getBuildingStatus()).isEqualTo(BuildingStatus.NONE)
   }
 
   @Test
   fun `matching not last`() {
     tokenizer.processChar('$', 0, false)
-    assertEquals(BuildingStatus.FINISHED, tokenizer.getBuildingStatus())
+    assertThat(tokenizer.getBuildingStatus()).isEqualTo(BuildingStatus.FINISHED)
 
     val token = tokenizer.buildToken()
-    assertEquals(Token(TokenType.DEFAULT, 0, 0), token)
+    assertThat(token).isEqualToComparingFieldByField(Token(TokenType.DEFAULT, 0, 0))
   }
 
   @Test
   fun `matching last`() {
     tokenizer.processChar('$', 0, true)
-    assertEquals(BuildingStatus.FINISHED, tokenizer.getBuildingStatus())
+    assertThat(tokenizer.getBuildingStatus()).isEqualTo(BuildingStatus.FINISHED)
 
     val token = tokenizer.buildToken()
-    assertEquals(Token(TokenType.DEFAULT, 0, 0), token)
+    assertThat(token).isEqualToComparingFieldByField(Token(TokenType.DEFAULT, 0, 0))
   }
 }
 
