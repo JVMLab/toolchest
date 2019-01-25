@@ -1,5 +1,5 @@
 plugins {
-  kotlin("jvm") version "1.3.20-eap-52"
+  kotlin("jvm") version "1.3.20"
   application
 }
 

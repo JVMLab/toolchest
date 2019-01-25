@@ -46,6 +46,7 @@ fun main(args: Array<String>) {
     parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
       it.prettyPrint(parsedString.source)
     }
+    println(parsedString.result)
   }
 
 
