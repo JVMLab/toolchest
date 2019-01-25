@@ -41,8 +41,3 @@ class SingeCharTokenizerTest {
     assertThat(token).isEqualToComparingFieldByField(Token(TokenType.DEFAULT, 0, 0))
   }
 }
-
-
-enum class TokenType {
-  DEFAULT
-}
