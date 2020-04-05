@@ -3,7 +3,7 @@ package com.jvmlab.commons.io
 import java.io.File
 import java.io.FileReader
 
-import org.snakeyaml.engine.v1.api.*
+import org.snakeyaml.engine.v2.api.*
 
 
 
@@ -11,7 +11,7 @@ class Yaml {
   private val load: Load
 
   init {
-    val settings = LoadSettingsBuilder().build()
+    val settings = LoadSettings.builder().build()
     load = Load(settings)
   }
 
