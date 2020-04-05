@@ -6,7 +6,7 @@ import com.jvmlab.commons.io.Yaml
 import com.jvmlab.commons.parse.ParsedKey
 import com.jvmlab.commons.parse.file.parsePath
 import com.jvmlab.commons.parse.file.parseYaml
-import com.jvmlab.commons.parse.text.AbstractTokenizer
+import com.jvmlab.commons.parse.text.ITokenizer
 import com.jvmlab.commons.parse.text.BracketsTokenizer
 import com.jvmlab.commons.parse.text.MultiTokenizer
 import com.jvmlab.commons.parse.text.SingleCharTokenizer
@@ -73,7 +73,7 @@ fun main(args: Array<String>) {
       val parsedString = str.parse(
           MultiTokenizer(
               TokenType.DFLT,
-              listOf<AbstractTokenizer<TokenType>>(
+              listOf<ITokenizer<TokenType>>(
                   WordTokenizer<TokenType>(TokenType.WORD),
                   WordTokenizer<TokenType>(TokenType.WORD)
               )),
@@ -96,7 +96,7 @@ fun main(args: Array<String>) {
     val parsedString = str.parse(
         MultiTokenizer(
             TokenType.DFLT,
-            listOf<AbstractTokenizer<TokenType>>(
+            listOf<ITokenizer<TokenType>>(
                 WordTokenizer<TokenType>(TokenType.WORD),
                 SingleCharTokenizer(TokenType.SPRT, ',')
             )),
@@ -121,7 +121,7 @@ fun main(args: Array<String>) {
         BracketsTokenizer<TokenType>(TokenType.BRCK,
             SubTokenizer(MultiTokenizer(
                 TokenType.DFLT,
-                listOf<AbstractTokenizer<TokenType>>(
+                listOf<ITokenizer<TokenType>>(
                     WordTokenizer<TokenType>(TokenType.WORD),
                     SingleCharTokenizer(TokenType.SPRT, ',')
                 ))),TokenType.L_BR, TokenType.R_BR

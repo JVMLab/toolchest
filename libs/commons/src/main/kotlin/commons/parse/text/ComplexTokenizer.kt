@@ -4,12 +4,12 @@ package com.jvmlab.commons.parse.text
 /**
  * A helper data class to keep sub-tokenizers of a [ComplexTokenizer]
  *
- * @property tokenizer is an [AbstractTokenizer] to keep
+ * @property tokenizer is an [ITokenizer] to keep
  * @property minTokens is a minimum number of tokens expected from [tokenizer]
  * @property maxTokens is a maximum number of tokens allowed for [tokenizer], 0 means unlimited
  */
 data class SubTokenizer<E: Enum<E>>(
-    val tokenizer: AbstractTokenizer<E>,
+    val tokenizer: ITokenizer<E>,
     val minTokens: Int = 0,
     val maxTokens: Int = 0) : ITokenizer<E> by tokenizer {
 
