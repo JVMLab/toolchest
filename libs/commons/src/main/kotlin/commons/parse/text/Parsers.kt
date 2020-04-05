@@ -12,11 +12,11 @@ import com.jvmlab.commons.parse.ParsedKey
 /**
  * An extension function to parse [CharSequence] into [Parsed] using [tokenizer]
  *
- * @param tokenizer is an [AbstractTokenizer] used to split [this] [CharSequence] into tokens
+ * @param tokenizer is an [ITokenizer] used to split [this] [CharSequence] into tokens
  * @param defaultTokenType is a type of a default token, which is created whenever the [tokenizer]
  */
 fun <E: Enum<E>> CharSequence.parse(
-    tokenizer: AbstractTokenizer<E>,
+    tokenizer: ITokenizer<E>,
     defaultTokenType: E? = null): Parsed<CharSequence, List<Token<E>>> =
     Parsed(this) { charSequence -> parse(charSequence, tokenizer, defaultTokenType) }
 
@@ -26,7 +26,7 @@ fun <E: Enum<E>> CharSequence.parse(
  * are just wrappers around it.
  *
  * @param charSequence is a [CharSequence] to be parsed
- * @param tokenizer is an [AbstractTokenizer] used to split the [charSequence] into tokens
+ * @param tokenizer is an [ITokenizer] used to split the [charSequence] into tokens
  * @param defaultTokenType is a type of a default token, which is created whenever the [tokenizer]
  * could not identify a token, usually for whitespaces (but not only). If null then default
  * tokens will not be created
@@ -36,7 +36,7 @@ fun <E: Enum<E>> CharSequence.parse(
  */
 private fun <E: Enum<E>> parse(
     charSequence: CharSequence,
-    tokenizer: AbstractTokenizer<E>,
+    tokenizer: ITokenizer<E>,
     defaultTokenType: E?
 ): Map<String, List<Token<E>>> {
   val tokenList = ArrayList<Token<E>>() // a list of tokens to be returned as a value in the Map

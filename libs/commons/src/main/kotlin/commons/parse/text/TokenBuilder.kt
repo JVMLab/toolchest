@@ -26,10 +26,13 @@ data class BuildingDetails (
 
 
 /**
+ * Represents an incomplete [Token] in progress and has build() method to build a completed [Token] when
+ * [details] equals [BuildingStatus.FINISHED]
  * Used in [AbstractTokenizer] to keep an intermediate result of the [AbstractTokenizer]
  * while constructing a [Token]. The class extends [Token] and adds some variable
  * properties to monitor the current status or the result of a [Token] creation
  *
+ * @property type is overridden to variable and used as a [Token] type built by this [TokenBuilder]
  * @property start is overridden to variable, should be 0 for [BuildingStatus.NONE] of [details]
  * @property finish is overridden to variable, should be 0 for [BuildingStatus.NONE] of [details]
  * @property details represents the current status or the result of a [Token] creation

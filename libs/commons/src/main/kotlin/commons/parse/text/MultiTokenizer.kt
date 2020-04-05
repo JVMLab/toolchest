@@ -16,10 +16,10 @@ import java.util.*
  */
 open class MultiTokenizer<E: Enum<E>>(
     defaultTokenType: E,
-    private val subTokenizers: List<AbstractTokenizer<E>>
+    private val subTokenizers: List<ITokenizer<E>>
 ) : AbstractTokenizer<E>(defaultTokenType) {
 
-  private val activeTokenizers: LinkedList<AbstractTokenizer<E>> = LinkedList()
+  private val activeTokenizers: LinkedList<ITokenizer<E>> = LinkedList()
 
 
   /**
@@ -102,7 +102,7 @@ open class MultiTokenizer<E: Enum<E>>(
 
   override fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails {
     // populate activeTokenizers
-    subTokenizers.forEach { subTokenizer: AbstractTokenizer<E> ->
+    subTokenizers.forEach { subTokenizer: ITokenizer<E> ->
       subTokenizer.processChar(char, idx, isLast)
       when (subTokenizer.getBuildingStatus()) {
         BuildingStatus.FAILED -> {
