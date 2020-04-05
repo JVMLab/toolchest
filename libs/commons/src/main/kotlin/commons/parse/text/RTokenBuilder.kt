@@ -16,7 +16,7 @@ inline class RTokenBuilder<E: Enum<E>>(private val instance: TokenBuilder<E>) {
 
 
   /**
-   * Duplicates [instance] providing an option to change some properties if required
+   * Duplicates [instance] and provides an option to change some properties if required
    */
   fun duplicate(
       type: E = instance.type,
