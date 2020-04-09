@@ -23,7 +23,7 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
   /**
    * A convenience method to get the current building status from the [tokenBuilder]
    */
-  override fun getBuildingStatus(): BuildingStatus = tokenBuilder.details.status
+  override fun getBuildingStatus(): BuildingStatus = tokenBuilder.status
 
 
   /**
@@ -66,7 +66,7 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    * and [nextChar] methods depending on a value returned by [getBuildingStatus]
    *
    * A calling method should call [buildToken] method once [getBuildingStatus] returned
-   * [BuildingStatus.FINISHED] before a next call to this [processChar] function otherwise
+   * [StatusFinished] before a next call to this [processChar] function otherwise
    * a private [tokenBuilder] value will be overridden before the [firstChar] call
    * from [processChar]
    *
@@ -74,8 +74,8 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    * after [TokenBuilder.finish] of the [tokenBuilder], so if this [char] matches the token
    * then [TokenBuilder.finish] of the [tokenBuilder] will be incremented in the following cases:
    *
-   * - [getBuildingStatus] is [BuildingStatus.BUILDING] before and after call to [processChar]
-   * - [getBuildingStatus] is [BuildingStatus.BUILDING] before call to [processChar] and
+   * - [getBuildingStatus] is [StatusBuilding] before and after call to [processChar]
+   * - [getBuildingStatus] is [StatusBuilding] before call to [processChar] and
    * [finalCharIncluded] is set to true by [nextChar]
    *
    *
@@ -84,19 +84,19 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    * @param isLast indicates if [idx] is the last index of a parsed [CharSequence]
    */
   override fun processChar(char: Char, idx: Int, isLast: Boolean) {
-    if (BuildingStatus.BUILDING == getBuildingStatus()) {
+    if (StatusBuilding == getBuildingStatus()) {
       finalCharIncluded = false
-      tokenBuilder.details = nextChar(char, idx, isLast)
-      if (finalCharIncluded || BuildingStatus.BUILDING == getBuildingStatus()) tokenBuilder.finish++
+      tokenBuilder.status = nextChar(char, idx, isLast)
+      if (finalCharIncluded || StatusBuilding == getBuildingStatus()) tokenBuilder.finish++
     } else {
       reset()
-      val details = firstChar(char, idx, isLast)
-      if (details.status != BuildingStatus.NONE)
-        tokenBuilder.startToken(idx, details)
+      val status = firstChar(char, idx, isLast)
+      if (status != StatusNone)
+        tokenBuilder.startToken(idx, status)
     }
 
-    if (isLast) require(tokenBuilder.details.status != BuildingStatus.BUILDING) {
-      "Unexpected ${BuildingStatus.BUILDING} for the last char at position $idx"
+    if (isLast) require(tokenBuilder.status != StatusBuilding) {
+      "Unexpected $StatusBuilding for the last char at position $idx"
     }
   }
 
@@ -107,9 +107,9 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    * An implementation *SHALL* expect that it's called with an initial state of [AbstractTokenizer]
    * after a call to [reset]
    *
-   * Possible [BuildingDetails.status] values to be set in the returned value:
+   * Possible [BuildingStatus] values to be set in the returned value:
    *  - [isLast] == false : any value
-   *  - [isLast] == true  : any value except [BuildingStatus.BUILDING]
+   *  - [isLast] == true  : any value except [StatusBuilding]
    *
    *
    * @param char is a [Char] to be parsed
@@ -119,23 +119,23 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    *
    * @return [BuildingStatus] with the building status and reason
    */
-  protected abstract fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails
+  protected abstract fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingStatus
 
 
   /**
    * Parses a next [char] of a token
    *
-   * The method is called when [getBuildingStatus] returns [BuildingStatus.BUILDING]
+   * The method is called when [getBuildingStatus] returns [StatusBuilding]
    * to prevent parsing of a token with incorrect initial status.
    *
-   * Possible [BuildingDetails.status] values to be set in the returned value::
+   * Possible [BuildingStatus] values to be set in the returned value::
    *  - [isLast] == false : any value
-   *  - [isLast] == true  : any value except [BuildingStatus.BUILDING]
+   *  - [isLast] == true  : any value except [StatusBuilding]
    *
    * The implementation *MUST* set [finalCharIncluded] to true if [TokenBuilder.finish]
    * of the [tokenBuilder] should be incremented by [processChar] for any of the final statuses
-   * (all statuses except [BuildingStatus.BUILDING]), although there is no harm to set
-   * [finalCharIncluded] to true even for [BuildingStatus.BUILDING]
+   * (all statuses except [StatusBuilding]), although there is no harm to set
+   * [finalCharIncluded] to true even for [StatusBuilding]
    *
    *
    * @param char is a [Char] to be parsed
@@ -145,6 +145,6 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
    *
    * @return [BuildingStatus] with the building status and reason
    */
-  protected abstract fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails
+  protected abstract fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingStatus
 
 }

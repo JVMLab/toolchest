@@ -10,8 +10,7 @@ package com.jvmlab.commons.parse.text
  * [firstChar] method. If returns true then a new [TokenBuilder] is created
  *
  * @property firstCharStatus is a [BuildingStatus] for the token created by the [firstChar] method.
- * Usually it is [BuildingStatus.BUILDING], but could be also [BuildingStatus.FINISHED] in case of
- * a single-char token
+ * Usually it is [StatusBuilding], but could be also [StatusFinished] in case of a single-char token
  *
  * @property checkNextChar a function to check a next and the last char of a token, to be used in
  * [nextChar] method. If returns true then the [TokenBuilder] is extended to one
@@ -21,23 +20,23 @@ package com.jvmlab.commons.parse.text
 open class GenericTokenizer<E: Enum<E>>(
     type: E,
     private val checkFirstChar: (Char) -> Boolean,
-    private val firstCharStatus: BuildingStatus = BuildingStatus.BUILDING,
+    private val firstCharStatus: BuildingStatus = StatusBuilding,
     private val checkNextChar: (Char) -> Boolean = checkFirstChar
 ) : AbstractTokenizer<E>(type) {
 
-  override fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails =
+  override fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingStatus =
     if (checkFirstChar(char))
-      if (isLast) BuildingDetails(BuildingStatus.FINISHED)
-      else BuildingDetails(firstCharStatus)
-    else BuildingDetails()
+      if (isLast) StatusFinished
+      else firstCharStatus
+    else StatusNone
 
 
-  override fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails =
+  override fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingStatus =
     if (checkNextChar(char)) {
       finalCharIncluded = true
-      if (isLast) BuildingDetails(BuildingStatus.FINISHED)
-      else getRTokenBuilder().details // expected to have BuildingStatus.BUILDING
+      if (isLast) StatusFinished
+      else getBuildingStatus() // expected to have StatusBuilding
     }
-    else BuildingDetails(BuildingStatus.FINISHED)
+    else StatusFinished
 
 }
