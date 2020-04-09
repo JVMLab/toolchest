@@ -13,6 +13,6 @@ class SingleCharTokenizer<E: Enum<E>>(
     GenericTokenizer<E>(
         type = type,
         checkFirstChar = { char: Char -> (char == tokenChar) },
-        firstCharStatus = BuildingStatus.FINISHED,
+        firstCharStatus = StatusFinished,
         checkNextChar = { false }
     )

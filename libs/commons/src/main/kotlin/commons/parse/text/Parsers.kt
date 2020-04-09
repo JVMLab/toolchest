@@ -49,12 +49,13 @@ private fun <E: Enum<E>> parse(
   while (idx < charSequence.length) {
     char = charSequence[idx]
     isLast = (idx == charSequence.length - 1)
-    when (tokenizer.getBuildingStatus()) {
+    val status = tokenizer.getBuildingStatus()
+    when (status) {
 
-      BuildingStatus.NONE -> {
+      StatusNone -> {
         tokenizer.processChar(char, idx, isLast)
         if (isLast) {
-          if (BuildingStatus.NONE == tokenizer.getBuildingStatus()) {
+          if (StatusNone == tokenizer.getBuildingStatus()) {
             idx++ // to exit the loop
             // Add a default token if the last char doesn't start a token
             tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
@@ -65,14 +66,14 @@ private fun <E: Enum<E>> parse(
         }
       }
 
-      BuildingStatus.BUILDING -> {
+      StatusBuilding -> {
         // changes this.status and may increment this.finish if still in building
         tokenizer.processChar(char, idx, isLast)
         if (isLast) {
           // don't increment idx here to process a new status in the next iteration
-          if (BuildingStatus.BUILDING == tokenizer.getBuildingStatus())
+          if (StatusBuilding == tokenizer.getBuildingStatus())
             throw IllegalStateException(
-                "Unexpected state: ${BuildingStatus.BUILDING} at the last position $idx")
+                "Unexpected state: $StatusBuilding at the last position $idx")
         } else {
           // increments idx if still in building or
           // keeps it when this.finish was not incremented in tokenizer.processChar()
@@ -80,7 +81,7 @@ private fun <E: Enum<E>> parse(
         }
       }
 
-      BuildingStatus.FINISHED -> {
+      StatusFinished -> {
         token = tokenizer.buildToken()
         tokenList.addDefaultToken(defaultTokenType, defaultStart, token.start)
         tokenList.add(token)
@@ -88,16 +89,14 @@ private fun <E: Enum<E>> parse(
         defaultStart = idx
       }
 
-      BuildingStatus.CANCELLED -> {
+      StatusCancelled -> {
         if (isLast) // Add a default token till the end of charSequence in case of the last char
           tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
         idx = tokenizer.getRTokenBuilder().finish + 1
       }
 
-      BuildingStatus.FAILED -> {
-        throw IllegalStateException(
-            "Parsing error at position $idx with reason: " +
-                tokenizer.getRTokenBuilder().details.reason)
+      is StatusFailed -> {
+        throw IllegalStateException("Parsing error at position $idx with reason: ${status.reason}")
       }
     }
   }

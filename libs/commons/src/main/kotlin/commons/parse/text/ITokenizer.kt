@@ -25,7 +25,7 @@ interface ITokenizer<E: Enum<E>> {
 
 
   /**
-   * Builds a resulting token in [BuildingStatus.FINISHED] status and resets [ITokenizer],
+   * Builds a resulting token in [StatusFinished] status and resets [ITokenizer],
    * so a current token can be built only once
    */
   fun buildToken(): Token<E>

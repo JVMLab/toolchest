@@ -76,14 +76,13 @@ open class ComplexTokenizer<E: Enum<E>>(
   }
 
 
-  override fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails {
+  override fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingStatus {
     currentTokenizer.processChar(char, idx, isLast)
-    return analyzeCurrentTokenizer(char, idx, isLast) ?:
-    BuildingDetails(BuildingStatus.NONE) // actually will never happen for firstChar()
+    return analyzeCurrentTokenizer(char, idx, isLast) ?: StatusNone // actually should never happen for firstChar()
   }
 
 
-  override fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingDetails  {
+  override fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingStatus  {
     // we will return from the method in the middle of the loop in case of a successful or failed
     // char processing by some sub-tokenizer
     loop@ while (subIdx < subTokenizers.size) {
@@ -91,7 +90,7 @@ open class ComplexTokenizer<E: Enum<E>>(
 
       // process char in the currentTokenizer if it is already in progress with some token
       // or it is allowed to start one more
-      if (BuildingStatus.BUILDING == currentTokenizer.getBuildingStatus() ||
+      if (StatusBuilding == currentTokenizer.getBuildingStatus() ||
           currentTokenizer.maxTokens == 0 ||
           tokenCount < currentTokenizer.maxTokens) {
         currentTokenizer.processChar(char, idx, isLast)
@@ -104,41 +103,39 @@ open class ComplexTokenizer<E: Enum<E>>(
       // analyze processing results, return in case of failure or set charProcessed accordingly
       val type = currentTokenizer.getRTokenBuilder().type
       when (currentTokenizer.getBuildingStatus()) {
-        BuildingStatus.BUILDING, // normal or failed returns are mostly made from here
-        BuildingStatus.FAILED,
-        BuildingStatus.CANCELLED,
-        BuildingStatus.FINISHED -> {
+        StatusBuilding, // normal or failed returns are mostly made from here
+        is StatusFailed,
+        StatusCancelled,
+        StatusFinished -> {
           return analyzeCurrentTokenizer(char, idx, isLast) ?:
           continue@loop // to try one more time with the same sub-tokenizer
         }
-        BuildingStatus.NONE -> { // switch to a next sub-tokenizer if possible or break the loop
+        StatusNone -> { // switch to a next sub-tokenizer if possible or break the loop
           if (tokenCount >= currentTokenizer.minTokens) {// allows to switch to a next sub-tokenizer
             subIdx++
             tokenCount = 0
-          } else return BuildingDetails(BuildingStatus.FAILED,
-              "$type sub-tokenizer could not match a token at position $idx")
+          } else return StatusFailed("$type sub-tokenizer could not match a token at position $idx")
         }
       }
     }
 
     // at this stage we didn't processed the char and reached the last tokenizer
     finalCharIncluded = false
-    return BuildingDetails(BuildingStatus.FINISHED)
+    return StatusFinished
   }
 
 
   /**
    * Implements common logic of [firstChar] and [nextChar]
    */
-  private fun analyzeCurrentTokenizer(char: Char, idx: Int, isLast: Boolean): BuildingDetails? {
+  private fun analyzeCurrentTokenizer(char: Char, idx: Int, isLast: Boolean): BuildingStatus? {
     val type = currentTokenizer.getRTokenBuilder().type
     return when (currentTokenizer.getBuildingStatus()) {
-      BuildingStatus.NONE,
-      BuildingStatus.BUILDING, // normal or failed returns are mostly made from here
-      BuildingStatus.FAILED -> return currentTokenizer.getRTokenBuilder().details
-      BuildingStatus.CANCELLED -> return BuildingDetails(BuildingStatus.FAILED,
-          "Cancelled sub-tokenizer $type at position $idx")
-      BuildingStatus.FINISHED -> {
+      StatusNone,
+      StatusBuilding, // normal or failed returns are mostly made from here
+      is StatusFailed -> return currentTokenizer.getBuildingStatus()
+      StatusCancelled -> return StatusFailed("Cancelled sub-tokenizer $type at position $idx")
+      StatusFinished -> {
         val charProcessed = (currentTokenizer.getRTokenBuilder().finish == idx)
         subTokens.add(currentTokenizer.buildToken())
         tokenCount++
@@ -151,10 +148,9 @@ open class ComplexTokenizer<E: Enum<E>>(
                       it.minTokens > 0
                     })) {
               finalCharIncluded = true
-              BuildingDetails(BuildingStatus.FINISHED)
-            } else BuildingDetails(BuildingStatus.FAILED,
-                "Unexpected end of CharSequence at position $idx for $defaultTokenType")
-          } else BuildingDetails(BuildingStatus.BUILDING) // greedy behaviour
+              StatusFinished
+            } else StatusFailed("Unexpected end of CharSequence at position $idx for $defaultTokenType")
+          } else StatusBuilding // greedy behaviour
         } else null
       }
     }
