@@ -49,8 +49,7 @@ private fun <E: Enum<E>> parse(
   while (idx < charSequence.length) {
     char = charSequence[idx]
     isLast = (idx == charSequence.length - 1)
-    val status = tokenizer.getBuildingStatus()
-    when (status) {
+    when (val status = tokenizer.getBuildingStatus()) {
 
       StatusNone -> {
         tokenizer.processChar(char, idx, isLast)

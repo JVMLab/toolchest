@@ -15,5 +15,5 @@ repositories {
 
 dependencies {
   implementation(kotlin("stdlib"))
-  compile("com.jvmlab.libs:jvmlab-commons")
+  implementation("com.jvmlab.libs:jvmlab-commons")
 }
