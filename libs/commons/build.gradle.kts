@@ -14,7 +14,6 @@ dependencies {
   implementation(kotlin("stdlib"))
   implementation(group = "org.snakeyaml", name = "snakeyaml-engine", version = "2.+")
   testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.+")
-  testImplementation(group = "org.assertj", name = "assertj-core", version = "3.+")
 }
 
 
