@@ -15,15 +15,21 @@ abstract class AbstractTokenizer<E: Enum<E>> (protected val defaultTokenType: E)
 
 
   /**
-   * Gives the current read-only version of [tokenBuilder]
+   * returns type of the [tokenBuilder]
    */
-  override fun getRTokenBuilder(): RTokenBuilder<E> = tokenBuilder.current
+  override fun getTokenType(): E = tokenBuilder.type
 
 
   /**
-   * A convenience method to get the current building status from the [tokenBuilder]
+   * returns building status of the [tokenBuilder]
    */
   override fun getBuildingStatus(): BuildingStatus = tokenBuilder.status
+
+
+  /**
+   * returns a current finish of the [tokenBuilder]
+   */
+  override fun getCurrentFinish() = tokenBuilder.finish
 
 
   /**

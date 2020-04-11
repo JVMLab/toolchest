@@ -66,8 +66,8 @@ open class MultiTokenizer<E: Enum<E>>(
     // BUILDING or FINISHED statuses
     (activeTokenizers.find { it.getBuildingStatus() == StatusFinished })?.let {
       setTokenType(defaultTokenType)
-      finalCharIncluded = (it.getRTokenBuilder().finish > getRTokenBuilder().finish)
-      return StatusFailed("${it.getRTokenBuilder().type} sub-tokenizer is $StatusFinished but another " +
+      finalCharIncluded = (it.getCurrentFinish() > getCurrentFinish())
+      return StatusFailed("${it.getTokenType()} sub-tokenizer is $StatusFinished but another " +
               "has either $StatusBuilding or $StatusFinished status")
     }
 
@@ -91,8 +91,8 @@ open class MultiTokenizer<E: Enum<E>>(
         "Unexpected $StatusNone of an active sub-tokenizer"
       }
       // Successful BuildingStatus.FINISHED is returned from here
-      setTokenType(activeTokenizer.getRTokenBuilder().type)
-      finalCharIncluded = (activeTokenizer.getRTokenBuilder().finish > getRTokenBuilder().finish)
+      setTokenType(activeTokenizer.getTokenType())
+      finalCharIncluded = (activeTokenizer.getCurrentFinish() > getCurrentFinish())
       return activeTokenizer.getBuildingStatus()
     }
     return null
@@ -105,7 +105,7 @@ open class MultiTokenizer<E: Enum<E>>(
       subTokenizer.processChar(char, idx, isLast)
       when (subTokenizer.getBuildingStatus()) {
         is StatusFailed -> {
-          setTokenType(subTokenizer.getRTokenBuilder().type)
+          setTokenType(subTokenizer.getTokenType())
           return subTokenizer.getBuildingStatus()
         }
         StatusBuilding, StatusFinished, StatusCancelled ->
@@ -127,7 +127,7 @@ open class MultiTokenizer<E: Enum<E>>(
     activeTokenizers.forEach {
       // we should have the only BUILDING statuses in activeTokenizers
       check(it.getBuildingStatus() == StatusBuilding) {
-        "Unexpected ${it.getBuildingStatus()} of an active ${it.getRTokenBuilder().type} " +
+        "Unexpected ${it.getBuildingStatus()} of an active ${it.getTokenType()} " +
             "sub-tokenizer"
       }
       it.processChar(char, idx, isLast)

@@ -23,7 +23,6 @@ data class StatusFailed(val reason: String = "") : BuildingStatus() { override f
  * @property start is overridden to variable, should be 0 for [StatusNone]
  * @property finish is overridden to variable, should be 0 for [StatusNone]
  * @property status represents the current status or the result of a [Token] creation
- * @property current keeps a read-only wrapper [RTokenBuilder] around this [TokenBuilder]
  */
 class TokenBuilder<E: Enum<E>> (
     override var type: E,
@@ -69,8 +68,6 @@ class TokenBuilder<E: Enum<E>> (
       }
       field = value
     }
-
-  val current = RTokenBuilder<E>(this)
 
 
   /**

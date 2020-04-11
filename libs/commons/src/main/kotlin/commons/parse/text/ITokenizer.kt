@@ -7,15 +7,21 @@ package com.jvmlab.commons.parse.text
 interface ITokenizer<E: Enum<E>> {
 
   /**
-   * Gives the current read-only version of internal [TokenBuilder]
+   * returns type of the internal [TokenBuilder]
    */
-  fun getRTokenBuilder(): RTokenBuilder<E>
+  fun getTokenType(): E
 
 
   /**
-   * A convenience method to get the current building status from the internal [TokenBuilder]
+   * returns building status of the internal [TokenBuilder]
    */
   fun getBuildingStatus(): BuildingStatus
+
+
+  /**
+   * returns building status of the internal [TokenBuilder]
+   */
+  fun getCurrentFinish(): Int
 
 
   /**
