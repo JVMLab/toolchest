@@ -76,7 +76,7 @@ private fun <E: Enum<E>> parse(
         } else {
           // increments idx if still in building or
           // keeps it when this.finish was not incremented in tokenizer.processChar()
-          idx = tokenizer.getRTokenBuilder().finish + 1
+          idx = tokenizer.getCurrentFinish() + 1
         }
       }
 
@@ -91,7 +91,7 @@ private fun <E: Enum<E>> parse(
       StatusCancelled -> {
         if (isLast) // Add a default token till the end of charSequence in case of the last char
           tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
-        idx = tokenizer.getRTokenBuilder().finish + 1
+        idx = tokenizer.getCurrentFinish() + 1
       }
 
       is StatusFailed -> {

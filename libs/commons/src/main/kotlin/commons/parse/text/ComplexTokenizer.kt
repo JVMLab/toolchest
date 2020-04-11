@@ -70,7 +70,7 @@ open class ComplexTokenizer<E: Enum<E>>(
    * @throws IllegalStateException when [tokenBuilder] has an improper [BuildingStatus]
    */
   override fun buildToken(): ComplexToken<E> {
-    val token = ComplexToken(getRTokenBuilder().build(), subTokens)
+    val token = ComplexToken(super.buildToken(), subTokens)
     reset()
     return token
   }
@@ -101,7 +101,7 @@ open class ComplexTokenizer<E: Enum<E>>(
       }
 
       // analyze processing results, return in case of failure or set charProcessed accordingly
-      val type = currentTokenizer.getRTokenBuilder().type
+      val type = currentTokenizer.getTokenType()
       when (currentTokenizer.getBuildingStatus()) {
         StatusBuilding, // normal or failed returns are mostly made from here
         is StatusFailed,
@@ -129,14 +129,14 @@ open class ComplexTokenizer<E: Enum<E>>(
    * Implements common logic of [firstChar] and [nextChar]
    */
   private fun analyzeCurrentTokenizer(char: Char, idx: Int, isLast: Boolean): BuildingStatus? {
-    val type = currentTokenizer.getRTokenBuilder().type
+    val type = currentTokenizer.getTokenType()
     return when (currentTokenizer.getBuildingStatus()) {
       StatusNone,
       StatusBuilding, // normal or failed returns are mostly made from here
       is StatusFailed -> return currentTokenizer.getBuildingStatus()
       StatusCancelled -> return StatusFailed("Cancelled sub-tokenizer $type at position $idx")
       StatusFinished -> {
-        val charProcessed = (currentTokenizer.getRTokenBuilder().finish == idx)
+        val charProcessed = (currentTokenizer.getCurrentFinish() == idx)
         subTokens.add(currentTokenizer.buildToken())
         tokenCount++
         // we have to return from here and carefully set the correct status
