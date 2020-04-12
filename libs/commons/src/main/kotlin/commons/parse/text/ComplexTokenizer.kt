@@ -70,7 +70,8 @@ open class ComplexTokenizer<E: Enum<E>>(
    * @throws IllegalStateException when [tokenBuilder] has an improper [BuildingStatus]
    */
   override fun buildToken(): ComplexToken<E> {
-    val token = ComplexToken(super.buildToken(), subTokens)
+    val s = subTokens
+    val token = ComplexToken(super.buildToken(), s)
     reset()
     return token
   }
