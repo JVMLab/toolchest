@@ -34,14 +34,14 @@ open class ComplexTokenizer<E: Enum<E>>(
     type: E,
     private val subTokenizers: List<SubTokenizer<E>>) : AbstractTokenizer<E>(type) {
 
-  private var subTokens: MutableList<Token<E>> = ArrayList()
+  private lateinit var subTokens: MutableList<Token<E>>
   private var subIdx: Int = 0
   private var tokenCount: Int = 0
   private var currentTokenizer: SubTokenizer<E> = subTokenizers.first()
 
 
   init {
-    require(subTokenizers.isNotEmpty()) { "subTokenizers List cannot be empty" }
+    require(subTokenizers.isNotEmpty()) { "subTokenizers list cannot be empty" }
     subInit()
   }
 
