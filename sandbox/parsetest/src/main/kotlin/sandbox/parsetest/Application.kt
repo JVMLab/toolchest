@@ -6,13 +6,7 @@ import com.jvmlab.commons.io.Yaml
 import com.jvmlab.commons.parse.ParsedKey
 import com.jvmlab.commons.parse.file.parsePath
 import com.jvmlab.commons.parse.file.parseYaml
-import com.jvmlab.commons.parse.text.ITokenizer
-import com.jvmlab.commons.parse.text.BracketsTokenizer
-import com.jvmlab.commons.parse.text.MultiTokenizer
-import com.jvmlab.commons.parse.text.SingleCharTokenizer
-import com.jvmlab.commons.parse.text.SubTokenizer
-import com.jvmlab.commons.parse.text.WordTokenizer
-import com.jvmlab.commons.parse.text.parse
+import com.jvmlab.commons.parse.text.*
 
 
 fun main(args: Array<String>) {
@@ -129,6 +123,9 @@ fun main(args: Array<String>) {
         TokenType.WSPC)
     parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
       it.prettyPrint(parsedString.source)
+      if (it is ComplexToken) {
+        println("${it.type} has ${it.subTokens.size} sub-tokens")
+      }
     }
   }
 }
