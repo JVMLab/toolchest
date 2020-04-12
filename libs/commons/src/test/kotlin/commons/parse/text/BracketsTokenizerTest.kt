@@ -3,6 +3,7 @@ package com.jvmlab.commons.parse.text
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -91,6 +92,24 @@ class BracketsTokenizerTest {
     ).assertComplexEquals(tokenizer.buildToken())
   }
 
+
+  @Test
+  fun `negative - brackets with single char`() {
+    val tokenizer = BracketsTokenizer(
+        TokenType.BRACKETS,
+        SubTokenizer(SingleCharTokenizer(TokenType.DEFAULT,'x'), 1, 1), // exactly 1 SingleCharTokenizer is expected
+        TokenType.L_BR, TokenType.R_BR
+    )
+
+    tokenizer.processChar('[', 0, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "left bracket")
+
+    tokenizer.processChar('x', 1, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "first inner char x")
+
+    tokenizer.processChar('x', 2, false)
+    assertTrue(tokenizer.getBuildingStatus() is StatusFailed, "second inner char x instead of closing bracket")
+  }
 
   @Test
   fun `brackets with word`() {
