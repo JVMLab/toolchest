@@ -97,4 +97,48 @@ class BracketsTokenizerTest {
         )
     ).assertComplexEquals(tokenizer.buildToken())
   }
+
+
+  @Test
+  fun `brackets with comma-separated words`() {
+    val tokenizer = BracketsTokenizer(
+        TokenType.BRACKETS,
+        SubTokenizer(
+            MultiTokenizer(
+                TokenType.DEFAULT,
+                listOf<ITokenizer<TokenType>>(
+                WordTokenizer(TokenType.WORD),
+                SingleCharTokenizer(TokenType.COMMA,',')
+                )
+            )
+        ),
+        TokenType.L_BR, TokenType.R_BR
+    )
+
+    tokenizer.processChar('[', 0, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "left bracket")
+
+    tokenizer.processChar('x', 1, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "inner char x")
+
+    tokenizer.processChar(',', 2, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "inner comma")
+
+    tokenizer.processChar('y', 3, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "inner char y")
+
+    tokenizer.processChar(']', 4, true)
+    assertEquals(StatusFinished, tokenizer.getBuildingStatus(), "right bracket")
+
+    ComplexToken(
+        TokenType.BRACKETS, 0, 4,
+        listOf(
+            Token(TokenType.L_BR,0,0),
+            Token(TokenType.WORD,1,1),
+            Token(TokenType.COMMA,2,2),
+            Token(TokenType.WORD,3,3),
+            Token(TokenType.R_BR,4,4)
+        )
+    ).assertComplexEquals(tokenizer.buildToken())
+  }
 }
