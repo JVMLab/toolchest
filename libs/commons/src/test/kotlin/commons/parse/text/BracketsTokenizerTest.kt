@@ -12,7 +12,7 @@ class BracketsTokenizerTest {
   fun `brackets with single char`() {
     val tokenizer = BracketsTokenizer(
         TokenType.BRACKETS,
-        SubTokenizer(SingleCharTokenizer(TokenType.DEFAULT,'x')),
+        SingleCharTokenizer(TokenType.DEFAULT,'x'),
         TokenType.L_BR, TokenType.R_BR
     )
 
@@ -37,10 +37,34 @@ class BracketsTokenizerTest {
 
 
   @Test
+  fun `empty brackets with SingleCharTokenizer`() {
+    val tokenizer = BracketsTokenizer(
+        TokenType.BRACKETS,
+        SingleCharTokenizer(TokenType.DEFAULT,'x'),
+        TokenType.L_BR, TokenType.R_BR
+    )
+
+    tokenizer.processChar('[', 0, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "left bracket")
+
+    tokenizer.processChar(']', 1, true)
+    assertEquals(StatusFinished, tokenizer.getBuildingStatus(), "right bracket")
+
+    ComplexToken(
+        TokenType.BRACKETS, 0, 1,
+        listOf(
+            Token(TokenType.L_BR,0,0),
+            Token(TokenType.R_BR,1,1)
+        )
+    ).assertComplexEquals(tokenizer.buildToken())
+  }
+
+
+  @Test
   fun `brackets with 2 chars`() {
     val tokenizer = BracketsTokenizer(
         TokenType.BRACKETS,
-        SubTokenizer(SingleCharTokenizer(TokenType.DEFAULT,'x')),
+        SingleCharTokenizer(TokenType.DEFAULT,'x'),
         TokenType.L_BR, TokenType.R_BR
     )
 
@@ -72,7 +96,7 @@ class BracketsTokenizerTest {
   fun `brackets with word`() {
     val tokenizer = BracketsTokenizer(
         TokenType.BRACKETS,
-        SubTokenizer(WordTokenizer(TokenType.WORD)),
+        WordTokenizer(TokenType.WORD),
         TokenType.L_BR, TokenType.R_BR
     )
 
@@ -103,13 +127,11 @@ class BracketsTokenizerTest {
   fun `brackets with comma-separated words`() {
     val tokenizer = BracketsTokenizer(
         TokenType.BRACKETS,
-        SubTokenizer(
-            MultiTokenizer(
-                TokenType.DEFAULT,
-                listOf<ITokenizer<TokenType>>(
+        MultiTokenizer(
+            TokenType.DEFAULT,
+            listOf<ITokenizer<TokenType>>(
                 WordTokenizer(TokenType.WORD),
                 SingleCharTokenizer(TokenType.COMMA,',')
-                )
             )
         ),
         TokenType.L_BR, TokenType.R_BR
