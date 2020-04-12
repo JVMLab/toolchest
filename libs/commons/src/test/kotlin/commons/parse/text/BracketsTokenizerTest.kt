@@ -35,4 +35,34 @@ class BracketsTokenizerTest {
     ).assertComplexEquals(tokenizer.buildToken())
   }
 
+
+  @Test
+  fun `brackets with word`() {
+    val tokenizer = BracketsTokenizer(
+        TokenType.BRACKETS,
+        SubTokenizer(WordTokenizer(TokenType.WORD)),
+        TokenType.L_BR, TokenType.R_BR
+    )
+
+    tokenizer.processChar('[', 0, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "left bracket")
+
+    tokenizer.processChar('1', 1, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "inner char 1")
+
+    tokenizer.processChar('2', 2, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "inner char 2")
+
+    tokenizer.processChar(']', 3, true)
+    assertEquals(StatusFinished, tokenizer.getBuildingStatus(), "right bracket")
+
+    ComplexToken(
+        TokenType.BRACKETS, 0, 3,
+        listOf<Token<TokenType>>(
+            Token(TokenType.L_BR,0,0),
+            Token(TokenType.WORD,1,2),
+            Token(TokenType.R_BR,3,3)
+        )
+    ).assertComplexEquals(tokenizer.buildToken())
+  }
 }
