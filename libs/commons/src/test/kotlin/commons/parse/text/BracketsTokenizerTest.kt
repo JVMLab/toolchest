@@ -27,10 +27,42 @@ class BracketsTokenizerTest {
 
     ComplexToken(
         TokenType.BRACKETS, 0, 2,
-        listOf<Token<TokenType>>(
+        listOf(
             Token(TokenType.L_BR,0,0),
             Token(TokenType.DEFAULT,1,1),
             Token(TokenType.R_BR,2,2)
+        )
+    ).assertComplexEquals(tokenizer.buildToken())
+  }
+
+
+  @Test
+  fun `brackets with 2 chars`() {
+    val tokenizer = BracketsTokenizer(
+        TokenType.BRACKETS,
+        SubTokenizer(SingleCharTokenizer(TokenType.DEFAULT,'x')),
+        TokenType.L_BR, TokenType.R_BR
+    )
+
+    tokenizer.processChar('[', 0, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "left bracket")
+
+    tokenizer.processChar('x', 1, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "first inner char x")
+
+    tokenizer.processChar('x', 2, false)
+    assertEquals(StatusBuilding, tokenizer.getBuildingStatus(), "second inner char x")
+
+    tokenizer.processChar(']', 3, true)
+    assertEquals(StatusFinished, tokenizer.getBuildingStatus(), "right bracket")
+
+    ComplexToken(
+        TokenType.BRACKETS, 0, 3,
+        listOf(
+            Token(TokenType.L_BR,0,0),
+            Token(TokenType.DEFAULT,1,1),
+            Token(TokenType.DEFAULT,2,2),
+            Token(TokenType.R_BR,3,3)
         )
     ).assertComplexEquals(tokenizer.buildToken())
   }
@@ -58,7 +90,7 @@ class BracketsTokenizerTest {
 
     ComplexToken(
         TokenType.BRACKETS, 0, 3,
-        listOf<Token<TokenType>>(
+        listOf(
             Token(TokenType.L_BR,0,0),
             Token(TokenType.WORD,1,2),
             Token(TokenType.R_BR,3,3)
