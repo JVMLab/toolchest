@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   kotlin("jvm") version "1.3.71"
 }
@@ -11,11 +13,16 @@ repositories {
 }
 
 dependencies {
-  implementation(kotlin("stdlib"))
+  implementation(kotlin("stdlib-jdk8"))
   implementation(group = "org.snakeyaml", name = "snakeyaml-engine", version = "2.+")
   testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.+")
 }
 
+
+
+tasks.withType<KotlinCompile>().configureEach {
+  kotlinOptions.jvmTarget = "1.8"
+}
 
 tasks.withType<Test> {
   useJUnitPlatform()

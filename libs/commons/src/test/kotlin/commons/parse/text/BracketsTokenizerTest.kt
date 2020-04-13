@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class BracketsTokenizerTest {
+internal class BracketsTokenizerTest {
 
   @Test
   fun `brackets with single char`() {

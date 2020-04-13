@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class SingeCharTokenizerTest {
+internal class SingeCharTokenizerTest {
   private val tokenizer = SingleCharTokenizer<TokenType>(TokenType.DEFAULT, '$')
   private val expectedToken = Token(TokenType.DEFAULT, 0, 0)
 

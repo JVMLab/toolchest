@@ -45,6 +45,7 @@ fun main(args: Array<String>) {
 
 
   val separatorStrList = listOf<String>(
+      "x,y",
       "xxx,ttt  ",
       "xxx, ttt,x",
       ",xxx,",
@@ -58,6 +59,7 @@ fun main(args: Array<String>) {
     parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
       it.prettyPrint(parsedString.source)
     }
+    println(parsedString.result)
   }
 
 

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class WordTokenizerTest {
+internal class WordTokenizerTest {
   private val tokenizer = WordTokenizer(TokenType.WORD)
   private val expectedToken0 = Token(TokenType.WORD, 0, 0)
   private val expectedToken1 = Token(TokenType.WORD, 0, 1)
