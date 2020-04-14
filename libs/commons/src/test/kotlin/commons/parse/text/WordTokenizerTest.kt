@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class WordTokenizerTest {
+internal class WordTokenizerTest {
   private val tokenizer = WordTokenizer(TokenType.WORD)
   private val expectedToken0 = Token(TokenType.WORD, 0, 0)
   private val expectedToken1 = Token(TokenType.WORD, 0, 1)
@@ -37,8 +37,7 @@ class WordTokenizerTest {
     tokenizer.processChar(' ', 1, false)
     assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
 
-    val token = tokenizer.buildToken()
-    expectedToken0.assertEquals(token)
+    tokenizer.buildToken().assertEquals(expectedToken0)
   }
 
   @Test
@@ -49,8 +48,7 @@ class WordTokenizerTest {
     tokenizer.processChar('b', 1, true)
     assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
 
-    val token = tokenizer.buildToken()
-    expectedToken1.assertEquals(token)
+    tokenizer.buildToken().assertEquals(expectedToken1)
   }
 
   @Test
@@ -61,8 +59,7 @@ class WordTokenizerTest {
     tokenizer.processChar(' ', 1, true)
     assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
 
-    val token = tokenizer.buildToken()
-    expectedToken0.assertEquals(token)
+    tokenizer.buildToken().assertEquals(expectedToken0)
   }
 
 }
