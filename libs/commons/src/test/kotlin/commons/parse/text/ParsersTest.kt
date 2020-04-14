@@ -141,4 +141,73 @@ internal class ParsersTest {
     src.parse(simpleNumberTokenizer, TokenType.DEFAULT).assertEquals(tokens)
   }
 
+
+  private val bracketsTokenizer = BracketsTokenizer(
+      TokenType.BRACKETS,
+      MultiTokenizer(
+          TokenType.DEFAULT,
+          listOf<ITokenizer<TokenType>>(
+              WordTokenizer(TokenType.WORD),
+              SingleCharTokenizer(TokenType.COMMA,',')
+          )
+      ),
+      TokenType.L_BR, TokenType.R_BR
+  )
+
+  fun bracketsArgs(): Stream<Arguments> =
+      Stream.of(
+          Arguments.of(
+              "[xxx]",
+              listOf(
+                  ComplexToken(TokenType.BRACKETS, 0, 4,
+                      listOf(
+                          Token(TokenType.L_BR, 0, 0),
+                          Token(TokenType.WORD, 1, 3),
+                          Token(TokenType.R_BR, 4, 4)
+                      )
+                  )
+              )
+          ),
+          Arguments.of(
+              "[xxx,yyy]",
+              listOf(
+                  ComplexToken(TokenType.BRACKETS, 0, 8,
+                      listOf(
+                          Token(TokenType.L_BR, 0, 0),
+                          Token(TokenType.WORD, 1, 3),
+                          Token(TokenType.COMMA, 4, 4),
+                          Token(TokenType.WORD, 5, 7),
+                          Token(TokenType.R_BR, 8, 8)
+                      )
+                  )
+              )
+          ),
+          Arguments.of(
+              "[xxx] [yyy]",
+              listOf(
+                  ComplexToken(TokenType.BRACKETS, 0, 4,
+                      listOf(
+                          Token(TokenType.L_BR, 0, 0),
+                          Token(TokenType.WORD, 1, 3),
+                          Token(TokenType.R_BR, 4, 4)
+                      )
+                  ),
+                  Token(TokenType.WHITESPACE, 5, 5),
+                  ComplexToken(TokenType.BRACKETS, 6, 10,
+                      listOf(
+                          Token(TokenType.L_BR, 6, 6),
+                          Token(TokenType.WORD, 7, 9),
+                          Token(TokenType.R_BR, 10, 10)
+                      )
+                  )
+              )
+          )
+      )
+
+  @ParameterizedTest(name = "BracketsTokenizer: \"{0}\"")
+  @MethodSource("bracketsArgs")
+  fun bracketsTest(src: String, tokens: List<Token<TokenType>>) {
+    bracketsTokenizer.reset()
+    src.parse(bracketsTokenizer, TokenType.WHITESPACE).assertEquals(tokens)
+  }
 }
