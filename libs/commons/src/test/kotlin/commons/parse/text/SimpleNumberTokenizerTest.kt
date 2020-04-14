@@ -37,8 +37,7 @@ internal class SimpleNumberTokenizerTest {
     tokenizer.processChar(' ', 1, false)
     assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
 
-    val token = tokenizer.buildToken()
-    expectedToken0.assertEquals(token)
+    tokenizer.buildToken().assertEquals(expectedToken0)
   }
 
   @Test
@@ -49,8 +48,7 @@ internal class SimpleNumberTokenizerTest {
     tokenizer.processChar('2', 1, true)
     assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
 
-    val token = tokenizer.buildToken()
-    expectedToken1.assertEquals(token)
+    tokenizer.buildToken().assertEquals(expectedToken1)
   }
 
   @Test
@@ -61,8 +59,7 @@ internal class SimpleNumberTokenizerTest {
     tokenizer.processChar(' ', 1, true)
     assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
 
-    val token = tokenizer.buildToken()
-    expectedToken0.assertEquals(token)
+    tokenizer.buildToken().assertEquals(expectedToken0)
   }
 
 }

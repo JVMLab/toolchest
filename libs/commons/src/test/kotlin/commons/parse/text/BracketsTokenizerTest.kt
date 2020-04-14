@@ -26,14 +26,16 @@ internal class BracketsTokenizerTest {
     tokenizer.processChar(']', 2, true)
     assertEquals(StatusFinished, tokenizer.getBuildingStatus(), "right bracket")
 
-    ComplexToken(
-        TokenType.BRACKETS, 0, 2,
-        listOf(
-            Token(TokenType.L_BR,0,0),
-            Token(TokenType.DEFAULT,1,1),
-            Token(TokenType.R_BR,2,2)
+    tokenizer.buildToken().assertComplexEquals(
+        ComplexToken(
+            TokenType.BRACKETS, 0, 2,
+            listOf(
+                Token(TokenType.L_BR,0,0),
+                Token(TokenType.DEFAULT,1,1),
+                Token(TokenType.R_BR,2,2)
+            )
         )
-    ).assertComplexEquals(tokenizer.buildToken())
+    )
   }
 
 
@@ -51,13 +53,15 @@ internal class BracketsTokenizerTest {
     tokenizer.processChar(']', 1, true)
     assertEquals(StatusFinished, tokenizer.getBuildingStatus(), "right bracket")
 
-    ComplexToken(
-        TokenType.BRACKETS, 0, 1,
-        listOf(
-            Token(TokenType.L_BR,0,0),
-            Token(TokenType.R_BR,1,1)
+    tokenizer.buildToken().assertComplexEquals(
+        ComplexToken(
+            TokenType.BRACKETS, 0, 1,
+            listOf(
+                Token(TokenType.L_BR, 0, 0),
+                Token(TokenType.R_BR, 1, 1)
+            )
         )
-    ).assertComplexEquals(tokenizer.buildToken())
+    )
   }
 
 
@@ -81,15 +85,17 @@ internal class BracketsTokenizerTest {
     tokenizer.processChar(']', 3, true)
     assertEquals(StatusFinished, tokenizer.getBuildingStatus(), "right bracket")
 
-    ComplexToken(
-        TokenType.BRACKETS, 0, 3,
-        listOf(
-            Token(TokenType.L_BR,0,0),
-            Token(TokenType.DEFAULT,1,1),
-            Token(TokenType.DEFAULT,2,2),
-            Token(TokenType.R_BR,3,3)
+    tokenizer.buildToken().assertComplexEquals(
+        ComplexToken(
+            TokenType.BRACKETS, 0, 3,
+            listOf(
+                Token(TokenType.L_BR, 0, 0),
+                Token(TokenType.DEFAULT, 1, 1),
+                Token(TokenType.DEFAULT, 2, 2),
+                Token(TokenType.R_BR, 3, 3)
+            )
         )
-    ).assertComplexEquals(tokenizer.buildToken())
+    )
   }
 
 
@@ -131,14 +137,16 @@ internal class BracketsTokenizerTest {
     tokenizer.processChar(']', 3, true)
     assertEquals(StatusFinished, tokenizer.getBuildingStatus(), "right bracket")
 
-    ComplexToken(
-        TokenType.BRACKETS, 0, 3,
-        listOf(
-            Token(TokenType.L_BR,0,0),
-            Token(TokenType.WORD,1,2),
-            Token(TokenType.R_BR,3,3)
+    tokenizer.buildToken().assertComplexEquals(
+        ComplexToken(
+            TokenType.BRACKETS, 0, 3,
+            listOf(
+                Token(TokenType.L_BR, 0, 0),
+                Token(TokenType.WORD, 1, 2),
+                Token(TokenType.R_BR, 3, 3)
+            )
         )
-    ).assertComplexEquals(tokenizer.buildToken())
+    )
   }
 
 
@@ -171,15 +179,17 @@ internal class BracketsTokenizerTest {
     tokenizer.processChar(']', 4, true)
     assertEquals(StatusFinished, tokenizer.getBuildingStatus(), "right bracket")
 
-    ComplexToken(
-        TokenType.BRACKETS, 0, 4,
-        listOf(
-            Token(TokenType.L_BR,0,0),
-            Token(TokenType.WORD,1,1),
-            Token(TokenType.COMMA,2,2),
-            Token(TokenType.WORD,3,3),
-            Token(TokenType.R_BR,4,4)
+    tokenizer.buildToken().assertComplexEquals(
+        ComplexToken(
+            TokenType.BRACKETS, 0, 4,
+            listOf(
+                Token(TokenType.L_BR, 0, 0),
+                Token(TokenType.WORD, 1, 1),
+                Token(TokenType.COMMA, 2, 2),
+                Token(TokenType.WORD, 3, 3),
+                Token(TokenType.R_BR, 4, 4)
+            )
         )
-    ).assertComplexEquals(tokenizer.buildToken())
+    )
   }
 }

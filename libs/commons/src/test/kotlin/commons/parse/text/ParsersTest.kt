@@ -96,4 +96,49 @@ internal class ParsersTest {
     wordTokenizer.reset()
     src.parse(wordTokenizer, TokenType.WHITESPACE).assertEquals(tokens)
   }
+
+
+  private val simpleNumberTokenizer = SimpleNumberTokenizer(TokenType.NUMBER)
+
+  fun simpleNumberArgs(): Stream<Arguments> =
+      Stream.of(
+          Arguments.of(
+              "1X",
+              listOf(
+                  Token(TokenType.NUMBER, 0, 0),
+                  Token(TokenType.DEFAULT, 1, 1)
+              )
+          ),
+          Arguments.of(
+              "X2",
+              listOf(
+                  Token(TokenType.DEFAULT, 0, 0),
+                  Token(TokenType.NUMBER, 1, 1)
+              )
+          ),
+          Arguments.of(
+              "10 20",
+              listOf(
+                  Token(TokenType.NUMBER, 0, 1),
+                  Token(TokenType.DEFAULT, 2, 2),
+                  Token(TokenType.NUMBER, 3, 4)
+              )
+          ),
+          Arguments.of(
+              "01XX02",
+              listOf(
+                  Token(TokenType.NUMBER, 0, 1),
+                  Token(TokenType.DEFAULT, 2, 3),
+                  Token(TokenType.NUMBER, 4, 5)
+              )
+          )
+      )
+
+  @ParameterizedTest(name = "SimpleNumberTokenizer: \"{0}\"")
+  @MethodSource("simpleNumberArgs")
+  fun simpleNumberTest(src: String, tokens: List<Token<TokenType>>) {
+    simpleNumberTokenizer.reset()
+    src.parse(simpleNumberTokenizer, TokenType.DEFAULT).assertEquals(tokens)
+  }
+
 }
