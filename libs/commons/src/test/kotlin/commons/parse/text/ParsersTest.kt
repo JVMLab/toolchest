@@ -148,7 +148,8 @@ internal class ParsersTest {
           TokenType.DEFAULT,
           listOf<ITokenizer<TokenType>>(
               WordTokenizer(TokenType.WORD),
-              SingleCharTokenizer(TokenType.COMMA,',')
+              SingleCharTokenizer(TokenType.COMMA,','),
+              WhitespaceTokenizer(TokenType.WHITESPACE)
           )
       ),
       TokenType.L_BR, TokenType.R_BR
@@ -169,15 +170,16 @@ internal class ParsersTest {
               )
           ),
           Arguments.of(
-              "[xxx,yyy]",
+              "[xxx, yyy]",
               listOf(
-                  ComplexToken(TokenType.BRACKETS, 0, 8,
+                  ComplexToken(TokenType.BRACKETS, 0, 9,
                       listOf(
                           Token(TokenType.L_BR, 0, 0),
                           Token(TokenType.WORD, 1, 3),
                           Token(TokenType.COMMA, 4, 4),
-                          Token(TokenType.WORD, 5, 7),
-                          Token(TokenType.R_BR, 8, 8)
+                          Token(TokenType.WHITESPACE, 5, 5),
+                          Token(TokenType.WORD, 6, 8),
+                          Token(TokenType.R_BR, 9, 9)
                       )
                   )
               )
