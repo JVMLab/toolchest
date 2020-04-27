@@ -11,9 +11,10 @@ import com.jvmlab.commons.parse.Parsed
 import com.jvmlab.commons.parse.ParsedKey
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertAll
+import org.junit.jupiter.api.fail
 
 
-fun Token<TokenType>.assertEquals(expectedToken: Token<TokenType>, message: String = expectedToken.type.toString()) {
+fun Token<*>.assertEquals(expectedToken: Token<*>, message: String = expectedToken.type.toString()) {
   assertAll(message,
       { assertEquals(expectedToken.type, type, "type mismatch") },
       { assertEquals(expectedToken.start, start, "start mismatch") },
@@ -22,7 +23,7 @@ fun Token<TokenType>.assertEquals(expectedToken: Token<TokenType>, message: Stri
 }
 
 
-fun ComplexToken<TokenType>.assertComplexEquals(expectedToken: ComplexToken<TokenType>,
+fun ComplexToken<*>.assertComplexEquals(expectedToken: ComplexToken<*>,
     message: String = expectedToken.type.toString()) {
 
   this.assertEquals(expectedToken, message)
@@ -46,8 +47,8 @@ fun ComplexToken<TokenType>.assertComplexEquals(expectedToken: ComplexToken<Toke
  *
  * @param expectedTokenList is the expected list of [Token]s
  */
-fun Parsed<CharSequence, List<Token<TokenType>>>.assertEquals(
-    expectedTokenList: List<Token<TokenType>>, message: String = "Parsed") {
+fun Parsed<CharSequence, List<Token<*>>>.assertEquals(
+    expectedTokenList: List<Token<*>>, message: String = "Parsed") {
 
   assertEquals(1, result.size, "$message: result size")
   assertEquals(ParsedKey.PARSED_STRING.key, result.keys.first(), "$message: result key")
@@ -62,5 +63,10 @@ fun Parsed<CharSequence, List<Token<TokenType>>>.assertEquals(
       t.assertEquals(expectedToken, msg)
     }
   }
+}
 
+
+fun TokenizerStatus.assertFinish(message: String = "$this is not FINISHED") {
+  if (this !is StatusFinished<*>)
+    fail(message)
 }

@@ -3,13 +3,13 @@ package com.jvmlab.commons.parse.text
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.assertAll
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class SingeCharTokenizerTest {
-  private val tokenizer = SingleCharTokenizer<TokenType>(TokenType.DEFAULT, '$')
+  private val tokenizer = SingleCharTokenizer(TokenType.DEFAULT, '$')
   private val expectedToken = Token(TokenType.DEFAULT, 0, 0)
 
   @BeforeEach
@@ -19,31 +19,29 @@ internal class SingeCharTokenizerTest {
 
   @Test
   fun `non matching not last`() {
-    tokenizer.processChar(' ', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusNone)
+    assertTrue(tokenizer.startProcessing(' ', 0) is StatusNone<*>)
   }
 
   @Test
   fun `non matching last`() {
-    tokenizer.processChar(' ', 0, true)
-    assertEquals(tokenizer.getBuildingStatus(),StatusNone)
+    assertTrue(tokenizer.startProcessingLast(' ', 0) is StatusNone<*>)
   }
 
   @Test
   fun `matching not last`() {
-    tokenizer.processChar('$', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusFinished, "status " + tokenizer.getBuildingStatus())
+    val status = tokenizer.startProcessing('$', 0)
+    status.assertFinish()
 
-    val token = tokenizer.buildToken()
-    expectedToken.assertEquals(token)
+    if (status is StatusFinished<*>)
+      status.createToken().assertEquals(expectedToken)
   }
 
   @Test
   fun `matching last`() {
-    tokenizer.processChar('$', 0, true)
-    assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
+    val status = tokenizer.startProcessingLast('$', 0)
+    status.assertFinish()
 
-    val token = tokenizer.buildToken()
-    expectedToken.assertEquals(token)
+    if (status is StatusFinished<*>)
+      status.createToken().assertEquals(expectedToken)
   }
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 
 
+/*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class BracketsTokenizerTest {
 
@@ -192,4 +193,4 @@ internal class BracketsTokenizerTest {
         )
     )
   }
-}
+}*/

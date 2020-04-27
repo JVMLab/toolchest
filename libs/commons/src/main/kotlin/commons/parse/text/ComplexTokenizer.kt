@@ -30,6 +30,7 @@ data class SubTokenizer<E: Enum<E>>(
  * @property subTokenizers a list of [SubTokenizer] to create sub-tokens
  * @property subTokens mutable list of tokens to be included in the resulting [ComplexToken]
  */
+/*
 open class ComplexTokenizer<E: Enum<E>>(
     type: E,
     private val subTokenizers: List<SubTokenizer<E>>) : AbstractTokenizer<E>(type) {
@@ -54,21 +55,25 @@ open class ComplexTokenizer<E: Enum<E>>(
   }
 
 
-  /**
+  */
+/**
    * Resets all [subTokenizers] and clears [subTokens]
-   */
+   *//*
+
   override fun reset() {
     super.reset()
     subInit()
   }
 
 
-  /**
+  */
+/**
    * Builds a resulting token and resets [ComplexTokenizer], so a current token can be built
    * only once.
    *
-   * @throws IllegalStateException when [tokenBuilder] has an improper [BuildingStatus]
-   */
+   * @throws IllegalStateException when [tokenBuilder] has an improper [TokenizerStatus]
+   *//*
+
   override fun buildToken(): ComplexToken<E> {
     val s = subTokens
     val token = ComplexToken(super.buildToken(), s)
@@ -77,13 +82,13 @@ open class ComplexTokenizer<E: Enum<E>>(
   }
 
 
-  override fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingStatus {
+  override fun firstChar(char: Char, idx: Int, isLast: Boolean): TokenizerStatus {
     currentTokenizer.processChar(char, idx, isLast)
     return analyzeCurrentTokenizer(char, idx, isLast) ?: StatusNone // actually should never happen for firstChar()
   }
 
 
-  override fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingStatus  {
+  override fun nextChar(char: Char, idx: Int, isLast: Boolean): TokenizerStatus  {
     // we will return from the method in the middle of the loop in case of a successful or failed
     // char processing by some sub-tokenizer
     loop@ while (subIdx < subTokenizers.size) {
@@ -126,10 +131,12 @@ open class ComplexTokenizer<E: Enum<E>>(
   }
 
 
-  /**
+  */
+/**
    * Implements common logic of [firstChar] and [nextChar]
-   */
-  private fun analyzeCurrentTokenizer(char: Char, idx: Int, isLast: Boolean): BuildingStatus? {
+   *//*
+
+  private fun analyzeCurrentTokenizer(char: Char, idx: Int, isLast: Boolean): TokenizerStatus? {
     val type = currentTokenizer.getTokenType()
     return when (currentTokenizer.getBuildingStatus()) {
       StatusNone,
@@ -156,4 +163,4 @@ open class ComplexTokenizer<E: Enum<E>>(
       }
     }
   }
-}
+}*/

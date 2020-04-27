@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 
 
+/*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class WordTokenizerTest {
   private val tokenizer = WordTokenizer(TokenType.WORD)
@@ -62,4 +63,4 @@ internal class WordTokenizerTest {
     tokenizer.buildToken().assertEquals(expectedToken0)
   }
 
-}
+}*/

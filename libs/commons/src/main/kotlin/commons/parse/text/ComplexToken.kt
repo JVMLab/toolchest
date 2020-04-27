@@ -1,7 +1,6 @@
 package com.jvmlab.commons.parse.text
 
 
-
 /**
  * Describes a text token taken from a [CharSequence]. The class extends [Token] adding [subTokens]
  * property which allows building of syntax trees.
@@ -17,7 +16,7 @@ package com.jvmlab.commons.parse.text
 open class ComplexToken<E: Enum<E>> (
     type: E,
     start: Int,
-    finish: Int,
+    finish: Int = start,
     val subTokens: List<Token<E>>) : Token<E>(type, start, finish) {
 
   /**
@@ -35,8 +34,8 @@ open class ComplexToken<E: Enum<E>> (
   /**
    * Additional constructor to create a [ComplexToken] based on [Token]
    */
-  constructor(token: Token<E>, subTokens: List<Token<E>>) : this(
-      token.type, token.start, token.finish, subTokens)
+  constructor(token: Token<E>, subTokens: List<Token<E>>) :
+      this(token.type, token.start, token.finish, subTokens)
 
 
   /**
@@ -46,5 +45,4 @@ open class ComplexToken<E: Enum<E>> (
     super.prettyPrint(source)
     subTokens.forEach { it.prettyPrint(source) }
   }
-
 }

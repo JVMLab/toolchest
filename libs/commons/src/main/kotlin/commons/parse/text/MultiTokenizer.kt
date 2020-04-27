@@ -11,9 +11,10 @@ import java.util.*
  * @property defaultTokenType is a [Token] type used to create a [TokenBuilder] when a type cannot
  * be determined from a sub-tokenizer, for example in case of an ambiguous tokenization result
  * @property subTokenizers is a [List] of sub-tokenizers to produce actual tokens
- * @property activeTokenizers is a [LinkedList] of sub-tokenizers with [BuildingStatus]
+ * @property activeTokenizers is a [LinkedList] of sub-tokenizers with [TokenizerStatus]
  * different from [StatusNone] or [StatusCancelled]
  */
+/*
 open class MultiTokenizer<E: Enum<E>>(
     defaultTokenType: E,
     private val subTokenizers: List<ITokenizer<E>>
@@ -22,9 +23,11 @@ open class MultiTokenizer<E: Enum<E>>(
   private val activeTokenizers: LinkedList<ITokenizer<E>> = LinkedList()
 
 
-  /**
+  */
+/**
    * Resets all [subTokenizers] and clears [activeTokenizers]
-   */
+   *//*
+
   override fun reset() {
     super.reset()
     activeTokenizers.clear()
@@ -32,8 +35,9 @@ open class MultiTokenizer<E: Enum<E>>(
   }
 
 
-  /**
-   * Checks [BuildingStatus] of [activeTokenizers], removes tokenizers with
+  */
+/**
+   * Checks [TokenizerStatus] of [activeTokenizers], removes tokenizers with
    * [StatusCancelled] (if there is no tokenizers with [StatusFailed] or any
    * other errors) and updates [tokenBuilder] accordingly
    *
@@ -41,8 +45,9 @@ open class MultiTokenizer<E: Enum<E>>(
    * as a result of using this function
    *
    * Used in [firstChar] and [nextChar] methods after a change in [activeTokenizers]
-   */
-  private fun updateTokenizer(): BuildingStatus {
+   *//*
+
+  private fun updateTokenizer(): TokenizerStatus {
     processEmptyOrSingleActiveTokenizer()?.let { return it}
 
     // Iterate over activeTokenizers and keep the only BUILDING and FINISHED statuses
@@ -79,10 +84,12 @@ open class MultiTokenizer<E: Enum<E>>(
   }
 
 
-  /**
+  */
+/**
    * Used in [updateTokenizer] to process [activeTokenizers] with 0 or 1 element
-   */
-  private fun processEmptyOrSingleActiveTokenizer(): BuildingStatus? {
+   *//*
+
+  private fun processEmptyOrSingleActiveTokenizer(): TokenizerStatus? {
     if (activeTokenizers.isEmpty()) return StatusNone
 
     if (activeTokenizers.size == 1) {
@@ -99,7 +106,7 @@ open class MultiTokenizer<E: Enum<E>>(
   }
 
 
-  override fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingStatus {
+  override fun firstChar(char: Char, idx: Int, isLast: Boolean): TokenizerStatus {
     // populate activeTokenizers
     subTokenizers.forEach { subTokenizer: ITokenizer<E> ->
       subTokenizer.processChar(char, idx, isLast)
@@ -119,7 +126,7 @@ open class MultiTokenizer<E: Enum<E>>(
   }
 
 
-  override fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingStatus {
+  override fun nextChar(char: Char, idx: Int, isLast: Boolean): TokenizerStatus {
     // we should have some active tokenizers if this method is called
     check(activeTokenizers.isNotEmpty()) { "Unexpected empty list of active sub-tokenizers" }
 
@@ -137,3 +144,4 @@ open class MultiTokenizer<E: Enum<E>>(
     return updateTokenizer()
   }
 }
+*/

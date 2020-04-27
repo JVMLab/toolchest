@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 
 
+/*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class SimpleNumberTokenizerTest {
   private val tokenizer = SimpleNumberTokenizer(TokenType.NUMBER)
@@ -62,4 +63,4 @@ internal class SimpleNumberTokenizerTest {
     tokenizer.buildToken().assertEquals(expectedToken0)
   }
 
-}
+}*/

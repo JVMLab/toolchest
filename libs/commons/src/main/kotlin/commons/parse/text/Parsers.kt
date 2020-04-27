@@ -15,12 +15,14 @@ import com.jvmlab.commons.parse.ParsedKey
  * @param tokenizer is an [ITokenizer] used to split [this] [CharSequence] into tokens
  * @param defaultTokenType is a type of a default token, which is created whenever the [tokenizer]
  */
+/*
 fun <E: Enum<E>> CharSequence.parse(
     tokenizer: ITokenizer<E>,
     defaultTokenType: E? = null): Parsed<CharSequence, List<Token<E>>> =
     Parsed(this) { charSequence -> parse(charSequence, tokenizer, defaultTokenType) }
 
 
+*/
 /**
  * Private function which does all heavy-lifting to parse a [charSequence], all public functions
  * are just wrappers around it.
@@ -33,7 +35,8 @@ fun <E: Enum<E>> CharSequence.parse(
  *
  * @return a single key [Map] with list of tokens produced by [tokenizer] along with default tokens
  * (in case of [defaultTokenType] is not null) as a value and [ParsedKey.PARSED_STRING.key] key
- */
+ *//*
+
 private fun <E: Enum<E>> parse(
     charSequence: CharSequence,
     tokenizer: ITokenizer<E>,
@@ -104,9 +107,11 @@ private fun <E: Enum<E>> parse(
 }
 
 
+*/
 /**
  * Adds a default token if required
- */
+ *//*
+
 private fun <E: Enum<E>> MutableList<Token<E>>.addDefaultToken(
     defaultTokenType: E?,
     defaultStart: Int,
@@ -115,4 +120,4 @@ private fun <E: Enum<E>> MutableList<Token<E>>.addDefaultToken(
     if (defaultStart < nextTokenStart)
       this.add(Token<E>(it, defaultStart, nextTokenStart - 1))
   }
-}
+}*/

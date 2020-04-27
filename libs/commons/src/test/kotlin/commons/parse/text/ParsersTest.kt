@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import java.util.stream.Stream
 
 
+/*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ParsersTest {
 
@@ -212,4 +213,4 @@ internal class ParsersTest {
     bracketsTokenizer.reset()
     src.parse(bracketsTokenizer, TokenType.WHITESPACE).assertEquals(tokens)
   }
-}
+}*/
