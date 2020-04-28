@@ -66,7 +66,23 @@ fun Parsed<CharSequence, List<Token<*>>>.assertEquals(
 }
 
 
-fun TokenizerStatus.assertFinish(message: String = "$this is not FINISHED") {
+/**
+ * Verifies if [TokenizerStatus] object has [StatusFinished] type
+ *
+ * @param action is a function or lambda expression to be called on receiver if it has [StatusFinished] type
+ */
+fun TokenizerStatus.assertFinish(action: (StatusFinished<*>) -> Unit = {}) {
   if (this !is StatusFinished<*>)
-    fail(message)
+    fail("$this is not ${StatusFinished.name}")
+  else
+    action(this)
+}
+
+
+/**
+ * Verifies if [TokenizerStatus] object has [StatusNone] type
+ */
+fun TokenizerStatus.assertNone() {
+  if (this !is StatusNone<*>)
+    fail("$this is not ${StatusNone.name}")
 }

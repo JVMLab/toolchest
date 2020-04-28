@@ -19,29 +19,25 @@ internal class SingeCharTokenizerTest {
 
   @Test
   fun `non matching not last`() {
-    assertTrue(tokenizer.startProcessing(' ', 0) is StatusNone<*>)
+    tokenizer.startProcessing(' ', 0).assertNone()
   }
 
   @Test
   fun `non matching last`() {
-    assertTrue(tokenizer.startProcessingLast(' ', 0) is StatusNone<*>)
+    tokenizer.startProcessingLast(' ', 0).assertNone()
   }
 
   @Test
   fun `matching not last`() {
-    val status = tokenizer.startProcessing('$', 0)
-    status.assertFinish()
-
-    if (status is StatusFinished<*>)
-      status.createToken().assertEquals(expectedToken)
+    tokenizer.startProcessing('$', 0).assertFinish {
+      it.createToken().assertEquals(expectedToken)
+    }
   }
 
   @Test
   fun `matching last`() {
-    val status = tokenizer.startProcessingLast('$', 0)
-    status.assertFinish()
-
-    if (status is StatusFinished<*>)
-      status.createToken().assertEquals(expectedToken)
+    tokenizer.startProcessingLast('$', 0).assertFinish {
+      it.createToken().assertEquals(expectedToken)
+    }
   }
 }

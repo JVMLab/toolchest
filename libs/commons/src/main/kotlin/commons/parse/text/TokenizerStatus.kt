@@ -35,7 +35,12 @@ open class StatusBuilding<E: Enum<E>>(
       finish: Int = start
   ) : this(SubSequence(start, finish), tokenizer)
 
-  override fun toString(): String = "BUILDING"
+
+  companion object ClassProps {
+    const val name = "BUILDING"
+  }
+
+  override fun toString(): String = name
 
   override fun processChar(char: Char, lastStatus: StatusBuilding<E>): TokenizerStatus =
       tokenizer.processChar(char, this)
@@ -50,7 +55,12 @@ open class StatusBuilding<E: Enum<E>>(
  */
 class StatusNone<E: Enum<E>>(private val tokenizer: IStartTokenizer<E>) : FinalStatus(),
     IStartTokenizer<E> by tokenizer {
-  override fun toString(): String = "NONE"
+
+  companion object ClassProps {
+    const val name = "NONE"
+  }
+
+  override fun toString(): String = name
 }
 
 
@@ -69,7 +79,11 @@ class StatusFinished<E: Enum<E>>(
       finish: Int = start
   ) : this(SubSequence(start, finish), tokenizer)
 
-  override fun toString(): String = "FINISHED"
+  companion object ClassProps {
+    const val name = "FINISHED"
+  }
+
+  override fun toString(): String = name
 
   fun createToken() = Token<E>(tokenizer.type, subSequence)
 }
@@ -94,7 +108,12 @@ class StatusCancelled<E: Enum<E>>(
       finish: Int = start
   ) : this(SubSequence(start, finish), tokenizer)
 
-  override fun toString(): String = "CANCELLED"
+
+  companion object ClassProps {
+    const val name = "CANCELLED"
+  }
+
+  override fun toString(): String = name
 }
 
 
@@ -117,7 +136,12 @@ class StatusFailed<E: Enum<E>>(
       finish: Int = start
   ) : this(SubSequence(start, finish), tokenizer)
 
-  override fun toString(): String = "FAILED"
+
+  companion object ClassProps {
+    const val name = "CANCELLED"
+  }
+
+  override fun toString(): String = name
 }
 
 
