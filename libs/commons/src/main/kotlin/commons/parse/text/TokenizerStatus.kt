@@ -28,7 +28,7 @@ open class StatusBuilding<E: Enum<E>>(
     private val subSequence: ISubSequence
     ) : ProgressStatus(),
     ISubSequence by subSequence,
-    IProcessTokenizer<E> by tokenizer {
+    IResetTokenizer<E> by tokenizer {
 
   constructor(
       tokenizer: IProcessTokenizer<E>,
@@ -43,11 +43,9 @@ open class StatusBuilding<E: Enum<E>>(
 
   override fun toString(): String = name
 
-  override fun processChar(char: Char, lastStatus: StatusBuilding<E>): TokenizerStatus =
-      tokenizer.processChar(char, this)
+  fun processChar(char: Char): TokenizerStatus = tokenizer.processChar(char, this)
 
-  override fun processLastChar(char: Char, lastStatus: StatusBuilding<E>): FinalStatus =
-      tokenizer.processLastChar(char, this)
+  fun processLastChar(char: Char): FinalStatus = tokenizer.processLastChar(char, this)
 }
 
 
