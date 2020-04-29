@@ -2,7 +2,6 @@ package com.jvmlab.commons.parse.text
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 
 
@@ -29,29 +28,26 @@ internal class WordTokenizerTest {
 
   @Test
   fun `matching not last`() {
-    tokenizer.startProcessing('a', 0).assertBuilding {
-      it.processChar(' ', it).assertFinish {
-        it.createToken().assertEquals(expectedToken0)
-      }
-    }
+    tokenizer.startProcessing('a', 0)
+        .assertBuilding().processChar(' ')
+        .assertFinish().createToken()
+        .assertEquals(expectedToken0)
   }
 
   @Test
   fun `matching last`() {
-    tokenizer.startProcessing('a', 0).assertBuilding {
-      it.processLastChar('b', it).assertFinish {
-        it.createToken().assertEquals(expectedToken1)
-      }
-    }
+    tokenizer.startProcessing('a', 0)
+        .assertBuilding().processLastChar('b')
+        .assertFinish().createToken()
+        .assertEquals(expectedToken1)
   }
 
   @Test
   fun `matching last space`() {
-    tokenizer.startProcessing('a', 0).assertBuilding {
-      it.processLastChar(' ', it).assertFinish {
-        it.createToken().assertEquals(expectedToken0)
-      }
-    }
+    tokenizer.startProcessing('a', 0)
+        .assertBuilding().processLastChar(' ')
+        .assertFinish().createToken()
+        .assertEquals(expectedToken0)
   }
 
 }

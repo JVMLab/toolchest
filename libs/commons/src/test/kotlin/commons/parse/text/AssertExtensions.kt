@@ -68,35 +68,34 @@ fun Parsed<CharSequence, List<Token<*>>>.assertEquals(
 
 /**
  * Verifies if [TokenizerStatus] object has [StatusBuilding] type
- *
- * @param action is a function or lambda expression to be called on receiver if it has [StatusBuilding] type
  */
-fun TokenizerStatus.assertBuilding(action: (StatusBuilding<TokenType>) -> Unit = {}) {
+fun TokenizerStatus.assertBuilding() : StatusBuilding<TokenType> {
   if (this !is StatusBuilding<*>)
     fail("$this is not ${StatusBuilding.name}")
-  else
-    @Suppress("UNCHECKED_CAST")
-    action(this as StatusBuilding<TokenType>)
+
+  @Suppress("UNCHECKED_CAST")
+  return(this as StatusBuilding<TokenType>)
 }
 
 /**
  * Verifies if [TokenizerStatus] object has [StatusFinished] type
- *
- * @param action is a function or lambda expression to be called on receiver if it has [StatusFinished] type
  */
-fun TokenizerStatus.assertFinish(action: (StatusFinished<TokenType>) -> Unit = {}) {
+fun TokenizerStatus.assertFinish() : StatusFinished<TokenType> {
   if (this !is StatusFinished<*>)
     fail("$this is not ${StatusFinished.name}")
-  else
-    @Suppress("UNCHECKED_CAST")
-    action(this as StatusFinished<TokenType>)
+
+  @Suppress("UNCHECKED_CAST")
+  return(this as StatusFinished<TokenType>)
 }
 
 
 /**
  * Verifies if [TokenizerStatus] object has [StatusNone] type
  */
-fun TokenizerStatus.assertNone() {
+fun TokenizerStatus.assertNone() : StatusNone<TokenType>{
   if (this !is StatusNone<*>)
     fail("$this is not ${StatusNone.name}")
+
+  @Suppress("UNCHECKED_CAST")
+  return(this as StatusNone<TokenType>)
 }

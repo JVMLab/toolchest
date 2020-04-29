@@ -2,8 +2,6 @@ package com.jvmlab.commons.parse.text
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 
 
@@ -29,15 +27,16 @@ internal class SingeCharTokenizerTest {
 
   @Test
   fun `matching not last`() {
-    tokenizer.startProcessing('$', 0).assertFinish {
-      it.createToken().assertEquals(expectedToken)
-    }
+    tokenizer.startProcessing('$', 0)
+        .assertFinish().createToken()
+        .assertEquals(expectedToken)
   }
 
   @Test
   fun `matching last`() {
-    tokenizer.startProcessingLast('$', 0).assertFinish {
-      it.createToken().assertEquals(expectedToken)
-    }
+    tokenizer.startProcessingLast('$', 0)
+        .assertFinish().createToken()
+        .assertEquals(expectedToken)
   }
+
 }
