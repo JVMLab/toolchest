@@ -24,8 +24,9 @@ sealed class ProgressStatus : TokenizerStatus()
  * Represents incomplete "in progress" status of an [ITokenizer]
  */
 open class StatusBuilding<E: Enum<E>>(
-    private val subSequence: SubSequence,
-    private val tokenizer: IProcessTokenizer<E>) : ProgressStatus(),
+    private val tokenizer: IProcessTokenizer<E>,
+    private val subSequence: ISubSequence
+    ) : ProgressStatus(),
     ISubSequence by subSequence,
     IProcessTokenizer<E> by tokenizer {
 
@@ -33,7 +34,7 @@ open class StatusBuilding<E: Enum<E>>(
       tokenizer: IProcessTokenizer<E>,
       start: Int,
       finish: Int = start
-  ) : this(SubSequence(start, finish), tokenizer)
+  ) : this(tokenizer, SubSequence(start, finish))
 
 
   companion object ClassProps {
@@ -68,8 +69,8 @@ class StatusNone<E: Enum<E>>(private val tokenizer: IStartTokenizer<E>) : FinalS
  * This is the only successful completion status which can create a [Token].
  */
 class StatusFinished<E: Enum<E>>(
-    private val subSequence: SubSequence,
-    private val tokenizer: IResetTokenizer<E>) : FinalStatus(),
+    private val tokenizer: IResetTokenizer<E>,
+    private val subSequence: ISubSequence) : FinalStatus(),
     ISubSequence by subSequence,
     IResetTokenizer<E> by tokenizer {
 
@@ -77,7 +78,7 @@ class StatusFinished<E: Enum<E>>(
       tokenizer: IResetTokenizer<E>,
       start: Int,
       finish: Int = start
-  ) : this(SubSequence(start, finish), tokenizer)
+  ) : this(tokenizer, SubSequence(start, finish))
 
   companion object ClassProps {
     const val name = "FINISHED"
@@ -97,8 +98,8 @@ class StatusFinished<E: Enum<E>>(
  * [ITokenizer] for 'maximum' will still have [StatusBuilding]
  */
 class StatusCancelled<E: Enum<E>>(
-    private val subSequence: SubSequence,
-    private val tokenizer: IResetTokenizer<E>) : FinalStatus(),
+    private val tokenizer: IResetTokenizer<E>,
+    private val subSequence: ISubSequence) : FinalStatus(),
     ISubSequence by subSequence,
     IResetTokenizer<E> by tokenizer {
 
@@ -106,7 +107,7 @@ class StatusCancelled<E: Enum<E>>(
       tokenizer: IResetTokenizer<E>,
       start: Int,
       finish: Int = start
-  ) : this(SubSequence(start, finish), tokenizer)
+  ) : this(tokenizer, SubSequence(start, finish))
 
 
   companion object ClassProps {
@@ -124,8 +125,8 @@ class StatusCancelled<E: Enum<E>>(
  * @property reason is an optional reason describing what has caused the [StatusFailed]
  */
 class StatusFailed<E: Enum<E>>(
-    private val subSequence: SubSequence,
     private val tokenizer: IResetTokenizer<E>,
+    private val subSequence: ISubSequence,
     val reason: String = "") : FinalStatus(),
     ISubSequence by subSequence,
     IResetTokenizer<E> by tokenizer {
@@ -134,14 +135,14 @@ class StatusFailed<E: Enum<E>>(
       tokenizer: IResetTokenizer<E>,
       start: Int,
       finish: Int = start
-  ) : this(SubSequence(start, finish), tokenizer)
+  ) : this(tokenizer, SubSequence(start, finish))
 
 
   companion object ClassProps {
-    const val name = "CANCELLED"
+    val name = toString()
   }
 
-  override fun toString(): String = name
+  override fun toString(): String = "CANCELLED"
 }
 
 

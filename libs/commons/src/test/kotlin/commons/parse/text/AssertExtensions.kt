@@ -67,15 +67,29 @@ fun Parsed<CharSequence, List<Token<*>>>.assertEquals(
 
 
 /**
+ * Verifies if [TokenizerStatus] object has [StatusBuilding] type
+ *
+ * @param action is a function or lambda expression to be called on receiver if it has [StatusBuilding] type
+ */
+fun TokenizerStatus.assertBuilding(action: (StatusBuilding<TokenType>) -> Unit = {}) {
+  if (this !is StatusBuilding<*>)
+    fail("$this is not ${StatusBuilding.name}")
+  else
+    @Suppress("UNCHECKED_CAST")
+    action(this as StatusBuilding<TokenType>)
+}
+
+/**
  * Verifies if [TokenizerStatus] object has [StatusFinished] type
  *
  * @param action is a function or lambda expression to be called on receiver if it has [StatusFinished] type
  */
-fun TokenizerStatus.assertFinish(action: (StatusFinished<*>) -> Unit = {}) {
+fun TokenizerStatus.assertFinish(action: (StatusFinished<TokenType>) -> Unit = {}) {
   if (this !is StatusFinished<*>)
     fail("$this is not ${StatusFinished.name}")
   else
-    action(this)
+    @Suppress("UNCHECKED_CAST")
+    action(this as StatusFinished<TokenType>)
 }
 
 

@@ -2,11 +2,11 @@ package com.jvmlab.commons.parse.text
 
 
 /**
- * TODO
+ * A generic class to create single-char tokens
  */
 open class GenericSingleCharTokenizer<E: Enum<E>>(
     type: E,
-    private val checkChar: (Char) -> Boolean
+    protected val checkChar: (Char) -> Boolean
 ) : AbstractTokenizer<E>(type) {
 
   override fun startProcessing(char: Char, idx: Int): TokenizerStatus = startProcessingLast(char, idx)

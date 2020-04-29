@@ -8,7 +8,7 @@ package com.jvmlab.commons.parse.text
  */
 open class Token<E: Enum<E>>(
     val type: E,
-    private val subSequence: SubSequence) : ISubSequence by subSequence {
+    private val subSequence: ISubSequence) : ISubSequence by subSequence {
 
   constructor(type: E, start: Int, finish: Int = start) : this(type, SubSequence(start, finish))
 

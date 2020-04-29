@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 
 
-/*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class WordTokenizerTest {
   private val tokenizer = WordTokenizer(TokenType.WORD)
@@ -20,47 +19,39 @@ internal class WordTokenizerTest {
 
   @Test
   fun `non matching not last`() {
-    tokenizer.processChar(' ', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusNone)
+    tokenizer.startProcessing(' ', 0).assertNone()
   }
 
   @Test
   fun `non matching last`() {
-    tokenizer.processChar(' ', 0, true)
-    assertEquals(tokenizer.getBuildingStatus(),StatusNone)
+    tokenizer.startProcessingLast(' ', 0).assertNone()
   }
 
   @Test
   fun `matching not last`() {
-    tokenizer.processChar('a', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusBuilding)
-
-    tokenizer.processChar(' ', 1, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
-
-    tokenizer.buildToken().assertEquals(expectedToken0)
+    tokenizer.startProcessing('a', 0).assertBuilding {
+      it.processChar(' ', it).assertFinish {
+        it.createToken().assertEquals(expectedToken0)
+      }
+    }
   }
 
   @Test
   fun `matching last`() {
-    tokenizer.processChar('a', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusBuilding)
-
-    tokenizer.processChar('b', 1, true)
-    assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
-
-    tokenizer.buildToken().assertEquals(expectedToken1)
+    tokenizer.startProcessing('a', 0).assertBuilding {
+      it.processLastChar('b', it).assertFinish {
+        it.createToken().assertEquals(expectedToken1)
+      }
+    }
   }
 
   @Test
   fun `matching last space`() {
-    tokenizer.processChar('a', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusBuilding)
-
-    tokenizer.processChar(' ', 1, true)
-    assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
-
-    tokenizer.buildToken().assertEquals(expectedToken0)
+    tokenizer.startProcessing('a', 0).assertBuilding {
+      it.processLastChar(' ', it).assertFinish {
+        it.createToken().assertEquals(expectedToken0)
+      }
+    }
   }
 
-}*/
+}
