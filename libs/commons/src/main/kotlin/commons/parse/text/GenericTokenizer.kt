@@ -7,7 +7,7 @@ package com.jvmlab.commons.parse.text
 open class GenericTokenizer<E: Enum<E>>(
     type: E,
     checkChar: (Char) -> Boolean
-) : GenericSingleCharTokenizer<E>(type, checkChar) {
+) : GenericSingleCharTokenizer<E>(type, checkChar), IProcessTokenizer<E> {
 
   override fun startProcessing(char: Char, idx: Int): TokenizerStatus =
       if (checkChar(char))
