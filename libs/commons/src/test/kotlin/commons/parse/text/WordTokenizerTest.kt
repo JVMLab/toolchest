@@ -69,5 +69,4 @@ internal class WordTokenizerTest {
         .assertFinish().createToken()
         .assertEquals(expectedToken2)
   }
-
 }
