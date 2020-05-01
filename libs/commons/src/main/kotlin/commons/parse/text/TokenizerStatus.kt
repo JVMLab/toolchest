@@ -43,6 +43,12 @@ open class StatusBuilding<E: Enum<E>>(
 
   override fun toString(): String = name
 
+  fun nextBuilding() = StatusBuilding<E>(tokenizer, start, finish + 1)
+
+  fun thisFinish() = StatusFinished<E>(tokenizer, start, finish)
+
+  fun nextFinish() = StatusFinished<E>(tokenizer, start, finish + 1)
+
   fun processChar(char: Char): TokenizerStatus = tokenizer.processChar(char, this)
 
   fun processLastChar(char: Char): FinalStatus = tokenizer.processLastChar(char, this)

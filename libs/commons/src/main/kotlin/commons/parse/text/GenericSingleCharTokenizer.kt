@@ -18,15 +18,4 @@ open class GenericSingleCharTokenizer<E: Enum<E>>(
       else
         reset()
 
-
-  /**
-   * This function is not expected to be called because [startProcessing] will never return [StatusBuilding]
-   */
-/*  override fun processChar(char: Char, lastStatus: StatusBuilding<E>): TokenizerStatus = reset()
-
-
-  *//**
-   * This function is not expected to be called because [startProcessing] will never return [StatusBuilding]
-   *//*
-  override fun processLastChar(char: Char, lastStatus: StatusBuilding<E>): FinalStatus = reset()*/
 }

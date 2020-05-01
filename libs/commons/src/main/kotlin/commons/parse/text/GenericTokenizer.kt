@@ -18,14 +18,14 @@ open class GenericTokenizer<E: Enum<E>>(
 
   override fun processChar(char: Char, lastStatus: StatusBuilding<E>): TokenizerStatus =
       if (checkChar(char))
-        StatusBuilding(this, lastStatus.start, lastStatus.finish + 1)
+        lastStatus.nextBuilding()
       else
-        StatusFinished(this, lastStatus)
+        lastStatus.thisFinish()
 
 
   override fun processLastChar(char: Char, lastStatus: StatusBuilding<E>): FinalStatus =
       if (checkChar(char))
-        StatusFinished(this, lastStatus.start, lastStatus.finish + 1)
+        lastStatus.nextFinish()
       else
-        StatusFinished(this, lastStatus)
+        lastStatus.thisFinish()
 }

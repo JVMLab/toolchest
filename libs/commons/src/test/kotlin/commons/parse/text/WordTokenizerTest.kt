@@ -10,6 +10,7 @@ internal class WordTokenizerTest {
   private val tokenizer = WordTokenizer(TokenType.WORD)
   private val expectedToken0 = Token(TokenType.WORD, 0, 0)
   private val expectedToken1 = Token(TokenType.WORD, 0, 1)
+  private val expectedToken2 = Token(TokenType.WORD, 0, 2)
 
   @BeforeEach
   fun reset() {
@@ -48,6 +49,25 @@ internal class WordTokenizerTest {
         .assertBuilding().processLastChar(' ')
         .assertFinish().createToken()
         .assertEquals(expectedToken0)
+  }
+
+  @Test
+  fun `matching long last`() {
+    tokenizer.startProcessing('a', 0)
+        .assertBuilding().processChar('b')
+        .assertBuilding().processLastChar('c')
+        .assertFinish().createToken()
+        .assertEquals(expectedToken2)
+  }
+
+  @Test
+  fun `matching long last space`() {
+    tokenizer.startProcessing('a', 0)
+        .assertBuilding().processChar('b')
+        .assertBuilding().processChar('c')
+        .assertBuilding().processLastChar(' ')
+        .assertFinish().createToken()
+        .assertEquals(expectedToken2)
   }
 
 }
