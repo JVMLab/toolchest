@@ -7,7 +7,7 @@ package com.jvmlab.commons.parse.text
 sealed class TokenizerStatus
 
 /**
- * Parent class of all the statuses of an [ITokenizer] which cannot be changed to any
+ * Parent class of all the statuses of an [ITokenizer] which cannot transit to any
  * status except initial [StatusNone].
  */
 sealed class FinalStatus : TokenizerStatus()
@@ -17,7 +17,7 @@ sealed class FinalStatus : TokenizerStatus()
  * in-progress. Such a status can be changed later to some [FinalStatus], when some
  * other [Char] is processed.
  */
-sealed class ProgressStatus : TokenizerStatus()
+sealed class ProgressStatus(private val subSequence: ISubSequence) : TokenizerStatus(), ISubSequence by subSequence
 
 
 /**
@@ -25,9 +25,8 @@ sealed class ProgressStatus : TokenizerStatus()
  */
 open class StatusBuilding<E: Enum<E>>(
     private val tokenizer: IProcessTokenizer<E>,
-    private val subSequence: ISubSequence
-    ) : ProgressStatus(),
-    ISubSequence by subSequence,
+    subSequence: ISubSequence
+    ) : ProgressStatus(subSequence),
     IResetTokenizer<E> by tokenizer {
 
   constructor(
@@ -70,12 +69,17 @@ class StatusNone<E: Enum<E>>(private val tokenizer: IStartTokenizer<E>) : FinalS
 
 
 /**
+ * Parent class of all the [FinalStatus] statuses of an [ITokenizer] except initial [StatusNone].
+ */
+sealed class FinalModifiedStatus(private val subSequence: ISubSequence) : FinalStatus(), ISubSequence by subSequence
+
+
+/**
  * This is the only successful completion status which can create a [Token].
  */
 class StatusFinished<E: Enum<E>>(
     private val tokenizer: IResetTokenizer<E>,
-    private val subSequence: ISubSequence) : FinalStatus(),
-    ISubSequence by subSequence,
+    subSequence: ISubSequence) : FinalModifiedStatus(subSequence),
     IResetTokenizer<E> by tokenizer {
 
   constructor(
@@ -90,7 +94,7 @@ class StatusFinished<E: Enum<E>>(
 
   override fun toString(): String = name
 
-  fun createToken() = Token<E>(tokenizer.type, subSequence)
+  fun createToken() = Token<E>(tokenizer.type, start, finish)
 }
 
 
@@ -103,8 +107,7 @@ class StatusFinished<E: Enum<E>>(
  */
 class StatusCancelled<E: Enum<E>>(
     private val tokenizer: IResetTokenizer<E>,
-    private val subSequence: ISubSequence) : FinalStatus(),
-    ISubSequence by subSequence,
+    subSequence: ISubSequence) : FinalModifiedStatus(subSequence),
     IResetTokenizer<E> by tokenizer {
 
   constructor(
@@ -130,9 +133,8 @@ class StatusCancelled<E: Enum<E>>(
  */
 class StatusFailed<E: Enum<E>>(
     private val tokenizer: IResetTokenizer<E>,
-    private val subSequence: ISubSequence,
-    val reason: String = "") : FinalStatus(),
-    ISubSequence by subSequence,
+    subSequence: ISubSequence,
+    val reason: String = "") : FinalModifiedStatus(subSequence),
     IResetTokenizer<E> by tokenizer {
 
   constructor(

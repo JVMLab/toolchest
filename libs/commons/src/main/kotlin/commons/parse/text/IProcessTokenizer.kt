@@ -7,7 +7,7 @@ package com.jvmlab.commons.parse.text
 interface IProcessTokenizer<E: Enum<E>> : IResetTokenizer<E> {
   /**
    * Processes a next [Char] from a [CharSequence] except a last [Char], see [processLastChar].
-   * The processing
+   * Can return any [TokenizerStatus] except [StatusNone]
    *
    * @param char is a [Char] to be parsed
    */
@@ -15,10 +15,10 @@ interface IProcessTokenizer<E: Enum<E>> : IResetTokenizer<E> {
 
 
   /**
-   * Processes a last [Char] from a [CharSequence]. It returns [FinalStatus] because tokenization must be
-   * finished by the end of the [CharSequence].
+   * Processes a last [Char] from a [CharSequence]. It returns [FinalModifiedStatus] because tokenization
+   * must be finished by the end of the [CharSequence].
    *
    * @param char is a [Char] to be parsed
    */
-  fun processLastChar(char: Char, lastStatus: StatusBuilding<E>) : FinalStatus
+  fun processLastChar(char: Char, lastStatus: StatusBuilding<E>) : FinalModifiedStatus
 }

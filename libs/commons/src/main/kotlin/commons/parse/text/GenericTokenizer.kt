@@ -23,7 +23,7 @@ open class GenericTokenizer<E: Enum<E>>(
         lastStatus.thisFinish()
 
 
-  override fun processLastChar(char: Char, lastStatus: StatusBuilding<E>): FinalStatus =
+  override fun processLastChar(char: Char, lastStatus: StatusBuilding<E>): FinalModifiedStatus =
       if (checkChar(char))
         lastStatus.nextFinish()
       else

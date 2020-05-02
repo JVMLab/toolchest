@@ -1,7 +1,5 @@
 package com.jvmlab.commons.parse.text
 
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -10,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import java.util.stream.Stream
 
 
-/*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ParsersTest {
 
@@ -51,10 +48,9 @@ internal class ParsersTest {
           )
       )
 
-  @ParameterizedTest(name = "SingleCharTokenizer: \"{0}\"")
+  @ParameterizedTest(name = "SingleCharTokenizer: <{0}>")
   @MethodSource("singleCharArgs")
   fun singleCharTest(src: String, tokens: List<Token<TokenType>>) {
-    singleCharTokenizer.reset()
     src.parse(singleCharTokenizer, TokenType.DEFAULT).assertEquals(tokens)
   }
 
@@ -88,13 +84,29 @@ internal class ParsersTest {
                   Token(TokenType.WORD, 0, 2),
                   Token(TokenType.WHITESPACE, 3, 3)
               )
+          ),
+          Arguments.of(
+              "xxx  y",
+              listOf(
+                  Token(TokenType.WORD, 0, 2),
+                  Token(TokenType.WHITESPACE, 3, 4),
+                  Token(TokenType.WORD, 5, 5)
+              )
+          ),
+          Arguments.of(
+              "xxx  y ",
+              listOf(
+                  Token(TokenType.WORD, 0, 2),
+                  Token(TokenType.WHITESPACE, 3, 4),
+                  Token(TokenType.WORD, 5, 5),
+                  Token(TokenType.WHITESPACE, 6, 6)
+              )
           )
       )
 
-  @ParameterizedTest(name = "WordTokenizer: \"{0}\"")
+  @ParameterizedTest(name = "WordTokenizer: <{0}>")
   @MethodSource("wordArgs")
   fun wordTest(src: String, tokens: List<Token<TokenType>>) {
-    wordTokenizer.reset()
     src.parse(wordTokenizer, TokenType.WHITESPACE).assertEquals(tokens)
   }
 
@@ -138,12 +150,11 @@ internal class ParsersTest {
   @ParameterizedTest(name = "SimpleNumberTokenizer: \"{0}\"")
   @MethodSource("simpleNumberArgs")
   fun simpleNumberTest(src: String, tokens: List<Token<TokenType>>) {
-    simpleNumberTokenizer.reset()
     src.parse(simpleNumberTokenizer, TokenType.DEFAULT).assertEquals(tokens)
   }
 
 
-  private val bracketsTokenizer = BracketsTokenizer(
+/*  private val bracketsTokenizer = BracketsTokenizer(
       TokenType.BRACKETS,
       MultiTokenizer(
           TokenType.DEFAULT,
@@ -212,5 +223,5 @@ internal class ParsersTest {
   fun bracketsTest(src: String, tokens: List<Token<TokenType>>) {
     bracketsTokenizer.reset()
     src.parse(bracketsTokenizer, TokenType.WHITESPACE).assertEquals(tokens)
-  }
-}*/
+  }*/
+}
