@@ -26,7 +26,8 @@ class StatusNone<E: Enum<E>>(private val tokenizer: IStartTokenizer<E>) : Tokeni
  * except [StatusNone]). [ModifiedStatus] can be changed later to some [FinalModifiedStatus],
  * when some other [Char] is processed.
  */
-sealed class ModifiedStatus(private val subSequence: ISubSequence) : TokenizerStatus(), ISubSequence by subSequence
+sealed class ModifiedStatus(protected open val subSequence: ISubSequence) :
+    TokenizerStatus(), ISubSequence by subSequence
 
 
 /**
@@ -34,7 +35,7 @@ sealed class ModifiedStatus(private val subSequence: ISubSequence) : TokenizerSt
  */
 open class StatusBuilding<E: Enum<E>>(
     private val tokenizer: IProcessTokenizer<E>,
-    subSequence: ISubSequence
+    override val subSequence: IStretchableSubSequence
     ) : ModifiedStatus(subSequence),
     IResetTokenizer<E> by tokenizer {
 
@@ -42,7 +43,7 @@ open class StatusBuilding<E: Enum<E>>(
       tokenizer: IProcessTokenizer<E>,
       start: Int,
       finish: Int = start
-  ) : this(tokenizer, SubSequence(start, finish))
+  ) : this(tokenizer, StretchableSubSequence(start, finish))
 
 
   companion object ClassProps {
@@ -51,7 +52,10 @@ open class StatusBuilding<E: Enum<E>>(
 
   override fun toString(): String = name
 
-  fun nextBuilding() = StatusBuilding<E>(tokenizer, start, finish + 1)
+  fun nextBuilding(): StatusBuilding<E> {
+    subSequence.stretch()
+    return this
+  }
 
   fun thisFinish() = StatusFinished<E>(tokenizer, start, finish)
 
@@ -95,7 +99,8 @@ class StatusFinished<E: Enum<E>>(
 
 /**
  * Represents cancelled status of an [ITokenizer]. This status is supposed to be treated
- * as normal valid status in contrast to [StatusFailed]. It can be used, for example, in case
+ * as normal valid status in contrast to [StatusFailed]. It is used when no token ws crated after
+ * starting processing from [StatusNone]. It can be used also, for example, in case
  * of tokenization of a [CharSequence] to one of several possible keywords like 'max' and 'maximum'.
  * [ITokenizer] for 'max' will have [StatusCancelled] after 'i' [Char] processing, while
  * [ITokenizer] for 'maximum' will still have [StatusBuilding]

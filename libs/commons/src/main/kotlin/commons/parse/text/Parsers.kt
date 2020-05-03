@@ -45,7 +45,7 @@ private fun <E: Enum<E>> parse(
   var defaultStart = 0 // a start of a default token, used when defaultTokenType is not null
   var idx = 0 // current index in the charSequence
   var char: Char // current char in the charSequence
-  var status: TokenizerStatus = StatusNone(tokenizer)
+  var status: TokenizerStatus = tokenizer.reset()
 
 
   loop@ while (idx < charSequence.length - 1) {
@@ -53,6 +53,7 @@ private fun <E: Enum<E>> parse(
     when (status) {
       is StatusNone<*> -> {
         status = status.startProcessing(char, idx)
+        @Suppress("USELESS_CAST")
         when (status as ModifiedStatus) {
           is StatusBuilding<*> -> idx++
           is FinalModifiedStatus -> continue@loop // just skip, will be processed in the next iteration
@@ -62,6 +63,7 @@ private fun <E: Enum<E>> parse(
         // increments idx if still in building or
         // keeps it when this.finish was not incremented in tokenizer.processChar()
         status = status.processChar(char)
+        @Suppress("USELESS_CAST")
         when (status as ModifiedStatus) {
           is StatusBuilding<*> -> idx = status.finish + 1
           is FinalModifiedStatus -> continue@loop // just skip, will be processed in the next iteration

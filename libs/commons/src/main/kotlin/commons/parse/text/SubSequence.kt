@@ -4,7 +4,7 @@ package com.jvmlab.commons.parse.text
 /**
  * Implements a piece of the [CharSequence] with [start] and [finish] points
  */
-class SubSequence(startParam: Int, finishParam: Int = startParam) : ISubSequence {
+open class SubSequence(startParam: Int, finishParam: Int = startParam) : ISubSequence {
   // Checks consistency of the token bounds startParam and finishParam
   init {
     require(startParam >= 0) { "Start ($startParam) cannot be negative" }
