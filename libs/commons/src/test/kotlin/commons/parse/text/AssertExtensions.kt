@@ -88,6 +88,16 @@ fun TokenizerStatus.assertFinish() : StatusFinished<TokenType> {
   return(this as StatusFinished<TokenType>)
 }
 
+/**
+ * Verifies if [TokenizerStatus] object has [StatusCancelled] type
+ */
+fun TokenizerStatus.assertCancelled() : StatusCancelled<TokenType> {
+  if (this !is StatusCancelled<*>)
+    fail("$this is not ${StatusCancelled.name}")
+
+  @Suppress("UNCHECKED_CAST")
+  return(this as StatusCancelled<TokenType>)
+}
 
 /**
  * Verifies if [TokenizerStatus] object has [StatusNone] type

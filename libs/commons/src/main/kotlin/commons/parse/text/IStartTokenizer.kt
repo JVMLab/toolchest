@@ -12,7 +12,7 @@ interface IStartTokenizer<E: Enum<E>> : IResetTokenizer<E>  {
    * @param char is a [Char] to be parsed
    * @param idx is a position of the [char] in a parsed [CharSequence]
    */
-  fun startProcessing(char: Char, idx: Int) : TokenizerStatus
+  fun startProcessing(char: Char, idx: Int) : ModifiedStatus
 
 
   /**
@@ -23,7 +23,7 @@ interface IStartTokenizer<E: Enum<E>> : IResetTokenizer<E>  {
    * @param char is a [Char] to be parsed
    * @param idx is a position of the [char] in a parsed [CharSequence]
    */
-  fun startProcessingLast(char: Char, idx: Int) : FinalStatus
+  fun startProcessingLast(char: Char, idx: Int) : FinalModifiedStatus
 
 
   /**

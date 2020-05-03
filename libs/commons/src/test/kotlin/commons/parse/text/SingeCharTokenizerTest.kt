@@ -17,12 +17,16 @@ internal class SingeCharTokenizerTest {
 
   @Test
   fun `non matching not last`() {
-    tokenizer.startProcessing(' ', 0).assertNone()
+    tokenizer.startProcessing(' ', 0)
+        .assertCancelled().reset()
+        .assertNone()
   }
 
   @Test
   fun `non matching last`() {
-    tokenizer.startProcessingLast(' ', 0).assertNone()
+    tokenizer.startProcessingLast(' ', 0)
+        .assertCancelled().reset()
+        .assertNone()
   }
 
   @Test

@@ -6,18 +6,27 @@ package com.jvmlab.commons.parse.text
  */
 sealed class TokenizerStatus
 
-/**
- * Parent class of all the statuses of an [ITokenizer] which cannot transit to any
- * status except initial [StatusNone].
- */
-sealed class FinalStatus : TokenizerStatus()
 
 /**
- * Parent class of all the statuses of an [ITokenizer] which represent tokenization
- * in-progress. Such a status can be changed later to some [FinalStatus], when some
- * other [Char] is processed.
+ * Initial status an [ITokenizer] before processing a first actual [Char] of a token.
  */
-sealed class ProgressStatus(private val subSequence: ISubSequence) : TokenizerStatus(), ISubSequence by subSequence
+class StatusNone<E: Enum<E>>(private val tokenizer: IStartTokenizer<E>) : TokenizerStatus(),
+    IStartTokenizer<E> by tokenizer {
+
+  companion object ClassProps {
+    const val name = "NONE"
+  }
+
+  override fun toString(): String = name
+}
+
+
+/**
+ * Parent class of all the statuses of an [ITokenizer] which started tokenization process (all statuses
+ * except [StatusNone]). [ModifiedStatus] can be changed later to some [FinalModifiedStatus],
+ * when some other [Char] is processed.
+ */
+sealed class ModifiedStatus(private val subSequence: ISubSequence) : TokenizerStatus(), ISubSequence by subSequence
 
 
 /**
@@ -26,7 +35,7 @@ sealed class ProgressStatus(private val subSequence: ISubSequence) : TokenizerSt
 open class StatusBuilding<E: Enum<E>>(
     private val tokenizer: IProcessTokenizer<E>,
     subSequence: ISubSequence
-    ) : ProgressStatus(subSequence),
+    ) : ModifiedStatus(subSequence),
     IResetTokenizer<E> by tokenizer {
 
   constructor(
@@ -48,30 +57,16 @@ open class StatusBuilding<E: Enum<E>>(
 
   fun nextFinish() = StatusFinished<E>(tokenizer, start, finish + 1)
 
-  fun processChar(char: Char): TokenizerStatus = tokenizer.processChar(char, this)
+  fun processChar(char: Char): ModifiedStatus = tokenizer.processChar(char, this)
 
-  fun processLastChar(char: Char): FinalStatus = tokenizer.processLastChar(char, this)
+  fun processLastChar(char: Char): FinalModifiedStatus = tokenizer.processLastChar(char, this)
 }
 
 
 /**
- * Initial status an [ITokenizer] before processing a first actual [Char] of a token.
+ * Parent class of all the [ModifiedStatus] statuses of an [ITokenizer] except incomplete status [StatusBuilding].
  */
-class StatusNone<E: Enum<E>>(private val tokenizer: IStartTokenizer<E>) : FinalStatus(),
-    IStartTokenizer<E> by tokenizer {
-
-  companion object ClassProps {
-    const val name = "NONE"
-  }
-
-  override fun toString(): String = name
-}
-
-
-/**
- * Parent class of all the [FinalStatus] statuses of an [ITokenizer] except initial [StatusNone].
- */
-sealed class FinalModifiedStatus(private val subSequence: ISubSequence) : FinalStatus(), ISubSequence by subSequence
+sealed class FinalModifiedStatus(subSequence: ISubSequence) : ModifiedStatus(subSequence)
 
 
 /**

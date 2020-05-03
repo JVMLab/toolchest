@@ -11,7 +11,7 @@ interface IProcessTokenizer<E: Enum<E>> : IResetTokenizer<E> {
    *
    * @param char is a [Char] to be parsed
    */
-  fun processChar(char: Char, lastStatus: StatusBuilding<E>) : TokenizerStatus
+  fun processChar(char: Char, lastStatus: StatusBuilding<E>) : ModifiedStatus
 
 
   /**

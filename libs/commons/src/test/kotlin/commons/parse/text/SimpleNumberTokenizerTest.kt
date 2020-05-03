@@ -20,12 +20,16 @@ internal class SimpleNumberTokenizerTest {
 
   @Test
   fun `non matching not last`() {
-    tokenizer.startProcessing('x', 0).assertNone()
+    tokenizer.startProcessing('x', 0)
+        .assertCancelled().reset()
+        .assertNone()
   }
 
   @Test
   fun `non matching last`() {
-    tokenizer.startProcessingLast('x', 0).assertNone()
+    tokenizer.startProcessingLast('x', 0)
+        .assertCancelled().reset()
+        .assertNone()
   }
 
   @Test
