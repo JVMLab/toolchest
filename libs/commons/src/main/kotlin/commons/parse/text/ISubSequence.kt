@@ -10,6 +10,14 @@ package com.jvmlab.commons.parse.text
 interface ISubSequence {
   val start: Int
   val finish: Int
-  fun subSequence(source: CharSequence): CharSequence
-  fun length(): Int
+
+  /**
+   * Gives [CharSequence] representation of this [SubSequence] based on [source]
+   */
+  fun sequence(source: CharSequence): CharSequence = source.subSequence(start, finish + 1)
+
+  /**
+   * Gives length of this [SubSequence] in characters
+   */
+  fun length(): Int = finish - start + 1
 }

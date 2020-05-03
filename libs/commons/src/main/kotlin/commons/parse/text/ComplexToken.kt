@@ -15,21 +15,23 @@ package com.jvmlab.commons.parse.text
  */
 open class ComplexToken<E: Enum<E>> (
     type: E,
-    start: Int,
-    finish: Int = start,
-    val subTokens: List<Token<E>>) : Token<E>(type, start, finish) {
+    subSequence: ISubSequence,
+    val subTokens: List<Token<E>>) : Token<E>(type, subSequence) {
 
   /**
    * Checks consistency of sub-token bounds
    */
   init {
-    var leftBound = start
+    var leftBound = subSequence.start
     subTokens.forEach { token ->
       require(leftBound <= token.start) { "Incorrect start value of a sub-token (${token.start})" }
       require(token.finish <= finish) { "Incorrect finish value of a sub-token (${token.finish})" }
       leftBound = token.finish
     }
   }
+
+  constructor(type: E, start: Int, finish: Int, subTokens: List<Token<E>>) :
+      this(type, SubSequence(start, finish), subTokens)
 
   /**
    * Additional constructor to create a [ComplexToken] based on [Token]

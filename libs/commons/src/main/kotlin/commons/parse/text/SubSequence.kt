@@ -15,16 +15,4 @@ open class SubSequence(startParam: Int, finishParam: Int = startParam) : ISubSeq
 
   override val start: Int = startParam
   override val finish: Int = finishParam
-
-
-  /**
-   * Gives [CharSequence] representation of this piece based on a [source] [CharSequence]
-   */
-  override fun subSequence(source: CharSequence): CharSequence = source.subSequence(start, finish + 1)
-
-
-  /**
-   * Gives length of this [CharSequence] piece in characters
-   */
-  override fun length(): Int = finish - start + 1
 }

@@ -17,9 +17,7 @@ open class Token<E: Enum<E>>(
    *
    * @param source is a source [CharSequence] for this token
    */
-  open fun prettyPrint(source: CharSequence) = println("$type : " + " ".repeat(start) + "'${subSequence(source)}'")
+  open fun prettyPrint(source: CharSequence) = println("$type : " + " ".repeat(start) + "'${sequence(source)}'")
 
-  override fun toString(): String {
-    return "Token(type=$type, start=$start, finish=$finish)"
-  }
+  override fun toString(): String = "Token(type=$type, start=$start, finish=$finish)"
 }
