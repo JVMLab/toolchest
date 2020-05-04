@@ -15,4 +15,8 @@ class StretchableSubSequence(startParam: Int, finishParam: Int = startParam) :
     super.stretch(extent)  // to validate function argument
     finish += extent
   }
+
+  override fun stretch() {
+    finish++
+  }
 }
