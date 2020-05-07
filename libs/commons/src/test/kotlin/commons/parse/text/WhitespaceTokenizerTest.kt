@@ -5,13 +5,13 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 
-/*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class WhitespaceTokenizerTest {
   private val tokenizer = WhitespaceTokenizer(TokenType.WHITESPACE)
   private val expectedToken0 = Token(TokenType.WHITESPACE, 0, 0)
   private val expectedToken1 = Token(TokenType.WHITESPACE, 0, 1)
+  private val expectedToken2 = Token(TokenType.WHITESPACE, 0, 2)
 
   @BeforeEach
   fun reset() {
@@ -20,47 +20,58 @@ internal class WhitespaceTokenizerTest {
 
   @Test
   fun `non matching not last`() {
-    tokenizer.processChar('X', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusNone)
+    tokenizer.startProcessing('X', 0)
+        .assertCancelled().reset()
+        .assertNone()
   }
 
   @Test
   fun `non matching last`() {
-    tokenizer.processChar('X', 0, true)
-    assertEquals(tokenizer.getBuildingStatus(),StatusNone)
+    tokenizer.startProcessingLast('X', 0)
+        .assertCancelled().reset()
+        .assertNone()
   }
 
   @Test
   fun `matching not last`() {
-    tokenizer.processChar(' ', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusBuilding)
-
-    tokenizer.processChar('X', 1, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
-
-    tokenizer.buildToken().assertEquals(expectedToken0)
+    tokenizer.startProcessing(' ', 0)
+        .assertBuilding().processChar('X')
+        .assertFinish().createToken()
+        .assertEquals(expectedToken0)
   }
 
   @Test
   fun `matching last`() {
-    tokenizer.processChar(' ', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusBuilding)
-
-    tokenizer.processChar(' ', 1, true)
-    assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
-
-    tokenizer.buildToken().assertEquals(expectedToken1)
+    tokenizer.startProcessing(' ', 0)
+        .assertBuilding().processLastChar(' ')
+        .assertFinish().createToken()
+        .assertEquals(expectedToken1)
   }
 
   @Test
   fun `matching last non-space`() {
-    tokenizer.processChar(' ', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusBuilding)
-
-    tokenizer.processChar('X', 1, true)
-    assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
-
-    tokenizer.buildToken().assertEquals(expectedToken0)
+    tokenizer.startProcessing(' ', 0)
+        .assertBuilding().processLastChar('X')
+        .assertFinish().createToken()
+        .assertEquals(expectedToken0)
   }
 
-}*/
+  @Test
+  fun `matching long last`() {
+    tokenizer.startProcessing(' ', 0)
+        .assertBuilding().processChar(' ')
+        .assertBuilding().processLastChar(' ')
+        .assertFinish().createToken()
+        .assertEquals(expectedToken2)
+  }
+
+  @Test
+  fun `matching long last non-space`() {
+    tokenizer.startProcessing(' ', 0)
+        .assertBuilding().processChar(' ')
+        .assertBuilding().processChar(' ')
+        .assertBuilding().processLastChar('X')
+        .assertFinish().createToken()
+        .assertEquals(expectedToken2)
+  }
+}

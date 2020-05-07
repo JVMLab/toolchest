@@ -154,6 +154,55 @@ internal class ParsersTest {
   }
 
 
+  private val alternativeTokenizer = AlternativeTokenizer(
+      TokenType.DEFAULT,
+      listOf(
+          WordTokenizer(TokenType.WORD),
+          WhitespaceTokenizer(TokenType.WHITESPACE)
+      )
+  )
+
+  fun alternativeArgs(): Stream<Arguments> =
+      Stream.of(
+          Arguments.of(
+              "a ",
+              listOf(
+                  Token(TokenType.WORD, 0, 0),
+                  Token(TokenType.WHITESPACE, 1, 1)
+              )
+          ),
+          Arguments.of(
+              " a",
+              listOf(
+                  Token(TokenType.WHITESPACE, 0, 0),
+                  Token(TokenType.WORD, 1, 1)
+              )
+          ),
+          Arguments.of(
+              "ab ",
+              listOf(
+                  Token(TokenType.WORD, 0, 1),
+                  Token(TokenType.WHITESPACE, 2, 2)
+              )
+          ),
+          Arguments.of(
+              "   ab  ",
+              listOf(
+                  Token(TokenType.WHITESPACE, 0, 2),
+                  Token(TokenType.WORD, 3, 4),
+                  Token(TokenType.WHITESPACE, 5, 6)
+              )
+          )
+      )
+
+  @ParameterizedTest(name = "AlternativeTokenizer: \"{0}\"")
+  @MethodSource("alternativeArgs")
+  fun alternativeTest(src: String, tokens: List<Token<TokenType>>) {
+    src.parse(alternativeTokenizer).assertEquals(tokens)
+  }
+
+
+
 /*  private val bracketsTokenizer = BracketsTokenizer(
       TokenType.BRACKETS,
       MultiTokenizer(

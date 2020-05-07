@@ -41,72 +41,72 @@ private fun <E: Enum<E>> parse(
     defaultTokenType: E?
 ): Map<String, List<Token<E>>> {
   val tokenList = ArrayList<Token<E>>() // a list of tokens to be returned as a value in the Map
-  var token: Token<E> // a token built by the currentBuilder
   var defaultStart = 0 // a start of a default token, used when defaultTokenType is not null
   var idx = 0 // current index in the charSequence
   var char: Char // current char in the charSequence
-  var status: TokenizerStatus = tokenizer.reset()
 
+  val initialStatus = tokenizer.reset()
+  var status: TokenizerStatus = initialStatus
 
-  loop@ while (idx < charSequence.length - 1) {
+  fun processFinished(statusFinished: StatusFinished<E>) {
+    val token = statusFinished.createToken()
+    tokenList.addDefaultToken(defaultTokenType, defaultStart, token.start)
+    tokenList.add(token)
+    idx = token.finish + 1 // sets idx to a next char after the current token
+    defaultStart = idx
+  }
+
+  fun processFailed(statusFailed: StatusFailed<*>) {
+    throw IllegalStateException("Parsing error at position $idx with reason: ${statusFailed.reason}")
+  }
+
+  while (idx < charSequence.length - 1) {
     char = charSequence[idx]
     when (status) {
       is StatusNone<*> -> {
         status = status.startProcessing(char, idx)
-        @Suppress("USELESS_CAST")
-        when (status as ModifiedStatus) {
-          is StatusBuilding<*> -> idx++
-          is FinalModifiedStatus -> continue@loop // just skip, will be processed in the next iteration
-        }
+        if (status is StatusBuilding<*>)
+          idx = status.finish + 1
       }
       is StatusBuilding<*> -> {
-        // increments idx if still in building or
-        // keeps it when this.finish was not incremented in tokenizer.processChar()
         status = status.processChar(char)
-        @Suppress("USELESS_CAST")
-        when (status as ModifiedStatus) {
-          is StatusBuilding<*> -> idx = status.finish + 1
-          is FinalModifiedStatus -> continue@loop // just skip, will be processed in the next iteration
-        }
+        if (status is StatusBuilding<*>)
+          idx = status.finish + 1
       }
       is StatusFinished<*> -> {
         @Suppress("UNCHECKED_CAST")
-        token = status.createToken() as Token<E>
-        status = status.reset()
-        tokenList.addDefaultToken(defaultTokenType, defaultStart, token.start)
-        tokenList.add(token)
-        idx = token.finish + 1 // sets idx to a next char after the current token
-        defaultStart = idx
+        processFinished(status as StatusFinished<E>)
+        status = initialStatus
       }
       is StatusCancelled<*> -> {
         idx = status.finish + 1
-        status = status.reset()
+        status = initialStatus
       }
       is StatusFailed<*> ->
-        throw IllegalStateException("Parsing error at position $idx with reason: ${status.reason}")
+        processFailed(status)
     }
   }
 
-  //Process the last char, idx == charSequence.length - 1
-  char = charSequence[idx]
-
-  val finalStatus = when (status) {
-    is StatusNone<*> -> status.startProcessingLast(char, idx)
-    is StatusBuilding<*> -> status.processLastChar(char)
-    is FinalModifiedStatus ->  // supposed to be processed in the above loop
-      throw IllegalStateException("Unexpected $status before position $idx")
-  }
-
-  when (finalStatus) {
-    is StatusCancelled<*> -> tokenList.addDefaultToken(defaultTokenType, defaultStart, idx + 1)
-    is StatusFinished<*> -> {
-      @Suppress("UNCHECKED_CAST")
-      token = finalStatus.createToken() as Token<E>
-      tokenList.addDefaultToken(defaultTokenType, defaultStart, token.start)
-      tokenList.add(token)
+  // Process the last char, idx == charSequence.length - 1
+  while (idx < charSequence.length) {
+    char = charSequence[idx]
+    when (status) {
+      is StatusNone<*> ->
+        status = status.startProcessingLast(char, idx)
+      is StatusBuilding<*> ->
+        status = status.processLastChar(char)
+      is StatusFinished<*> -> {
+        @Suppress("UNCHECKED_CAST")
+        processFinished(status as StatusFinished<E>)
+        status = initialStatus
+      }
+      is StatusCancelled<*> -> {
+        idx = status.finish + 1
+        tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
+      }
+      is StatusFailed<*> ->
+        processFailed(status)
     }
-    is StatusFailed<*> ->
-      throw IllegalStateException("Parsing error at position $idx with reason: ${finalStatus.reason}")
   }
 
   return mapOf(ParsedKey.PARSED_STRING.key to tokenList)

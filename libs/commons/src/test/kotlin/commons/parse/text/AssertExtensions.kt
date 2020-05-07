@@ -52,6 +52,9 @@ fun Parsed<CharSequence, List<Token<TokenType>>>.assertEquals(
 
   assertEquals(1, result.size, "$message: result size")
   assertEquals(ParsedKey.PARSED_STRING.key, result.keys.first(), "$message: result key")
+  result[ParsedKey.PARSED_STRING.key]?.let {
+    assertEquals(expectedTokenList.size, it.size, "$message: result size")
+  }
 
   result[ParsedKey.PARSED_STRING.key]?.forEachIndexed { idx, t ->
     val expectedToken = expectedTokenList[idx]

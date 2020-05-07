@@ -12,4 +12,6 @@ package com.jvmlab.commons.parse.text
  * [ITokenizer] should keep an internal state to be ready to correctly process a next [Char] from a [CharSequence]
  * - char processing functions should return a [StatusFinished] upon successful completion of the tokenization
  */
-interface ITokenizer<E: Enum<E>> : IStartTokenizer<E>, IProcessTokenizer<E>
+interface ITokenizer<E: Enum<E>> : IStartTokenizer<E>, IProcessTokenizer<E> {
+  override fun reset() = StatusNone(this)
+}

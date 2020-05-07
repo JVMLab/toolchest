@@ -13,11 +13,11 @@ sealed class TokenizerStatus
 class StatusNone<E: Enum<E>>(private val tokenizer: IStartTokenizer<E>) : TokenizerStatus(),
     IStartTokenizer<E> by tokenizer {
 
-  companion object ClassProps {
+  companion object {
     const val name = "NONE"
   }
 
-  override fun toString(): String = name
+  override fun toString(): String = "$name of ${tokenizer.type}"
 }
 
 
@@ -46,20 +46,24 @@ open class StatusBuilding<E: Enum<E>>(
   ) : this(tokenizer, StretchableSubSequence(start, finish))
 
 
-  companion object ClassProps {
+  companion object {
     const val name = "BUILDING"
   }
 
-  override fun toString(): String = name
+  override fun toString(): String = "$name of ${tokenizer.type}"
 
-  fun nextBuilding(): StatusBuilding<E> {
+  internal fun nextBuilding(): StatusBuilding<E> {
     subSequence.stretch()
     return this
   }
 
-  fun thisFinish() = StatusFinished<E>(tokenizer, start, finish)
+  internal fun thisFinish() : StatusFinished<E> = StatusFinished(tokenizer, start, finish)
 
-  fun nextFinish() = StatusFinished<E>(tokenizer, start, finish + 1)
+  internal fun nextFinish() : StatusFinished<E> = StatusFinished(tokenizer, start, finish + 1)
+
+  internal fun thisCancelled() : StatusCancelled<E> = StatusCancelled(tokenizer, start, finish)
+
+  internal fun nextCancelled() : StatusCancelled<E> = StatusCancelled(tokenizer, start, finish + 1)
 
   fun processChar(char: Char): ModifiedStatus = tokenizer.processChar(char, this)
 
@@ -87,11 +91,11 @@ class StatusFinished<E: Enum<E>>(
       finish: Int = start
   ) : this(tokenizer, SubSequence(start, finish))
 
-  companion object ClassProps {
+  companion object {
     const val name = "FINISHED"
   }
 
-  override fun toString(): String = name
+  override fun toString(): String = "$name of ${tokenizer.type}"
 
   fun createToken() = Token<E>(tokenizer.type, start, finish)
 }
@@ -117,11 +121,11 @@ class StatusCancelled<E: Enum<E>>(
   ) : this(tokenizer, SubSequence(start, finish))
 
 
-  companion object ClassProps {
+  companion object {
     const val name = "CANCELLED"
   }
 
-  override fun toString(): String = name
+  override fun toString(): String = "$name of ${tokenizer.type}"
 }
 
 
@@ -140,15 +144,16 @@ class StatusFailed<E: Enum<E>>(
   constructor(
       tokenizer: IResetTokenizer<E>,
       start: Int,
-      finish: Int = start
-  ) : this(tokenizer, SubSequence(start, finish))
+      finish: Int = start,
+      reason: String = ""
+  ) : this(tokenizer, SubSequence(start, finish), reason)
 
 
-  companion object ClassProps {
-    val name = toString()
+  companion object {
+    const val name = "FAILED"
   }
 
-  override fun toString(): String = "CANCELLED"
+  override fun toString(): String = "$name of ${tokenizer.type}"
 }
 
 
