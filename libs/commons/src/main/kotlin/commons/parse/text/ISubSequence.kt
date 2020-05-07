@@ -12,12 +12,25 @@ interface ISubSequence {
   val finish: Int
 
   /**
-   * Gives [CharSequence] representation of this [SubSequence] based on [source]
+   * Gives [CharSequence] representation of this [ISubSequence] based on [source]
    */
   fun sequence(source: CharSequence): CharSequence = source.subSequence(start, finish + 1)
 
+
   /**
-   * Gives length of this [SubSequence] in characters
+   * Gives length of this [ISubSequence] in characters
    */
   fun length(): Int = finish - start + 1
+
+
+  /**
+   * Returns [ISubSequence] with [finish] increased by [extent], which should not be negative
+   */
+  fun stretch(extent : Int) : ISubSequence
+
+
+  /**
+   * Returns [ISubSequence] with [finish] increased by 1
+   */
+  fun stretch() : ISubSequence
 }

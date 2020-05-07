@@ -2,7 +2,7 @@ package com.jvmlab.commons.parse.text
 
 
 /**
- * Implements a piece of the [CharSequence] with [start] and [finish] points
+ * Immutable implementation of [ISubSequence]
  */
 open class SubSequence(startParam: Int, finishParam: Int = startParam) : ISubSequence {
   // Checks consistency of the token bounds startParam and finishParam
@@ -15,4 +15,14 @@ open class SubSequence(startParam: Int, finishParam: Int = startParam) : ISubSeq
 
   override val start: Int = startParam
   override val finish: Int = finishParam
+
+
+  override fun stretch(extent: Int): ISubSequence {
+    require(extent >= 0) { "Extent for stretch() ($extent) cannot be negative" }
+    return SubSequence(start, finish + extent)
+  }
+
+  override fun stretch(): ISubSequence {
+    return SubSequence(start, finish + 1)
+  }
 }

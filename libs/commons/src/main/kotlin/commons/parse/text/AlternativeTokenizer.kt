@@ -64,7 +64,7 @@ class AlternativeTokenizer<E: Enum<E>>(
     if (buildingStatuses.size == 1)
       return buildingStatuses.first()
 
-    return StatusAltBuilding<E>(this, StretchableSubSequence(idx), buildingStatuses)
+    return StatusAltBuilding<E>(this, idx, buildingStatuses)
   }
 
 

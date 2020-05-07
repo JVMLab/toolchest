@@ -26,16 +26,16 @@ class StatusNone<E: Enum<E>>(private val tokenizer: IStartTokenizer<E>) : Tokeni
  * except [StatusNone]). [ModifiedStatus] can be changed later to some [FinalModifiedStatus],
  * when some other [Char] is processed.
  */
-sealed class ModifiedStatus(protected open val subSequence: ISubSequence) :
+sealed class ModifiedStatus(protected val subSequence: ISubSequence) :
     TokenizerStatus(), ISubSequence by subSequence
 
 
 /**
  * Represents incomplete "in progress" status of an [ITokenizer]
  */
-open class StatusBuilding<E: Enum<E>>(
-    private val tokenizer: IProcessTokenizer<E>,
-    override val subSequence: IStretchableSubSequence
+open class StatusBuilding<E: Enum<E>> protected constructor(
+    protected val tokenizer: IProcessTokenizer<E>,
+    subSequence: ISubSequence
     ) : ModifiedStatus(subSequence),
     IResetTokenizer<E> by tokenizer {
 
@@ -43,7 +43,7 @@ open class StatusBuilding<E: Enum<E>>(
       tokenizer: IProcessTokenizer<E>,
       start: Int,
       finish: Int = start
-  ) : this(tokenizer, StretchableSubSequence(start, finish))
+  ) : this(tokenizer, VariableSubSequence(start, finish))
 
 
   companion object {
@@ -57,13 +57,13 @@ open class StatusBuilding<E: Enum<E>>(
     return this
   }
 
-  internal fun thisFinish() : StatusFinished<E> = StatusFinished(tokenizer, start, finish)
+  internal open fun thisFinish() : StatusFinished<E> = StatusFinished(tokenizer, subSequence)
 
-  internal fun nextFinish() : StatusFinished<E> = StatusFinished(tokenizer, start, finish + 1)
+  internal open fun nextFinish() : StatusFinished<E> = StatusFinished(tokenizer, subSequence.stretch())
 
-  internal fun thisCancelled() : StatusCancelled<E> = StatusCancelled(tokenizer, start, finish)
+  internal fun thisCancelled() : StatusCancelled<E> = StatusCancelled(tokenizer, subSequence)
 
-  internal fun nextCancelled() : StatusCancelled<E> = StatusCancelled(tokenizer, start, finish + 1)
+  internal fun nextCancelled() : StatusCancelled<E> = StatusCancelled(tokenizer, subSequence.stretch())
 
   fun processChar(char: Char): ModifiedStatus = tokenizer.processChar(char, this)
 
@@ -80,7 +80,7 @@ sealed class FinalModifiedStatus(subSequence: ISubSequence) : ModifiedStatus(sub
 /**
  * This is the only successful completion status which can create a [Token].
  */
-class StatusFinished<E: Enum<E>>(
+open class StatusFinished<E: Enum<E>>(
     private val tokenizer: IResetTokenizer<E>,
     subSequence: ISubSequence) : FinalModifiedStatus(subSequence),
     IResetTokenizer<E> by tokenizer {
@@ -97,7 +97,7 @@ class StatusFinished<E: Enum<E>>(
 
   override fun toString(): String = "$name of ${tokenizer.type}"
 
-  fun createToken() = Token<E>(tokenizer.type, start, finish)
+  fun createToken() = Token(tokenizer.type, start, finish)
 }
 
 

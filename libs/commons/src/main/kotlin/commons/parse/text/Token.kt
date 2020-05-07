@@ -6,7 +6,7 @@ package com.jvmlab.commons.parse.text
  *
  * @property type is a type of this token, to be defined in sub-classes
  */
-open class Token<E: Enum<E>>(
+open class Token<E: Enum<E>> protected constructor(
     val type: E,
     private val subSequence: ISubSequence) : ISubSequence by subSequence {
 
