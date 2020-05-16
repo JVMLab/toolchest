@@ -32,46 +32,61 @@ internal class WhitespaceTokenizerTest {
         .assertNone()
   }
 
+
   @Test
   fun `matching not last`() {
-    tokenizer.startProcessing(' ', 0)
-        .assertBuilding().processChar('X')
-        .assertFinish().createToken()
+    val source = " X"
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processChar(source[1])
+        .assertFinish(expectedToken0.sequence(source)).createToken()
         .assertEquals(expectedToken0)
   }
+
 
   @Test
   fun `matching last`() {
-    tokenizer.startProcessing(' ', 0)
-        .assertBuilding().processLastChar(' ')
-        .assertFinish().createToken()
+    val source = "  "
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processLastChar(source[1])
+        .assertFinish(expectedToken1.sequence(source)).createToken()
         .assertEquals(expectedToken1)
   }
 
+
   @Test
   fun `matching last non-space`() {
-    tokenizer.startProcessing(' ', 0)
-        .assertBuilding().processLastChar('X')
-        .assertFinish().createToken()
+    val source = " X"
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processLastChar(source[1])
+        .assertFinish(expectedToken0.sequence(source)).createToken()
         .assertEquals(expectedToken0)
   }
 
+
   @Test
   fun `matching long last`() {
-    tokenizer.startProcessing(' ', 0)
-        .assertBuilding().processChar(' ')
-        .assertBuilding().processLastChar(' ')
-        .assertFinish().createToken()
+    val source = "   "
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processChar(source[1])
+        .assertBuilding(0, 1, source).processLastChar(source[2])
+        .assertFinish(expectedToken2.sequence(source)).createToken()
         .assertEquals(expectedToken2)
   }
 
+
   @Test
   fun `matching long last non-space`() {
-    tokenizer.startProcessing(' ', 0)
-        .assertBuilding().processChar(' ')
-        .assertBuilding().processChar(' ')
-        .assertBuilding().processLastChar('X')
-        .assertFinish().createToken()
+    val source = "   X"
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processChar(source[1])
+        .assertBuilding(0, 1, source).processChar(source[2])
+        .assertBuilding(0, 2, source).processLastChar(source[3])
+        .assertFinish(expectedToken2.sequence(source)).createToken()
         .assertEquals(expectedToken2)
   }
 }

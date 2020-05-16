@@ -72,35 +72,87 @@ fun Parsed<CharSequence, List<Token<TokenType>>>.assertEquals(
 /**
  * Verifies if [TokenizerStatus] object has [StatusBuilding] type
  */
-fun TokenizerStatus.assertBuilding() : StatusBuilding<TokenType> {
+fun TokenizerStatus.assertBuilding(
+    expectedStart: Int,
+    expectedFinish: Int,
+    source: CharSequence
+) : StatusBuilding<TokenType> {
+
+  val expectedSubSequence = SubSequence(expectedStart, expectedFinish).sequence(source)
+
   if (this !is StatusBuilding<*>)
-    fail("$this is not ${StatusBuilding.name}")
+    fail("'$expectedSubSequence': $this is not ${StatusBuilding.name}")
+
+  assertAll(expectedSubSequence.toString(),
+      { assertEquals(expectedStart, this.start, "$this start doesn't match") },
+      { assertEquals(expectedFinish, this.finish, "$this finish doesn't match") },
+      { assertEquals(expectedSubSequence, this.sequence(source)) }
+  )
 
   @Suppress("UNCHECKED_CAST")
   return(this as StatusBuilding<TokenType>)
 }
 
+
 /**
  * Verifies if [TokenizerStatus] object has [StatusFinished] type
  */
-fun TokenizerStatus.assertFinish() : StatusFinished<TokenType> {
+fun TokenizerStatus.assertFinish(
+    source: CharSequence
+) : StatusFinished<TokenType> {
   if (this !is StatusFinished<*>)
-    fail("$this is not ${StatusFinished.name}")
+    fail("'$source': $this is not ${StatusFinished.name}")
+
+  assertAll(source.toString(),
+      { assertEquals(0, this.start, "$this start doesn't match") },
+      { assertEquals(source.lastIndex, this.finish, "$this finish doesn't match") },
+      { assertEquals(source, this.sequence(source)) }
+  )
 
   @Suppress("UNCHECKED_CAST")
   return(this as StatusFinished<TokenType>)
 }
 
+
 /**
  * Verifies if [TokenizerStatus] object has [StatusCancelled] type
  */
-fun TokenizerStatus.assertCancelled() : StatusCancelled<TokenType> {
+fun TokenizerStatus.assertCancelled(
+    expectedStart: Int = 0,
+    expectedFinish: Int = expectedStart
+) : StatusCancelled<TokenType> {
   if (this !is StatusCancelled<*>)
     fail("$this is not ${StatusCancelled.name}")
+
+  assertAll(StatusCancelled.name,
+      { assertEquals(expectedStart, this.start, "$this start doesn't match") },
+      { assertEquals(expectedFinish, this.finish, "$this finish doesn't match") }
+  )
 
   @Suppress("UNCHECKED_CAST")
   return(this as StatusCancelled<TokenType>)
 }
+
+
+/**
+ * Verifies if [TokenizerStatus] object has [StatusFailed] type
+ */
+fun TokenizerStatus.assertFailed(
+    expectedStart: Int = 0,
+    expectedFinish: Int = expectedStart
+) : StatusFailed<TokenType> {
+  if (this !is StatusFailed<*>)
+    fail("$this is not ${StatusFailed.name}")
+
+  assertAll(StatusFailed.name,
+      { assertEquals(expectedStart, this.start, "$this start doesn't match") },
+      { assertEquals(expectedFinish, this.finish, "$this finish doesn't match") }
+  )
+
+  @Suppress("UNCHECKED_CAST")
+  return(this as StatusFailed<TokenType>)
+}
+
 
 /**
  * Verifies if [TokenizerStatus] object has [StatusNone] type

@@ -29,18 +29,23 @@ internal class SingeCharTokenizerTest {
         .assertNone()
   }
 
+
   @Test
   fun `matching not last`() {
-    tokenizer.startProcessing('$', 0)
-        .assertFinish().createToken()
+    val source = "$"
+
+    tokenizer.startProcessing(source[0])
+        .assertFinish(source).createToken()
         .assertEquals(expectedToken)
   }
+
 
   @Test
   fun `matching last`() {
-    tokenizer.startProcessingLast('$', 0)
-        .assertFinish().createToken()
+    val source = "$"
+
+    tokenizer.startProcessingLast(source[0])
+        .assertFinish(source).createToken()
         .assertEquals(expectedToken)
   }
-
 }

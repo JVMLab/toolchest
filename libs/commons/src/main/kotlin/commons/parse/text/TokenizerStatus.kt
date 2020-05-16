@@ -97,7 +97,7 @@ open class StatusFinished<E: Enum<E>>(
 
   override fun toString(): String = "$name of ${tokenizer.type}"
 
-  fun createToken() = Token(tokenizer.type, start, finish)
+  open fun createToken() = Token(tokenizer.type, start, finish)
 }
 
 
@@ -144,9 +144,15 @@ class StatusFailed<E: Enum<E>>(
   constructor(
       tokenizer: IResetTokenizer<E>,
       start: Int,
-      finish: Int = start,
+      finish: Int,
       reason: String = ""
   ) : this(tokenizer, SubSequence(start, finish), reason)
+
+  constructor(
+      tokenizer: IResetTokenizer<E>,
+      start: Int,
+      reason: String = ""
+  ) : this(tokenizer, SubSequence(start, start), reason)
 
 
   companion object {

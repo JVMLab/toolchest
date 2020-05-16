@@ -9,11 +9,11 @@ open class GenericTokenizer<E: Enum<E>>(
     checkChar: (Char) -> Boolean
 ) : GenericSingleCharTokenizer<E>(type, checkChar), IProcessTokenizer<E> {
 
-  override fun startProcessing(char: Char, idx: Int): ModifiedStatus =
+  override fun startProcessing(char: Char, start: Int): ModifiedStatus =
       if (checkChar(char))
-        StatusBuilding(this, idx)
+        StatusBuilding(this, start)
       else
-        StatusCancelled(this, idx)
+        StatusCancelled(this, start)
 
 
   override fun processChar(char: Char, lastStatus: StatusBuilding<E>): ModifiedStatus =

@@ -11,16 +11,14 @@ private enum class Defaults(val c: Char) {
  * Creates [ComplexToken] for brackets and their internal content as sub-tokens
  *
  */
-/*
 class BracketsTokenizer<E: Enum<E>> : ComplexTokenizer<E> {
 
-    */
 /**
-     * the default constructor
-     *
-     * @param leftBracket represents a left bracket [Char]
-     * @param rightBracket represents a right bracket [Char]
-     *//*
+ * the default constructor
+ *
+ * @param leftBracket represents a left bracket [Char]
+ * @param rightBracket represents a right bracket [Char]
+ */
 
     constructor(
         type: E,
@@ -38,14 +36,12 @@ class BracketsTokenizer<E: Enum<E>> : ComplexTokenizer<E> {
         )
     )
 
-
-    */
 /**
-     * a secondary constructor with unlimited number of [tokenizer]s instead of a [SubTokenizer]
-     *//*
+ * a secondary constructor with unlimited number of [tokenizer]s instead of a [SubTokenizer]
+ */
 
     constructor(type: E,
-                tokenizer: ITokenizer<E>,
+                tokenizer: IStartTokenizer<E>,
                 leftBracketType: E,
                 rightBracketType: E,
                 leftBracket: Char = Defaults.LEFT_BRACKET.c,
@@ -57,4 +53,4 @@ class BracketsTokenizer<E: Enum<E>> : ComplexTokenizer<E> {
             SubTokenizer(SingleCharTokenizer(rightBracketType, rightBracket), 1, 1)
         )
     )
-}*/
+}

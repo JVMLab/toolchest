@@ -9,13 +9,13 @@ open class GenericSingleCharTokenizer<E: Enum<E>>(
     protected val checkChar: (Char) -> Boolean
 ) : IStartTokenizer<E> {
 
-  override fun startProcessing(char: Char, idx: Int): ModifiedStatus = startProcessingLast(char, idx)
+  override fun startProcessing(char: Char, start: Int): ModifiedStatus = startProcessingLast(char, start)
 
 
-  override fun startProcessingLast(char: Char, idx: Int): FinalModifiedStatus =
+  override fun startProcessingLast(char: Char, start: Int): FinalModifiedStatus =
       if (checkChar(char))
-        StatusFinished(this, idx)
+        StatusFinished(this, start)
       else
-        StatusCancelled(this, idx)
+        StatusCancelled(this, start)
 
 }

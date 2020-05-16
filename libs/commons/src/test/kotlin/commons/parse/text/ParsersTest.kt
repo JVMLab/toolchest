@@ -202,12 +202,11 @@ internal class ParsersTest {
   }
 
 
-
-/*  private val bracketsTokenizer = BracketsTokenizer(
+  private val bracketsTokenizer = BracketsTokenizer(
       TokenType.BRACKETS,
-      MultiTokenizer(
+      AlternativeTokenizer(
           TokenType.DEFAULT,
-          listOf<ITokenizer<TokenType>>(
+          listOf(
               WordTokenizer(TokenType.WORD),
               SingleCharTokenizer(TokenType.COMMA,','),
               WhitespaceTokenizer(TokenType.WHITESPACE)
@@ -219,7 +218,7 @@ internal class ParsersTest {
   fun bracketsArgs(): Stream<Arguments> =
       Stream.of(
           Arguments.of(
-              "[xxx]",
+              "[xyz]",
               listOf(
                   ComplexToken(TokenType.BRACKETS, 0, 4,
                       listOf(
@@ -270,7 +269,6 @@ internal class ParsersTest {
   @ParameterizedTest(name = "BracketsTokenizer: \"{0}\"")
   @MethodSource("bracketsArgs")
   fun bracketsTest(src: String, tokens: List<Token<TokenType>>) {
-    bracketsTokenizer.reset()
     src.parse(bracketsTokenizer, TokenType.WHITESPACE).assertEquals(tokens)
-  }*/
+  }
 }

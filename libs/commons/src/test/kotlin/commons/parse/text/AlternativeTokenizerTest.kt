@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class AlternativeTokenizerTest {
+
   private val tokenizer = AlternativeTokenizer(
       TokenType.DEFAULT,
       listOf(
@@ -40,51 +41,69 @@ internal class AlternativeTokenizerTest {
         .assertNone()
   }
 
+
   @Test
   fun `matching word not last`() {
-    tokenizer.startProcessing('a', 0)
-        .assertBuilding().processChar('_')
-        .assertFinish().createToken()
+    val source = "a_"
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processChar(source[1])
+        .assertFinish(expectedWord0.sequence(source)).createToken()
         .assertEquals(expectedWord0)
   }
 
+
   @Test
   fun `matching whitespace not last`() {
-    tokenizer.startProcessing(' ', 0)
-        .assertBuilding().processChar('_')
-        .assertFinish().createToken()
+    val source = " _"
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processChar(source[1])
+        .assertFinish(expectedWhitespace0.sequence(source)).createToken()
         .assertEquals(expectedWhitespace0)
   }
+
 
   @Test
   fun `matching both not last`() {
-    tokenizer.startProcessing(' ', 0)
-        .assertBuilding().processChar('a')
-        .assertFinish().createToken()
+    val source = " a"
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processChar(source[1])
+        .assertFinish(expectedWhitespace0.sequence(source)).createToken()
         .assertEquals(expectedWhitespace0)
   }
 
+
   @Test
   fun `matching word last`() {
-    tokenizer.startProcessing('a', 0)
-        .assertBuilding().processLastChar('b')
-        .assertFinish().createToken()
+    val source = "ab"
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processLastChar(source[1])
+        .assertFinish(expectedWord1.sequence(source)).createToken()
         .assertEquals(expectedWord1)
   }
 
+
   @Test
   fun `matching whitespace last`() {
-    tokenizer.startProcessing(' ', 0)
-        .assertBuilding().processLastChar(' ')
-        .assertFinish().createToken()
+    val source = "  "
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processLastChar(source[1])
+        .assertFinish(expectedWhitespace1.sequence(source)).createToken()
         .assertEquals(expectedWhitespace1)
   }
 
+
   @Test
   fun `matching both last`() {
-    tokenizer.startProcessing('a', 0)
-        .assertBuilding().processLastChar(' ')
-        .assertFinish().createToken()
+    val source = "a "
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processLastChar(source[1])
+        .assertFinish(expectedWord0.sequence(source)).createToken()
         .assertEquals(expectedWord0)
   }
 }

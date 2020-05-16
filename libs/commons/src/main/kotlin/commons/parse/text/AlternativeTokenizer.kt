@@ -20,35 +20,36 @@ class AlternativeTokenizer<E: Enum<E>>(
     private val altTokenizers: List<IStartTokenizer<E>>
 ) : ITokenizer<E> {
 
-  private fun failedAmbiguous(s1: ModifiedStatus, s2: ModifiedStatus, idx: Int) : StatusFailed<E> =
+  private fun failedAmbiguous(s1: ModifiedStatus, s2: ModifiedStatus, start: Int) : StatusFailed<E> =
       StatusFailed(
-          tokenizer = this,
-          start = idx,
-          reason = "Ambiguous: $s1 and $s2 are found at the same position $idx"
+          this,
+          start,
+          "Ambiguous: $s1 and $s2 are found at the same position $start"
       )
 
 
-  override fun startProcessing(char: Char, idx: Int): ModifiedStatus {
+  override fun startProcessing(char: Char, start: Int): ModifiedStatus {
     val buildingStatuses: MutableList<StatusBuilding<E>> = ArrayList()
-    var statusFinished : StatusFinished<E>? = null
+    var statusFinished: StatusFinished<E>? = null
 
     loop@ for (altTokenizer in altTokenizers)
-      when (val status = altTokenizer.startProcessing(char, idx)) {
+
+      when (val status = altTokenizer.startProcessing(char, start)) {
         is StatusBuilding<*>  ->
           if (null == statusFinished)
             @Suppress("UNCHECKED_CAST")
             buildingStatuses.add(status as StatusBuilding<E>)
           else
-            return failedAmbiguous(status, statusFinished, idx)
+            return failedAmbiguous(status, statusFinished, start)
         is StatusFinished<*> ->
           if (buildingStatuses.isEmpty())
             if (null == statusFinished) {
               @Suppress("UNCHECKED_CAST")
               statusFinished = status as StatusFinished<E>
             } else
-              return failedAmbiguous(status, statusFinished, idx)
+              return failedAmbiguous(status, statusFinished, start)
           else
-            return failedAmbiguous(status, buildingStatuses.first(), idx)
+            return failedAmbiguous(status, buildingStatuses.first(), start)
         is StatusCancelled<*> -> // just skip it
           continue@loop
         is StatusFailed<*> ->
@@ -59,40 +60,40 @@ class AlternativeTokenizer<E: Enum<E>>(
       return statusFinished
 
     if (buildingStatuses.isEmpty())  // all altTokenizers returned StatusCancelled
-      return StatusCancelled(this, idx)
+      return StatusCancelled(this, start)
 
     if (buildingStatuses.size == 1)
       return buildingStatuses.first()
 
-    return StatusAltBuilding<E>(this, idx, buildingStatuses)
+    return StatusAltBuilding<E>(this, start, buildingStatuses)
   }
 
 
-  override fun startProcessingLast(char: Char, idx: Int): FinalModifiedStatus {
-    var statusFinished : StatusFinished<E>? = null
+  override fun startProcessingLast(char: Char, start: Int): FinalModifiedStatus {
+    var statusFinished: StatusFinished<E>? = null
 
     loop@ for (altTokenizer in altTokenizers)
-      when (val status = altTokenizer.startProcessingLast(char, idx)) {
+      when (val status = altTokenizer.startProcessingLast(char, start)) {
         is StatusFinished<*> ->
           if (null == statusFinished) {
             @Suppress("UNCHECKED_CAST")
             statusFinished = status as StatusFinished<E>
           } else
-            return failedAmbiguous(status, statusFinished, idx)
+            return failedAmbiguous(status, statusFinished, start)
         is StatusCancelled<*> -> // just skip it
           continue@loop
         is StatusFailed<*> ->
           return status
       }
 
-    return statusFinished ?: StatusCancelled(this, idx)
+    return statusFinished ?: StatusCancelled(this, start)
   }
 
 
   override fun processChar(char: Char, lastStatus: StatusBuilding<E>): ModifiedStatus {
-    var statusFinished : StatusFinished<E>? = null
-    val lastAltBuilding : StatusAltBuilding<E> =
+    val lastAltBuilding: StatusAltBuilding<E> =
         (lastStatus as? StatusAltBuilding<E>) ?: return lastStatus.processChar(char)
+    var statusFinished: StatusFinished<E>? = null
 
     val iterator = lastAltBuilding.listIterator()
     var maxCancelledFinish = lastAltBuilding.finish
@@ -134,8 +135,8 @@ class AlternativeTokenizer<E: Enum<E>>(
 
 
   override fun processLastChar(char: Char, lastStatus: StatusBuilding<E>): FinalModifiedStatus {
-    var statusFinished : StatusFinished<E>? = null
-    val lastAltBuilding : StatusAltBuilding<E> =
+    var statusFinished: StatusFinished<E>? = null
+    val lastAltBuilding: StatusAltBuilding<E> =
         (lastStatus as? StatusAltBuilding<E>) ?: return lastStatus.processLastChar(char)
 
     val iterator = lastAltBuilding.listIterator()
