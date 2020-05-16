@@ -1,42 +1,31 @@
 package com.jvmlab.commons.parse.text
 
 
-
 /**
- * An [AbstractTokenizer] to create tokens based on conditions for chars given by external functions
- *
- *
- * @property checkFirstChar a function to check the first char of a token, to be used in
- * [firstChar] method. If returns true then a new [TokenBuilder] is created
- *
- * @property firstCharStatus is a [BuildingStatus] for the token created by the [firstChar] method.
- * Usually it is [StatusBuilding], but could be also [StatusFinished] in case of a single-char token
- *
- * @property checkNextChar a function to check a next and the last char of a token, to be used in
- * [nextChar] method. If returns true then the [TokenBuilder] is extended to one
- * more char by the [nextChar] or finished successfully in case of the last [Char] of a parsed
- * [CharSequence]
+ * A subclass of [GenericSingleCharTokenizer] to create multi-char tokens
  */
 open class GenericTokenizer<E: Enum<E>>(
     type: E,
-    private val checkFirstChar: (Char) -> Boolean,
-    private val firstCharStatus: BuildingStatus = StatusBuilding,
-    private val checkNextChar: (Char) -> Boolean = checkFirstChar
-) : AbstractTokenizer<E>(type) {
+    checkChar: (Char) -> Boolean
+) : GenericSingleCharTokenizer<E>(type, checkChar), IProcessTokenizer<E> {
 
-  override fun firstChar(char: Char, idx: Int, isLast: Boolean): BuildingStatus =
-    if (checkFirstChar(char))
-      if (isLast) StatusFinished
-      else firstCharStatus
-    else StatusNone
+  override fun startProcessing(char: Char, start: Int): ModifiedStatus =
+      if (checkChar(char))
+        StatusBuilding(this, start)
+      else
+        StatusCancelled(this, start)
 
 
-  override fun nextChar(char: Char, idx: Int, isLast: Boolean): BuildingStatus =
-    if (checkNextChar(char)) {
-      finalCharIncluded = true
-      if (isLast) StatusFinished
-      else getBuildingStatus() // expected to have StatusBuilding
-    }
-    else StatusFinished
+  override fun processChar(char: Char, lastStatus: StatusBuilding<E>): ModifiedStatus =
+      if (checkChar(char))
+        lastStatus.nextBuilding()
+      else
+        lastStatus.thisFinish()
 
+
+  override fun processLastChar(char: Char, lastStatus: StatusBuilding<E>): FinalModifiedStatus =
+      if (checkChar(char))
+        lastStatus.nextFinish()
+      else
+        lastStatus.thisFinish()
 }

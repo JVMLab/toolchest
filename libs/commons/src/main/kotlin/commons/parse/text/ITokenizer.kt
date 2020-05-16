@@ -2,47 +2,16 @@ package com.jvmlab.commons.parse.text
 
 
 /**
- * Contains common public functions of all tokenizers
+ * The main interface of the parse.text package. It is implemented by any tokenizer
+ * and used in text parsers.
+ *
+ * An implementation must have the following behaviour:
+ * - char processing functions should return [StatusNone] if [ITokenizer] still has initial state
+ * after processing a [Char]
+ * - char processing functions should return [StatusBuilding] if a token is in progress. In this case
+ * [ITokenizer] should keep an internal state to be ready to correctly process a next [Char] from a [CharSequence]
+ * - char processing functions should return a [StatusFinished] upon successful completion of the tokenization
  */
-interface ITokenizer<E: Enum<E>> {
-
-  /**
-   * returns type of the internal [TokenBuilder]
-   */
-  fun getTokenType(): E
-
-
-  /**
-   * returns building status of the internal [TokenBuilder]
-   */
-  fun getBuildingStatus(): BuildingStatus
-
-
-  /**
-   * returns building status of the internal [TokenBuilder]
-   */
-  fun getCurrentFinish(): Int
-
-
-  /**
-   * Resets an [ITokenizer] to an initial state.
-   */
-  fun reset()
-
-
-  /**
-   * Builds a resulting token in [StatusFinished] status and resets [ITokenizer],
-   * so a current token can be built only once
-   */
-  fun buildToken(): Token<E>
-
-
-  /**
-   * Processes a current [Char] from a [CharSequence]
-   *
-   * @param char is a [Char] to be parsed
-   * @param idx is a position of the [char] in a parsed [CharSequence]
-   * @param isLast indicates if [idx] is the last index of a parsed [CharSequence]
-   */
-  fun processChar(char: Char, idx: Int, isLast: Boolean)
+interface ITokenizer<E: Enum<E>> : IStartTokenizer<E>, IProcessTokenizer<E> {
+  override fun reset() = StatusNone(this)
 }

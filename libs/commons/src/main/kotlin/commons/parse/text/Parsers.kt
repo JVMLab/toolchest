@@ -16,7 +16,7 @@ import com.jvmlab.commons.parse.ParsedKey
  * @param defaultTokenType is a type of a default token, which is created whenever the [tokenizer]
  */
 fun <E: Enum<E>> CharSequence.parse(
-    tokenizer: ITokenizer<E>,
+    tokenizer: IStartTokenizer<E>,
     defaultTokenType: E? = null): Parsed<CharSequence, List<Token<E>>> =
     Parsed(this) { charSequence -> parse(charSequence, tokenizer, defaultTokenType) }
 
@@ -33,70 +33,79 @@ fun <E: Enum<E>> CharSequence.parse(
  *
  * @return a single key [Map] with list of tokens produced by [tokenizer] along with default tokens
  * (in case of [defaultTokenType] is not null) as a value and [ParsedKey.PARSED_STRING.key] key
+ *
  */
 private fun <E: Enum<E>> parse(
     charSequence: CharSequence,
-    tokenizer: ITokenizer<E>,
+    tokenizer: IStartTokenizer<E>,
     defaultTokenType: E?
 ): Map<String, List<Token<E>>> {
   val tokenList = ArrayList<Token<E>>() // a list of tokens to be returned as a value in the Map
-  var token: Token<E> // a token built by the currentBuilder
-  var defaultStart: Int = 0 // a start of a default token, used when defaultTokenType is not null
-  var idx: Int = 0 // current index in the charSequence
+  var defaultStart = 0 // a start of a default token, used when defaultTokenType is not null
+  var idx = 0 // current index in the charSequence
   var char: Char // current char in the charSequence
-  var isLast: Boolean // true if char is the last Char in the charSequence
 
+  val initialStatus = tokenizer.reset()
+  var status: TokenizerStatus = initialStatus
+
+  fun processFinished(statusFinished: StatusFinished<E>) {
+    val token = statusFinished.createToken()
+    tokenList.addDefaultToken(defaultTokenType, defaultStart, token.start)
+    tokenList.add(token)
+    idx = token.finish + 1 // sets idx to a next char after the current token
+    defaultStart = idx
+  }
+
+  fun processFailed(statusFailed: StatusFailed<*>) {
+    throw IllegalStateException("Parsing error at position $idx with reason: ${statusFailed.reason}")
+  }
+
+  while (idx < charSequence.length - 1) {
+    char = charSequence[idx]
+    when (status) {
+      is StatusNone<*> -> {
+        status = status.startProcessing(char, idx)
+        if (status is StatusBuilding<*>)
+          idx = status.finish + 1
+      }
+      is StatusBuilding<*> -> {
+        status = status.processChar(char)
+        if (status is StatusBuilding<*>)
+          idx = status.finish + 1
+      }
+      is StatusFinished<*> -> {
+        @Suppress("UNCHECKED_CAST")
+        processFinished(status as StatusFinished<E>)
+        status = initialStatus
+      }
+      is StatusCancelled<*> -> {
+        idx = status.finish + 1
+        status = initialStatus
+      }
+      is StatusFailed<*> ->
+        processFailed(status)
+    }
+  }
+
+  // Process the last char, idx == charSequence.length - 1
   while (idx < charSequence.length) {
     char = charSequence[idx]
-    isLast = (idx == charSequence.length - 1)
-    when (val status = tokenizer.getBuildingStatus()) {
-
-      StatusNone -> {
-        tokenizer.processChar(char, idx, isLast)
-        if (isLast) {
-          if (StatusNone == tokenizer.getBuildingStatus()) {
-            idx++ // to exit the loop
-            // Add a default token if the last char doesn't start a token
-            tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
-          }
-          // don't increment idx here to process a new BuildingStatus in the next iteration
-        } else {
-          idx++
-        }
+    when (status) {
+      is StatusNone<*> ->
+        status = status.startProcessingLast(char, idx)
+      is StatusBuilding<*> ->
+        status = status.processLastChar(char)
+      is StatusFinished<*> -> {
+        @Suppress("UNCHECKED_CAST")
+        processFinished(status as StatusFinished<E>)
+        status = initialStatus
       }
-
-      StatusBuilding -> {
-        // changes this.status and may increment this.finish if still in building
-        tokenizer.processChar(char, idx, isLast)
-        if (isLast) {
-          // don't increment idx here to process a new status in the next iteration
-          if (StatusBuilding == tokenizer.getBuildingStatus())
-            throw IllegalStateException(
-                "Unexpected state: $StatusBuilding at the last position $idx")
-        } else {
-          // increments idx if still in building or
-          // keeps it when this.finish was not incremented in tokenizer.processChar()
-          idx = tokenizer.getCurrentFinish() + 1
-        }
+      is StatusCancelled<*> -> {
+        idx = status.finish + 1
+        tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
       }
-
-      StatusFinished -> {
-        token = tokenizer.buildToken()
-        tokenList.addDefaultToken(defaultTokenType, defaultStart, token.start)
-        tokenList.add(token)
-        idx = token.finish + 1 // sets idx to a next char after the current token
-        defaultStart = idx
-      }
-
-      StatusCancelled -> {
-        if (isLast) // Add a default token till the end of charSequence in case of the last char
-          tokenList.addDefaultToken(defaultTokenType, defaultStart, idx)
-        idx = tokenizer.getCurrentFinish() + 1
-      }
-
-      is StatusFailed -> {
-        throw IllegalStateException("Parsing error at position $idx with reason: ${status.reason}")
-      }
+      is StatusFailed<*> ->
+        processFailed(status)
     }
   }
 

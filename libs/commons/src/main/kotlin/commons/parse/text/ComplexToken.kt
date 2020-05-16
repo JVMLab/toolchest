@@ -1,7 +1,6 @@
 package com.jvmlab.commons.parse.text
 
 
-
 /**
  * Describes a text token taken from a [CharSequence]. The class extends [Token] adding [subTokens]
  * property which allows building of syntax trees.
@@ -16,15 +15,14 @@ package com.jvmlab.commons.parse.text
  */
 open class ComplexToken<E: Enum<E>> (
     type: E,
-    start: Int,
-    finish: Int,
-    val subTokens: List<Token<E>>) : Token<E>(type, start, finish) {
+    subSequence: ISubSequence,
+    val subTokens: List<Token<E>>) : Token<E>(type, subSequence) {
 
   /**
    * Checks consistency of sub-token bounds
    */
   init {
-    var leftBound = start
+    var leftBound = subSequence.start
     subTokens.forEach { token ->
       require(leftBound <= token.start) { "Incorrect start value of a sub-token (${token.start})" }
       require(token.finish <= finish) { "Incorrect finish value of a sub-token (${token.finish})" }
@@ -32,11 +30,14 @@ open class ComplexToken<E: Enum<E>> (
     }
   }
 
+  constructor(type: E, start: Int, finish: Int, subTokens: List<Token<E>>) :
+      this(type, SubSequence(start, finish), subTokens)
+
   /**
    * Additional constructor to create a [ComplexToken] based on [Token]
    */
-  constructor(token: Token<E>, subTokens: List<Token<E>>) : this(
-      token.type, token.start, token.finish, subTokens)
+  constructor(token: Token<E>, subTokens: List<Token<E>>) :
+      this(token.type, token.start, token.finish, subTokens)
 
 
   /**
@@ -46,5 +47,4 @@ open class ComplexToken<E: Enum<E>> (
     super.prettyPrint(source)
     subTokens.forEach { it.prettyPrint(source) }
   }
-
 }

@@ -11,6 +11,7 @@ internal class SimpleNumberTokenizerTest {
   private val tokenizer = SimpleNumberTokenizer(TokenType.NUMBER)
   private val expectedToken0 = Token(TokenType.NUMBER, 0, 0)
   private val expectedToken1 = Token(TokenType.NUMBER, 0, 1)
+  private val expectedToken2 = Token(TokenType.NUMBER, 0, 2)
 
   @BeforeEach
   fun reset() {
@@ -19,47 +20,73 @@ internal class SimpleNumberTokenizerTest {
 
   @Test
   fun `non matching not last`() {
-    tokenizer.processChar(' ', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusNone)
+    tokenizer.startProcessing('x', 0)
+        .assertCancelled().reset()
+        .assertNone()
   }
 
   @Test
   fun `non matching last`() {
-    tokenizer.processChar(' ', 0, true)
-    assertEquals(tokenizer.getBuildingStatus(),StatusNone)
+    tokenizer.startProcessingLast('x', 0)
+        .assertCancelled().reset()
+        .assertNone()
   }
+
 
   @Test
   fun `matching not last`() {
-    tokenizer.processChar('1', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusBuilding)
+    val source = "1 "
 
-    tokenizer.processChar(' ', 1, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
-
-    tokenizer.buildToken().assertEquals(expectedToken0)
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processChar(source[1])
+        .assertFinish(expectedToken0.sequence(source)).createToken()
+        .assertEquals(expectedToken0)
   }
+
 
   @Test
   fun `matching last`() {
-    tokenizer.processChar('1', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusBuilding)
+    val source = "12"
 
-    tokenizer.processChar('2', 1, true)
-    assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
-
-    tokenizer.buildToken().assertEquals(expectedToken1)
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processLastChar(source[1])
+        .assertFinish(expectedToken1.sequence(source)).createToken()
+        .assertEquals(expectedToken1)
   }
+
 
   @Test
   fun `matching last space`() {
-    tokenizer.processChar('1', 0, false)
-    assertEquals(tokenizer.getBuildingStatus(),StatusBuilding)
+    val source = "1 "
 
-    tokenizer.processChar(' ', 1, true)
-    assertEquals(tokenizer.getBuildingStatus(),StatusFinished)
-
-    tokenizer.buildToken().assertEquals(expectedToken0)
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processLastChar(source[1])
+        .assertFinish(expectedToken0.sequence(source)).createToken()
+        .assertEquals(expectedToken0)
   }
 
+
+  @Test
+  fun `matching long last`() {
+    val source = "123"
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processChar(source[1])
+        .assertBuilding(0, 1, source).processLastChar(source[2])
+        .assertFinish(expectedToken2.sequence(source)).createToken()
+        .assertEquals(expectedToken2)
+  }
+
+
+  @Test
+  fun `matching long last space`() {
+    val source = "123 "
+
+    tokenizer.startProcessing(source[0])
+        .assertBuilding(0, 0, source).processChar(source[1])
+        .assertBuilding(0, 1, source).processChar(source[2])
+        .assertBuilding(0, 2, source).processLastChar(source[3])
+        .assertFinish(expectedToken2.sequence(source)).createToken()
+        .assertEquals(expectedToken2)
+  }
 }
