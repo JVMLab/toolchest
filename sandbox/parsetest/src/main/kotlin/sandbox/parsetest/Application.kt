@@ -7,6 +7,7 @@ import com.jvmlab.commons.parse.ParsedKey
 import com.jvmlab.commons.parse.file.parsePath
 import com.jvmlab.commons.parse.file.parseYaml
 import com.jvmlab.commons.parse.text.*
+import com.jvmlab.commons.parse.text.tokenizers.*
 
 
 fun main(args: Array<String>) {
@@ -24,7 +25,7 @@ fun main(args: Array<String>) {
   println("result: ${parsedPath.result}\n")
 
 
-  val wordStrList = listOf<String>(
+  val wordStrList = listOf(
       "   ",
       "xxx",
       "aaa ",
@@ -35,7 +36,7 @@ fun main(args: Array<String>) {
 
   println("\n*********** WordTokenizer positive")
   wordStrList.forEach { str: String ->
-    val parsedString = str.parse(WordTokenizer<TokenType>(TokenType.WORD), TokenType.WSPC)
+    val parsedString = str.tokenize(WordTokenizer(TokenType.WORD), TokenType.WSPC)
     println("\nsrc  : '${parsedString.source}'")
     parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
       it.prettyPrint(parsedString.source)
@@ -44,7 +45,7 @@ fun main(args: Array<String>) {
   }
 
 
-  val separatorStrList = listOf<String>(
+  val separatorStrList = listOf(
       "x,y",
       "xxx,ttt  ",
       "xxx, ttt,x",
@@ -54,7 +55,7 @@ fun main(args: Array<String>) {
 
   println("\n\n*********** SingleCharTokenizer positive")
   separatorStrList.forEach { str: String ->
-    val parsedString = str.parse(SingleCharTokenizer(TokenType.SPRT, ','), TokenType.WORD)
+    val parsedString = str.tokenize(SingleCharTokenizer(TokenType.SPRT, ','), TokenType.WORD)
     println("\nsrc  : '${parsedString.source}'")
     parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
       it.prettyPrint(parsedString.source)
@@ -66,13 +67,14 @@ fun main(args: Array<String>) {
   println("\n\n*********** MultiTokenizer negative")
   wordStrList.forEach { str: String ->
     try {
-      val parsedString = str.parse(
-          MultiTokenizer(
+      val parsedString = str.tokenize(
+          AlternativeTokenizer(
               TokenType.DFLT,
-              listOf<ITokenizer<TokenType>>(
-                  WordTokenizer<TokenType>(TokenType.WORD),
-                  WordTokenizer<TokenType>(TokenType.WORD)
-              )),
+              listOf(
+                  WordTokenizer(TokenType.WORD),
+                  WordTokenizer(TokenType.WORD)
+              )
+          ),
           TokenType.WSPC)
 
 
@@ -89,13 +91,14 @@ fun main(args: Array<String>) {
 
   println("\n\n*********** MultiTokenizer positive")
   separatorStrList.forEach { str: String ->
-    val parsedString = str.parse(
-        MultiTokenizer(
+    val parsedString = str.tokenize(
+        AlternativeTokenizer(
             TokenType.DFLT,
-            listOf<ITokenizer<TokenType>>(
-                WordTokenizer<TokenType>(TokenType.WORD),
+            listOf(
+                WordTokenizer(TokenType.WORD),
                 SingleCharTokenizer(TokenType.SPRT, ',')
-            )),
+            )
+        ),
         TokenType.WSPC)
     println("\nsrc  : '${parsedString.source}'")
     parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
@@ -104,7 +107,7 @@ fun main(args: Array<String>) {
   }
 
 
-  val bracketsStrList = listOf<String>(
+  val bracketsStrList = listOf(
       "[xxx]",
       "[xxx] [ttt,xx] ",
       " [tt,xxx,t]"
@@ -113,14 +116,18 @@ fun main(args: Array<String>) {
   println("\n\n*********** BracketsTokenizer positive")
   bracketsStrList.forEach { str: String ->
     println("\nsrc  : '$str'")
-    val parsedString = str.parse(
-        BracketsTokenizer<TokenType>(TokenType.BRCK,
-            SubTokenizer(MultiTokenizer(
-                TokenType.DFLT,
-                listOf<ITokenizer<TokenType>>(
-                    WordTokenizer<TokenType>(TokenType.WORD),
-                    SingleCharTokenizer(TokenType.SPRT, ',')
-                ))),TokenType.L_BR, TokenType.R_BR
+    val parsedString = str.tokenize(
+        BracketsTokenizer(
+            TokenType.BRCK,
+            SubTokenizer(
+                AlternativeTokenizer(
+                    TokenType.DFLT,
+                    listOf(
+                        WordTokenizer(TokenType.WORD),
+                        SingleCharTokenizer(TokenType.SPRT, ',')
+                    )
+                )
+            ),TokenType.L_BR, TokenType.R_BR
         ),
         TokenType.WSPC)
     parsedString.result[ParsedKey.PARSED_STRING.key]?.forEach {
