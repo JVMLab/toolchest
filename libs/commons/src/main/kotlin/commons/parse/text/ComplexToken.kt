@@ -1,5 +1,7 @@
 package com.jvmlab.commons.parse.text
 
+import com.jvmlab.commons.parse.text.subsequence.*
+
 
 /**
  * Describes a text token taken from a [CharSequence]. The class extends [Token] adding [subTokens]

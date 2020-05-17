@@ -1,5 +1,8 @@
 package com.jvmlab.commons.parse.text
 
+
+import com.jvmlab.commons.parse.text.tokenizers.*
+
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -9,7 +12,7 @@ import java.util.stream.Stream
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class ParsersTest {
+internal class LexerTest {
 
   private val singleCharTokenizer = SingleCharTokenizer(TokenType.COMMA, ',')
 
@@ -51,7 +54,7 @@ internal class ParsersTest {
   @ParameterizedTest(name = "SingleCharTokenizer: <{0}>")
   @MethodSource("singleCharArgs")
   fun singleCharTest(src: String, tokens: List<Token<TokenType>>) {
-    src.parse(singleCharTokenizer, TokenType.DEFAULT).assertEquals(tokens)
+    src.tokenize(singleCharTokenizer, TokenType.DEFAULT).assertEquals(tokens)
   }
 
 
@@ -107,7 +110,7 @@ internal class ParsersTest {
   @ParameterizedTest(name = "WordTokenizer: <{0}>")
   @MethodSource("wordArgs")
   fun wordTest(src: String, tokens: List<Token<TokenType>>) {
-    src.parse(wordTokenizer, TokenType.WHITESPACE).assertEquals(tokens)
+    src.tokenize(wordTokenizer, TokenType.WHITESPACE).assertEquals(tokens)
   }
 
 
@@ -150,7 +153,7 @@ internal class ParsersTest {
   @ParameterizedTest(name = "SimpleNumberTokenizer: \"{0}\"")
   @MethodSource("simpleNumberArgs")
   fun simpleNumberTest(src: String, tokens: List<Token<TokenType>>) {
-    src.parse(simpleNumberTokenizer, TokenType.DEFAULT).assertEquals(tokens)
+    src.tokenize(simpleNumberTokenizer, TokenType.DEFAULT).assertEquals(tokens)
   }
 
 
@@ -198,7 +201,7 @@ internal class ParsersTest {
   @ParameterizedTest(name = "AlternativeTokenizer: \"{0}\"")
   @MethodSource("alternativeArgs")
   fun alternativeTest(src: String, tokens: List<Token<TokenType>>) {
-    src.parse(alternativeTokenizer).assertEquals(tokens)
+    src.tokenize(alternativeTokenizer).assertEquals(tokens)
   }
 
 
@@ -269,6 +272,6 @@ internal class ParsersTest {
   @ParameterizedTest(name = "BracketsTokenizer: \"{0}\"")
   @MethodSource("bracketsArgs")
   fun bracketsTest(src: String, tokens: List<Token<TokenType>>) {
-    src.parse(bracketsTokenizer, TokenType.WHITESPACE).assertEquals(tokens)
+    src.tokenize(bracketsTokenizer, TokenType.WHITESPACE).assertEquals(tokens)
   }
 }
