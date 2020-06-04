@@ -1,7 +1,7 @@
 package com.jvmlab.mlpath.tokens
 
-import com.jvmlab.commons.parse.text.Token
-import com.jvmlab.commons.parse.text.ComplexToken
+import com.jvmlab.commons.parse.lexer.Token
+import com.jvmlab.commons.parse.lexer.ComplexToken
 
 
 /**
