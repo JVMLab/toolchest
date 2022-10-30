@@ -12,14 +12,13 @@ repositories {
 }
 
 dependencies {
-  implementation(kotlin("stdlib-jdk8"))
   implementation("com.jvmlab.libs:jvmlab-commons")
   testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.+")
 }
 
 
 tasks.withType<KotlinCompile>().configureEach {
-  kotlinOptions.jvmTarget = "11"
+  kotlinOptions.jvmTarget = "17"
 }
 
 tasks.withType<Test> {

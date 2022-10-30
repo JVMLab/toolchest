@@ -5,7 +5,7 @@ plugins {
 
 
 application {
-  mainClassName = "com.jvmlab.sandbox.parsetest.ApplicationKt"
+  mainClass.set("com.jvmlab.sandbox.parsetest.ApplicationKt")
 }
 
 repositories {
@@ -13,6 +13,5 @@ repositories {
 }
 
 dependencies {
-  implementation(kotlin("stdlib"))
   implementation("com.jvmlab.libs:jvmlab-commons")
 }
