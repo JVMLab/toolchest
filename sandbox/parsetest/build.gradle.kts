@@ -1,5 +1,5 @@
 plugins {
-  kotlin("jvm") version "1.3.71"
+  kotlin("jvm") version "1.7.20"
   application
 }
 
@@ -9,7 +9,6 @@ application {
 }
 
 repositories {
-  maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
   mavenCentral()
 }
 
