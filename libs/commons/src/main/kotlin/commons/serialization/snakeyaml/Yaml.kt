@@ -1,4 +1,4 @@
-package com.jvmlab.commons.io
+package commons.serialization.snakeyaml
 
 import java.io.File
 import java.io.FileReader
