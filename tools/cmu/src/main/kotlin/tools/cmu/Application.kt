@@ -4,6 +4,7 @@ package com.jvmlab.tools.cmu
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import java.io.File
+import java.io.PrintWriter
 
 
 fun main(args: Array<String>) {
@@ -23,10 +24,17 @@ fun main(args: Array<String>) {
   parser.parse(args)
 
   val inputFile = File(input)
+  val printWriter = output?.let {
+    PrintWriter(it)
+  } ?: run {
+    PrintWriter(System.out)
+  }
 
   when (val inputExtension = inputFile.extension.lowercase()) {
     "json" -> {
-
+      println("Processing JSON $input")
+      processJson(inputFile, printWriter)
+      printWriter.close()
     }
     else -> System.err.println("Unknown input file extension: '$inputExtension'")
   }
