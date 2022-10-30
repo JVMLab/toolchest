@@ -3,6 +3,7 @@ package com.jvmlab.tools.cmu
 
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
+import java.io.File
 
 
 fun main(args: Array<String>) {
@@ -20,4 +21,13 @@ fun main(args: Array<String>) {
   )
 
   parser.parse(args)
+
+  val inputFile = File(input)
+
+  when (val inputExtension = inputFile.extension.lowercase()) {
+    "json" -> {
+
+    }
+    else -> System.err.println("Unknown input file extension: '$inputExtension'")
+  }
 }
