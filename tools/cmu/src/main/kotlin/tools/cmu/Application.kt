@@ -1,10 +1,11 @@
 package com.jvmlab.tools.cmu
 
 
+import com.jvmlab.commons.io.filePrintWriterOrOut
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import java.io.File
-import java.io.PrintWriter
+
 
 
 fun main(args: Array<String>) {
@@ -24,15 +25,12 @@ fun main(args: Array<String>) {
   parser.parse(args)
 
   val inputFile = File(input)
-  val printWriter = output?.let {
-    PrintWriter(it)
-  } ?: run {
-    PrintWriter(System.out)
-  }
+  val printWriter = filePrintWriterOrOut(output)
+  val outputName = output ?: "STDOUT"
 
   when (val inputExtension = inputFile.extension.lowercase()) {
     "json" -> {
-      println("Processing JSON $input")
+      println("Processing JSON: from '$input' to '$outputName'")
       processJson(inputFile, printWriter)
       printWriter.close()
     }
