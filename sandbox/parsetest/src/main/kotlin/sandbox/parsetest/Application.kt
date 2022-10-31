@@ -2,7 +2,7 @@ package com.jvmlab.sandbox.parsetest
 
 import java.io.File
 
-import com.jvmlab.commons.io.Yaml
+import commons.serialization.snakeyaml.Yaml
 import com.jvmlab.commons.parse.ParsedKey
 import com.jvmlab.commons.parse.file.parsePath
 import com.jvmlab.commons.parse.file.parseYaml

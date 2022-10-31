@@ -1,19 +1,17 @@
 plugins {
-  kotlin("jvm") version "1.3.71"
+  kotlin("jvm") version "1.7.20"
   application
 }
 
 
 application {
-  mainClassName = "com.jvmlab.sandbox.parsetest.ApplicationKt"
+  mainClass.set("com.jvmlab.sandbox.parsetest.ApplicationKt")
 }
 
 repositories {
-  maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
   mavenCentral()
 }
 
 dependencies {
-  implementation(kotlin("stdlib"))
   implementation("com.jvmlab.libs:jvmlab-commons")
 }
