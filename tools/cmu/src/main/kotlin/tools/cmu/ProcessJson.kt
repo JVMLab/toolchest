@@ -15,5 +15,5 @@ private val parser = Json {
 
 fun processJson(inputFile: File, printWriter: PrintWriter) {
   val jsonElement = parser.decodeFromString<JsonElement>(inputFile.readText())
-  printWriter.print(parser.encodeToString(jsonElement))
+  printWriter.println(parser.encodeToString(jsonElement))
 }
